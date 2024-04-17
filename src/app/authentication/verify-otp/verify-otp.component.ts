@@ -12,6 +12,7 @@ export class VerifyOtpComponent {
   public otpForm = {
     otp: '',
   };
+  public otpLength: number = 6;
 
   isInputFocusedOrTyped: boolean = false;
 
@@ -44,5 +45,10 @@ export class VerifyOtpComponent {
 
   onInputBlur() {
     this.isInputFocusedOrTyped = false;
+  }
+
+  submitCode() {
+    console.log(this.otpForm.otp);
+    this.router.navigate(['/dashboard']);
   }
 }

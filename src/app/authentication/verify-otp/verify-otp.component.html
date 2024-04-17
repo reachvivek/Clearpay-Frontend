@@ -13,45 +13,76 @@
 
       <p class="mt-2 fs-3">Payment Advisor</p>
 
+      <!-- PrimeNG UI Template -->
+
+      <!-- Ends -->
+
       <form #otp="ngForm" (submit)="onSubmit()" ngNativeValidate>
         <div>
           <div class="form-group">
-            <label for="otp">Enter the OTP</label>
-            <input
+            <div class="d-flex flex-column align-items-center">
+              <div class="font-bold fs-5">Authenticate Your Account</div>
+              <p class="text-color-secondary block mt-2">
+                Please enter the code sent to your email or phone.
+              </p>
+            </div>
+            <p-inputOtp
               #otp="ngModel"
-              [(ngModel)]="this.otpForm.otp"
-              (focus)="onInputFocusOrTyping()"
-              (blur)="onInputBlur()"
-              (input)="onInputFocusOrTyping()"
-              class="form-control"
-              type="text"
+              [(ngModel)]="otpForm.otp"
               name="otp"
-              id="otp"
-              required
-            />
+              [length]="otpLength"
+              style="gap: 0"
+            >
+              <ng-template
+                pTemplate="input"
+                let-token
+                let-events="events"
+                let-index="index"
+              >
+                <input
+                  pInputText
+                  type="text"
+                  (focus)="onInputFocusOrTyping()"
+                  (blur)="onInputBlur()"
+                  class="form-control"
+                  type="text"
+                  id="otp"
+                  [maxLength]="1"
+                  (input)="events.input($event)"
+                  (keydown)="events.keydown($event)"
+                  [attr.value]="token"
+                  class="custom-otp-input"
+                  required
+                />
+                <div *ngIf="index === 3" class="px-3">
+                  <i class="pi pi-minus"></i>
+                </div>
+              </ng-template>
+            </p-inputOtp>
             <p
               *ngIf="otp.invalid && (otp.dirty || otp.touched)"
               class="form-text text-danger text-start"
             >
-              OTP is required
+              Code is required
             </p>
           </div>
           <!-- group -->
 
-          <div class="text-center mt-3">
-            <button
-              [disabled]="otp.invalid"
-              type="submit"
-              class="btn btn-primary btn-block w-75 mb-1"
-            >
-              Verify OTP
-            </button>
+          <div class="d-flex flex-column align-items-center">
+            <div class="d-flex justify-content-between mt-3 align-self-stretch">
+              <button class="btn btn-outline btn-block mb-1">
+                Resend Code
+              </button>
+              <button
+                [disabled]="otp.invalid"
+                type="submit"
+                class="btn btn-primary btn-block mb-1"
+                (click)="submitCode()"
+              >
+                Submit Code
+              </button>
+            </div>
           </div>
-          <!-- center -->
-
-          <!-- <div class="text-center">
-            <a routerLink="/auth/signup" class="link-underline link-underline-opacity-0">Create an account</a>
-          </div>center -->
         </div>
       </form>
       <!-- form -->

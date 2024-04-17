@@ -43,7 +43,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputGroupModule } from 'primeng/inputgroup';
-import { InputOtpModule } from 'primeng/inputotp';
 import { ImageModule } from 'primeng/image';
 import { KnobModule } from 'primeng/knob';
 import { ListboxModule } from 'primeng/listbox';
@@ -151,7 +150,6 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     InputNumberModule,
     InputGroupModule,
     InputGroupAddonModule,
-    InputOtpModule,
     ImageModule,
     KnobModule,
     ListboxModule,
