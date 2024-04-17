@@ -1,0 +1,216 @@
+<div class="card">
+  <p-toast></p-toast>
+
+  <p-table
+    #dt
+    [value]="users"
+    [rows]="4"
+    [rowsPerPageOptions]="[4, 10, 25]"
+    [paginator]="true"
+    [tableStyle]="{
+      'white-space': 'nowrap',
+      'font-family': 'Arial, sans-serif',
+      'font-size': '14px',
+      'border-collapse': 'collapse',
+      overflow: 'hidden',
+      'text-overflow': 'ellipsis'
+    }"
+    styleClass="p-datatable-sm"
+    [globalFilterFields]="['EmpName', 'EmpEmail', 'EmpMobNo']"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [(selection)]="selectedUsers"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="caption">
+      <div class="d-flex align-items-center justify-content-between">
+        <h5 class="m-0">User Management</h5>
+        <div>
+          <button
+            pButton
+            pRipple
+            label="New"
+            icon="pi pi-plus"
+            class="m-1 p-element p-button-success mr-2 p-button p-component ng-star-inserted rounded-pill"
+            (click)="openNew()"
+            rounded="true"
+          ></button>
+          <button
+            pButton
+            pRipple
+            label="Delete"
+            icon="pi pi-trash"
+            class="m-1 p-button-danger rounded-pill"
+            (click)="deleteSelectedUsers()"
+            [disabled]="!selectedUsers || !selectedUsers.length"
+          ></button>
+          <span class="p-input-icon-left m-1">
+            <i class="pi pi-search"></i>
+            <input
+              #searchInput
+              pInputText
+              type="text"
+              (input)="dt.filterGlobal(searchInput.value, 'contains')"
+              placeholder="Search..."
+            />
+          </span>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th>
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th pSortableColumn="EmpName">
+          Name <p-sortIcon field="EmpName"></p-sortIcon>
+        </th>
+        <th pSortableColumn="EmpMobNo">
+          Mobile No <p-sortIcon field="EmpMobNo"></p-sortIcon>
+        </th>
+        <th pSortableColumn="EmpEmail">
+          Email ID <p-sortIcon field="EmpEmail"></p-sortIcon>
+        </th>
+        <th pSortableColumn="Active">
+          Status <p-sortIcon field="Active"></p-sortIcon>
+        </th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-user>
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="user"></p-tableCheckbox>
+        </td>
+        <td>{{ user.EmpName }}</td>
+        <td>{{ user.EmpMobNo }}</td>
+        <td>{{ user.EmpEmail }}</td>
+        <td>
+          <p-tag
+            [value]="user.Active ? 'Active' : 'Inactive'"
+            [severity]="getSeverity(user.Active)"
+          ></p-tag>
+        </td>
+        <td>
+          <div class="row d-flex justify-content-start">
+            <div class="col-md-4">
+              <button
+                pButton
+                pRipple
+                [rounded]="true"
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-success rounded-circle m-0"
+                (click)="editUser(user)"
+              ></button>
+            </div>
+            <div class="col-md-4">
+              <button
+                pButton
+                pRipple
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-warning rounded-circle m-0"
+                (click)="deleteUser(user)"
+              ></button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [(visible)]="userDialog"
+  [style]="{ width: '450px' }"
+  header="User Details"
+  [modal]="true"
+  styleClass="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <div class="field">
+      <label for="name">Name</label>
+      <input
+        type="text"
+        pInputText
+        id="name"
+        [(ngModel)]="user.EmpName"
+        required
+        autofocus
+      />
+      <small class="p-error" *ngIf="submitted && !user.EmpName"
+        >Name is required.</small
+      >
+    </div>
+    <div class="field">
+      <label for="description">Mobile Number</label>
+      <textarea
+        id="description"
+        pInputTextarea
+        [(ngModel)]="user.EmpMobNo"
+        required
+        rows="1"
+        cols="20"
+      ></textarea>
+    </div>
+
+    <div class="field">
+      <label for="status">User Status</label>
+      <p-dropdown
+        [(ngModel)]="user.Active"
+        inputId="status"
+        [options]="statuses"
+      >
+        <ng-template pTemplate="selectedItem">
+          <p-tag
+            [value]="user.Active ? 'Active' : 'Suspended'"
+            [severity]="getSeverity(user.Active ? 'Active' : 'Suspended')"
+          ></p-tag>
+        </ng-template>
+        <ng-template let-option pTemplate="item">
+          <p-tag
+            [value]="option.label"
+            [severity]="getSeverity(option.label)"
+          ></p-tag>
+        </ng-template>
+      </p-dropdown>
+    </div>
+
+    <div class="formgrid grid">
+      <div class="field">
+        <label for="EmpEmail">Email ID</label>
+
+        <input
+          id="email"
+          [(ngModel)]="user.EmpEmail"
+          type="text"
+          pInputText
+          required
+          autofocus
+        />
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="hideDialog()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Save"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="saveUser()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>

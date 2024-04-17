@@ -1,0 +1,101 @@
+<div class="sidebar {{ this.isSidebarOpen ? '' : 'close' }}">
+  <div class="logo-details d-flex justify-content-center">
+    <img class="p-1" src="assets/img/brand/cms-w-lg.svg" alt="" />
+  </div>
+  <ul class="nav-links mt-3">
+    <li
+      routerLink="../dashboard"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <div class="icon-link">
+        <a routerLink="../dashboard">
+          <i class="bx bx-grid-alt"></i>
+          <span class="link_name">Dashboard</span>
+        </a>
+      </div>
+      <ul class="sub-menu blank">
+        <li>
+          <a class="link_name" href="#">Dashboard</a>
+        </li>
+      </ul>
+      <!-- Sidebar Item -->
+    </li>
+
+    <li routerLink="../dashboard/user-management" routerLinkActive="active">
+      <div class="icon-link">
+        <a routerLink="../dashboard/user-management">
+          <i class="bx bx-user"></i>
+          <span class="link_name">User Management</span>
+        </a>
+      </div>
+      <ul class="sub-menu blank">
+        <li>
+          <a class="link_name" href="#">User Management</a>
+        </li>
+      </ul>
+      <!-- Sidebar Item -->
+    </li>
+
+    <li routerLink="../dashboard/lho-management" routerLinkActive="active">
+      <div class="icon-link">
+        <a routerLink="../dashboard/lho-management">
+          <i class="bx bx-map"></i>
+          <span class="link_name">LHO Management</span>
+        </a>
+      </div>
+      <ul class="sub-menu blank">
+        <li>
+          <a class="link_name" href="#">LHO Management</a>
+        </li>
+      </ul>
+      <!-- Sidebar Item -->
+    </li>
+
+    <!-- <li
+      [routerLinkActive]="isManagementRoute ? 'active' : ''"
+      class="{{ isSubMenuOpen ? 'showMenu' : '' }}"
+    >
+      <div class="icon-link" (click)="toggleSubMenu()">
+        <a>
+          <i class="bx bx-user"></i>
+          <span class="link_name">Management</span>
+        </a>
+        <i class="bx bxs-chevron-down arrow"></i>
+      </div>
+      <ul class="sub-menu">
+        <li>
+          <a class="link_name">Management</a>
+          <a
+            routerLink="../dashboard/management/user-management"
+            routerLinkActive="active"
+            (click)="closeSubMenu()"
+            >User Management</a
+          >
+          <a
+            routerLink="../dashboard/management/lho-management"
+            routerLinkActive="active"
+            (click)="closeSubMenu()"
+            >LHO Management</a
+          >
+        </li>
+      </ul>
+    </li> -->
+    <!-- Sidebar Item With Sub Menu-->
+    <li>
+      <div class="logout-section">
+        <a href="#">
+          <i class="bx bx-exit"></i> <span class="link_name">Sign out</span>
+        </a>
+      </div>
+    </li>
+    <!-- Sign Out Button -->
+  </ul>
+</div>
+
+<section class="home-section">
+  <div class="home-content">
+    <i class="bx bx-menu" (click)="toggleSidebar()"></i>
+  </div>
+  <router-outlet></router-outlet>
+</section>

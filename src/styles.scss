@@ -1,0 +1,739 @@
+/* You can add global styles to this file, and also import other style files */
+@import "variables.scss";
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+
+html,
+body {
+  background-color: #f4f7fb;
+  margin: 0;
+}
+
+.card {
+  background: var(--surface-card);
+  padding: 2rem;
+  margin: 0 1rem;
+  border: none;
+  margin-bottom: 1rem;
+  max-height: 100vh;
+}
+
+.btn {
+  padding: 0.4rem 1.4rem;
+  border-radius: 60px;
+  font-size: 15px;
+
+  &:focus-visible,
+  &:focus,
+  &:hover {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.password-rules {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 10px);
+  z-index: 999;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  width: 15rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.password-rules ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.password-rules li {
+  margin-bottom: 5px;
+  font-size: 14px;
+  position: relative;
+  padding-left: 25px;
+}
+
+.password-rules li span {
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.password-rules li.valid span:before {
+  content: "\2713";
+  color: green;
+}
+
+.form-group {
+  margin: 0 0 1rem;
+  position: relative;
+
+  label {
+    font-size: 14px;
+    color: rgba($color: $text-black, $alpha: 0.6);
+    margin: 0 0 4px;
+  }
+
+  .form-check-label {
+    font-size: 16px;
+    color: $text-black;
+  }
+
+  textarea {
+    min-height: 40px;
+    height: auto !important;
+  }
+
+  .pointer-default {
+    cursor: default;
+  }
+
+  .input-group {
+    .btn {
+      border-radius: $border-raidus;
+    }
+  }
+
+  .form-check-input:focus,
+  .form-check-input:checked {
+    background-color: $primary;
+    border-color: $primary;
+    box-shadow: none;
+  }
+
+  .small-input {
+    max-width: 125px;
+  }
+
+  .checkbox-dropdown {
+    background: transparent;
+  }
+
+  .search-dropdown {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: #fff;
+    box-shadow: 0px 3px 6px 1px rgba($color: #000000, $alpha: 0.1);
+    z-index: 1000;
+    border-radius: 8px;
+
+    .item {
+      font-size: 16px;
+      padding: 1rem;
+      cursor: pointer;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid $border-color;
+      }
+
+      &:hover {
+        background-color: $secondary-color;
+        color: #fff;
+      }
+    }
+  }
+}
+
+.form-select,
+.form-control {
+  font-size: 16px;
+  border: 1px solid $border-color;
+  border-radius: 0.3rem;
+
+  &:focus,
+  &:hover {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: $primary !important;
+  }
+
+  &:focus + .input-group-text,
+  &:hover + .input-group-text {
+    border-color: $primary;
+  }
+}
+
+/* form-group */
+.mat-pseudo-checkbox-checked {
+  background: $primary;
+}
+
+.mdc-list-item__primary-text {
+  color: $text-black;
+}
+
+.mdc-list-item--selected {
+  .mdc-list-item__primary-text {
+    color: $primary;
+  }
+}
+
+.coutry-code-selector {
+  .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    background-color: #fff;
+    padding: 0;
+  }
+
+  .mat-mdc-form-field-infix {
+    min-height: 40px;
+  }
+
+  .mdc-text-field--no-label:not(.mdc-text-field--outlined):not(
+      .mdc-text-field--textarea
+    )
+    .mat-mdc-form-field-infix {
+    padding: 4px 8px;
+    border: 1px solid $border-color;
+    border-radius: 0.3rem;
+  }
+
+  .mat-mdc-form-field-subscript-wrapper {
+    &::before {
+      display: none;
+    }
+  }
+
+  .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-line-ripple {
+    display: none;
+  }
+
+  .mat-mdc-select {
+    vertical-align: middle;
+  }
+
+  .mat-mdc-form-field-focus-overlay {
+    display: none !important;
+  }
+}
+
+.cdk-overlay-container {
+  z-index: 1200;
+}
+
+.currency-container {
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+}
+
+.input-group {
+  .coutry-code-selector {
+    .mdc-text-field--no-label:not(.mdc-text-field--outlined):not(
+        .mdc-text-field--textarea
+      )
+      .mat-mdc-form-field-infix {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}
+
+.country-dropdown-panel {
+  min-width: 200px;
+}
+
+.f-modal-alert {
+  margin: 10px;
+  padding: 20px;
+}
+
+.f-modal-alert .f-modal-icon {
+  border-radius: 50%;
+  border: 4px solid gray;
+  box-sizing: content-box;
+  height: 80px;
+  margin: 20px auto;
+  padding: 0;
+  position: relative;
+  width: 80px;
+
+  // Success icon
+  &.f-modal-success,
+  &.f-modal-error {
+    border-color: #a5dc86;
+
+    &:after,
+    &:before {
+      background: #fff;
+      content: "";
+      height: 120px;
+      position: absolute;
+      transform: rotate(45deg);
+      width: 60px;
+    }
+
+    &:before {
+      border-radius: 120px 0 0 120px;
+      left: -33px;
+      top: -7px;
+      transform-origin: 60px 60px;
+      transform: rotate(-45deg);
+    }
+
+    &:after {
+      border-radius: 0 120px 120px 0;
+      left: 30px;
+      top: -11px;
+      transform-origin: 0 60px;
+      transform: rotate(-45deg);
+    }
+
+    .f-modal-placeholder {
+      border-radius: 50%;
+      border: 4px solid rgba(165, 220, 134, 0.2);
+      box-sizing: content-box;
+      height: 80px;
+      left: -4px;
+      position: absolute;
+      top: -4px;
+      width: 80px;
+      z-index: 2;
+    }
+
+    .f-modal-fix {
+      background-color: #fff;
+      height: 90px;
+      left: 28px;
+      position: absolute;
+      top: 8px;
+      transform: rotate(-45deg);
+      width: 5px;
+      z-index: 1;
+    }
+
+    .f-modal-line {
+      background-color: #a5dc86;
+      border-radius: 2px;
+      display: block;
+      height: 5px;
+      position: absolute;
+      z-index: 2;
+
+      &.f-modal-tip {
+        left: 14px;
+        top: 46px;
+        transform: rotate(45deg);
+        width: 25px;
+      }
+
+      &.f-modal-long {
+        right: 8px;
+        top: 38px;
+        transform: rotate(-45deg);
+        width: 47px;
+      }
+    }
+  }
+
+  // Error icon
+  &.f-modal-error {
+    border-color: #f27474;
+
+    .f-modal-x-mark {
+      display: block;
+      position: relative;
+      z-index: 2;
+    }
+
+    .f-modal-placeholder {
+      border: 4px solid rgba(200, 0, 0, 0.2);
+    }
+
+    .f-modal-line {
+      background-color: #f27474;
+      top: 37px;
+      width: 47px;
+
+      &.f-modal-left {
+        left: 17px;
+        transform: rotate(45deg);
+      }
+
+      &.f-modal-right {
+        right: 16px;
+        transform: rotate(-45deg);
+      }
+    }
+  }
+
+  // Warning icon
+
+  &.f-modal-warning {
+    border-color: #f8bb86;
+
+    &:before {
+      animation: pulseWarning 2s linear infinite;
+      background-color: #fff;
+      border-radius: 50%;
+      content: "";
+      display: inline-block;
+      height: 100%;
+      opacity: 0;
+      position: absolute;
+      width: 100%;
+    }
+
+    &:after {
+      background-color: #fff;
+      border-radius: 50%;
+      content: "";
+      display: block;
+      height: 100%;
+      position: absolute;
+      width: 100%;
+      z-index: 1;
+    }
+  }
+
+  &.f-modal-warning .f-modal-body {
+    background-color: #f8bb86;
+    border-radius: 2px;
+    height: 47px;
+    left: 50%;
+    margin-left: -2px;
+    position: absolute;
+    top: 10px;
+    width: 5px;
+    z-index: 2;
+  }
+
+  &.f-modal-warning .f-modal-dot {
+    background-color: #f8bb86;
+    border-radius: 50%;
+    bottom: 10px;
+    height: 7px;
+    left: 50%;
+    margin-left: -3px;
+    position: absolute;
+    width: 7px;
+    z-index: 2;
+  }
+
+  + .f-modal-icon {
+    margin-top: 50px;
+  }
+}
+
+.animateSuccessTip {
+  animation: animateSuccessTip 0.75s;
+}
+
+.animateSuccessLong {
+  animation: animateSuccessLong 0.75s;
+}
+
+.f-modal-icon.f-modal-success.animate:after {
+  animation: rotatePlaceholder 4.25s ease-in;
+}
+
+.f-modal-icon.f-modal-error.animate:after {
+  animation: rotatePlaceholder 4.25s ease-in;
+}
+
+.animateErrorIcon {
+  animation: animateErrorIcon 0.5s;
+}
+
+.animateXLeft {
+  animation: animateXLeft 0.75s;
+}
+
+.animateXRight {
+  animation: animateXRight 0.75s;
+}
+
+.scaleWarning {
+  animation: scaleWarning 0.75s infinite alternate;
+}
+
+.pulseWarningIns {
+  animation: pulseWarningIns 0.75s infinite alternate;
+}
+
+@keyframes animateSuccessTip {
+  0%,
+  54% {
+    width: 0;
+    left: 1px;
+    top: 19px;
+  }
+
+  70% {
+    width: 50px;
+    left: -8px;
+    top: 37px;
+  }
+
+  84% {
+    width: 17px;
+    left: 21px;
+    top: 48px;
+  }
+
+  100% {
+    width: 25px;
+    left: 14px;
+    top: 45px;
+  }
+}
+
+@keyframes animateSuccessLong {
+  0%,
+  65% {
+    width: 0;
+    right: 46px;
+    top: 54px;
+  }
+
+  84% {
+    width: 55px;
+    right: 0;
+    top: 35px;
+  }
+
+  100% {
+    width: 47px;
+    right: 8px;
+    top: 38px;
+  }
+}
+
+@keyframes rotatePlaceholder {
+  0%,
+  5% {
+    transform: rotate(-45deg);
+  }
+
+  100%,
+  12% {
+    transform: rotate(-405deg);
+  }
+}
+
+@keyframes animateErrorIcon {
+  0% {
+    transform: rotateX(100deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes animateXLeft {
+  0%,
+  65% {
+    left: 82px;
+    top: 95px;
+    width: 0;
+  }
+
+  84% {
+    left: 14px;
+    top: 33px;
+    width: 47px;
+  }
+
+  100% {
+    left: 17px;
+    top: 37px;
+    width: 47px;
+  }
+}
+
+@keyframes animateXRight {
+  0%,
+  65% {
+    right: 82px;
+    top: 95px;
+    width: 0;
+  }
+
+  84% {
+    right: 14px;
+    top: 33px;
+    width: 47px;
+  }
+
+  100% {
+    right: 16px;
+    top: 37px;
+    width: 47px;
+  }
+}
+
+@keyframes scaleWarning {
+  0% {
+    transform: scale(1);
+  }
+
+  30% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseWarning {
+  0% {
+    background-color: #fff;
+    transform: scale(1);
+    opacity: 0.5;
+  }
+
+  30% {
+    background-color: #fff;
+    transform: scale(1);
+    opacity: 0.5;
+  }
+
+  100% {
+    background-color: #f8bb86;
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes pulseWarningIns {
+  0% {
+    background-color: #f8d486;
+  }
+
+  100% {
+    background-color: #f8bb86;
+  }
+}
+
+.wrapper {
+  height: auto;
+  display: flex;
+  margin: 4rem;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #4c956c;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 4;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 10% auto;
+  box-shadow: inset 0px 0px 0px #4c956c;
+  animation: fill 0.4s ease-in-out 0.4s forwards,
+    scale 0.3s ease-in-out 0.9s both;
+}
+
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%,
+  100% {
+    transform: none;
+  }
+
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 50px #4c956c;
+  }
+}
+.checkmark_rejected {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 4;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  box-shadow: inset 0px 0px 0px #ee4040;
+  animation: fillRed 0.4s ease-in-out 0.4s forwards,
+    scale 0.3s ease-in-out 0.9s both;
+}
+
+.checkmark__circle_rejected {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #ee4040;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark_check_rejected {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  stroke-linecap: round; /* Add this line to make the rejected lines rounded */
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%,
+  100% {
+    transform: none;
+  }
+
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fillRed {
+  100% {
+    box-shadow: inset 0px 0px 0px 50px #ee4040;
+  }
+}
+
+.p-steps .p-steps-item .p-menuitem-link {
+  cursor: pointer !important;
+}

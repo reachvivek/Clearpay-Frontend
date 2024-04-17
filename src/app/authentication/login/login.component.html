@@ -1,0 +1,110 @@
+<div class="container">
+  <div class="form">
+    <div
+      [ngClass]="{ 'focus-on-input': isInputFocusedOrTyped }"
+      class="sign-in-section"
+    >
+      <img
+        class="mb-2"
+        src="assets/img/brand/CMS_RMS_logo-removebg.png"
+        style="max-width: 145px"
+        alt=""
+      />
+
+      <p class="mt-2 fs-3">Payment Advisor</p>
+      <p class="header text-1000 mb-3 display-2 fw-1 fs-4">Sign In</p>
+
+      <form #login="ngForm" (submit)="onSubmit()" ngNativeValidate>
+        <div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input
+              #email="ngModel"
+              [(ngModel)]="this.loginForm.email"
+              (focus)="onInputFocusOrTyping()"
+              (blur)="onInputBlur()"
+              (input)="onInputFocusOrTyping()"
+              class="form-control"
+              type="email"
+              email
+              name="emailId"
+              id="emailId"
+              required
+            />
+            <p
+              *ngIf="email.invalid && (email.dirty || email.touched)"
+              class="form-text text-danger text-start"
+            >
+              Email address is required
+            </p>
+          </div>
+          <!-- group -->
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-group">
+              <input
+                #password="ngModel"
+                [type]="this.passwordType ? 'password' : 'text'"
+                [(ngModel)]="this.loginForm.password"
+                (focus)="onInputFocusOrTyping()"
+                (blur)="onInputBlur()"
+                (input)="onInputFocusOrTyping()"
+                required
+                name="password"
+                id="password"
+                minlength="8"
+                class="form-control"
+              />
+              <button
+                (click)="this.passwordType = !this.passwordType"
+                type="button"
+                class="btn btn-outline-secondary"
+              >
+                <i
+                  [ngClass]="
+                    this.passwordType ? 'ri-eye-off-line' : 'ri-eye-line'
+                  "
+                ></i>
+              </button>
+            </div>
+            <!-- input -->
+            <p
+              *ngIf="password.invalid && (password.dirty || password.touched)"
+              class="form-text text-danger text-start"
+            >
+              Password is required
+            </p>
+          </div>
+          <!-- group -->
+
+          <div class="form-text text-end">
+            <a
+              routerLink="/auth/forgot-password"
+              class="link-underline link-underline-opacity-0"
+            >
+              Forgot Password
+            </a>
+          </div>
+          <!-- form-text -->
+
+          <div class="text-center mt-3">
+            <button
+              [disabled]="login.invalid"
+              type="submit"
+              class="btn btn-primary btn-block w-50 mb-1"
+            >
+              Sign In
+            </button>
+          </div>
+          <!-- center -->
+
+          <!-- <div class="text-center">
+            <a routerLink="/auth/signup" class="link-underline link-underline-opacity-0">Create an account</a>
+          </div>center -->
+        </div>
+      </form>
+      <!-- form -->
+    </div>
+  </div>
+</div>
