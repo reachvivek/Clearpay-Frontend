@@ -1,11 +1,10 @@
 <div class="card">
   <p-toast></p-toast>
-
   <p-table
     #dt
-    [value]="users"
-    [rows]="4"
-    [rowsPerPageOptions]="[4, 10, 25]"
+    [value]="lhos"
+    [rows]="5"
+    [rowsPerPageOptions]="[5, 10, 25]"
     [paginator]="true"
     [tableStyle]="{
       'white-space': 'nowrap',
@@ -16,9 +15,9 @@
       'text-overflow': 'ellipsis'
     }"
     styleClass="p-datatable-sm"
-    [globalFilterFields]="['EmpName', 'EmpEmail', 'EmpMobNo']"
+    [globalFilterFields]="['lhoName', 'location', 'state']"
     [tableStyle]="{ 'min-width': '50rem' }"
-    [(selection)]="selectedUsers"
+    [(selection)]="selectedLhos"
     [rowHover]="true"
     dataKey="id"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
@@ -26,7 +25,7 @@
   >
     <ng-template pTemplate="caption">
       <div class="d-flex align-items-center justify-content-between">
-        <h5 class="m-0">LHO Management</h5>
+        <h5 class="m-0">LHO Details</h5>
         <div>
           <button
             pButton
@@ -36,15 +35,6 @@
             class="m-1 p-element p-button-success mr-2 p-button p-component ng-star-inserted rounded-pill"
             (click)="openNew()"
             rounded="true"
-          ></button>
-          <button
-            pButton
-            pRipple
-            label="Delete"
-            icon="pi pi-trash"
-            class="m-1 p-button-danger rounded-pill"
-            (click)="deleteSelectedUsers()"
-            [disabled]="!selectedUsers || !selectedUsers.length"
           ></button>
           <span class="p-input-icon-left m-1">
             <i class="pi pi-search"></i>
@@ -61,38 +51,23 @@
     </ng-template>
     <ng-template pTemplate="header">
       <tr>
-        <th>
-          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        <th pSortableColumn="lhoName">
+          LHO<p-sortIcon field="lhoName"></p-sortIcon>
         </th>
-        <th pSortableColumn="EmpName">
-          Name <p-sortIcon field="EmpName"></p-sortIcon>
+        <th pSortableColumn="state">
+          State <p-sortIcon field="state"></p-sortIcon>
         </th>
-        <th pSortableColumn="EmpMobNo">
-          Mobile No <p-sortIcon field="EmpMobNo"></p-sortIcon>
-        </th>
-        <th pSortableColumn="EmpEmail">
-          Email ID <p-sortIcon field="EmpEmail"></p-sortIcon>
-        </th>
-        <th pSortableColumn="Active">
-          Status <p-sortIcon field="Active"></p-sortIcon>
+        <th pSortableColumn="empName">
+          LHO User <p-sortIcon field="empName"></p-sortIcon>
         </th>
         <th></th>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-user>
+    <ng-template pTemplate="body" let-lho>
       <tr>
-        <td>
-          <p-tableCheckbox [value]="user"></p-tableCheckbox>
-        </td>
-        <td>{{ user.EmpName }}</td>
-        <td>{{ user.EmpMobNo }}</td>
-        <td>{{ user.EmpEmail }}</td>
-        <td>
-          <p-tag
-            [value]="user.Active ? 'Active' : 'Inactive'"
-            [severity]="getSeverity(user.Active)"
-          ></p-tag>
-        </td>
+        <td>{{ lho.lhoName }}</td>
+        <td>{{ lho.state }}</td>
+        <td>{{ lho.empName || "NA" }}</td>
         <td>
           <div class="row d-flex justify-content-start">
             <div class="col-md-4">
@@ -102,7 +77,7 @@
                 [rounded]="true"
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-success rounded-circle m-0"
-                (click)="editUser(user)"
+                (click)="editLho(lho)"
               ></button>
             </div>
             <div class="col-md-4">
@@ -111,7 +86,7 @@
                 pRipple
                 icon="pi pi-trash"
                 class="p-button-rounded p-button-warning rounded-circle m-0"
-                (click)="deleteUser(user)"
+                (click)="deleteLho(lho)"
               ></button>
             </div>
           </div>
@@ -121,96 +96,139 @@
   </p-table>
 </div>
 
-<p-dialog
-  [(visible)]="userDialog"
-  [style]="{ width: '450px' }"
-  header="User Details"
-  [modal]="true"
-  styleClass="p-fluid"
->
-  <ng-template pTemplate="content">
-    <div class="field">
-      <label for="name">Name</label>
-      <input
-        type="text"
-        pInputText
-        id="name"
-        [(ngModel)]="user.EmpName"
-        required
-        autofocus
-      />
-      <small class="p-error" *ngIf="submitted && !user.EmpName"
-        >Name is required.</small
-      >
-    </div>
-    <div class="field">
-      <label for="description">Mobile Number</label>
-      <textarea
-        id="description"
-        pInputTextarea
-        [(ngModel)]="user.EmpMobNo"
-        required
-        rows="1"
-        cols="20"
-      ></textarea>
-    </div>
-
-    <div class="field">
-      <label for="status">User Status</label>
-      <p-dropdown
-        [(ngModel)]="user.Active"
-        inputId="status"
-        [options]="statuses"
-      >
-        <ng-template pTemplate="selectedItem">
-          <p-tag
-            [value]="user.Active ? 'Active' : 'Suspended'"
-            [severity]="getSeverity(user.Active ? 'Active' : 'Suspended')"
-          ></p-tag>
-        </ng-template>
-        <ng-template let-option pTemplate="item">
-          <p-tag
-            [value]="option.label"
-            [severity]="getSeverity(option.label)"
-          ></p-tag>
-        </ng-template>
-      </p-dropdown>
-    </div>
-
-    <div class="formgrid grid">
-      <div class="field">
-        <label for="EmpEmail">Email ID</label>
-
+<!-- Create/Edit User Dialog -->
+<form #lhoFormRef="ngForm" (submit)="saveLho()" ngNativeValidate>
+  <p-dialog
+    [(visible)]="lhoDialog"
+    [style]="{ width: '450px' }"
+    header="{{ !isEditMode ? 'Create New LHO' : 'Update LHO' }}"
+    [modal]="true"
+    styleClass="p-fluid"
+  >
+    <ng-template pTemplate="content">
+      <div class="field form-group">
+        <label for="name" class="form-label">LHO Name</label>
         <input
-          id="email"
-          [(ngModel)]="user.EmpEmail"
-          type="text"
+          #lhoName="ngModel"
+          [(ngModel)]="newLho.lhoName"
           pInputText
+          type="text"
+          id="name"
+          (input)="this.isEditMode ? checkChanges() : null"
+          name="lhoName"
+          autocomplete="off"
+          class="form-control {{
+            lhoName.invalid && (lhoName.dirty || lhoName.touched)
+              ? 'is-invalid'
+              : ''
+          }}"
           required
           autofocus
         />
+        <p
+          *ngIf="lhoName.invalid && (lhoName.dirty || lhoName.touched)"
+          class="form-text text-danger"
+        >
+          LHO Name is required
+        </p>
       </div>
-    </div>
-  </ng-template>
 
-  <ng-template pTemplate="footer">
-    <button
-      pButton
-      pRipple
-      label="Cancel"
-      icon="pi pi-times"
-      class="p-button-text"
-      (click)="hideDialog()"
-    ></button>
-    <button
-      pButton
-      pRipple
-      label="Save"
-      icon="pi pi-check"
-      class="p-button-text"
-      (click)="saveUser()"
-    ></button>
-  </ng-template>
-</p-dialog>
+      <div class="field">
+        <label for="description" class="row form-label">State</label>
+        <p-multiSelect
+          #lhoState
+          name="lhoState"
+          [options]="states"
+          optionLabel="state_Name"
+          [(ngModel)]="selectedStates"
+          placeholder="Select States"
+          (onChange)="showSelected()"
+          [filter]="true"
+          appendTo="body"
+          required
+        ></p-multiSelect>
+        <!-- <select
+          #lhoState="ngModel"
+          (input)="this.isEditMode ? checkChanges() : null"
+          name="state"
+          id="state"
+          class="{{ 'form-select' }}{{
+            lhoState.invalid && (lhoState.dirty || lhoState.touched)
+              ? 'is-invalid'
+              : ''
+          }}"
+          [(ngModel)]="this.newLho.state"
+          optionLabel="state"
+          placeholder="Select States"
+          required
+        >
+          <option *ngFor="let obj of states" [value]="obj.state_Name">
+            {{ obj.state_Name }}
+          </option>
+        </select> -->
+      </div>
+      <p *ngIf="!selectedStates.length" class="form-text text-danger d-inline">
+        State is a required field
+      </p>
+
+      <div class="field mt-3">
+        <label for="description" class="row form-label">LHO User</label>
+        <select
+          #lhoUser="ngModel"
+          (input)="this.isEditMode ? checkChanges() : null"
+          name="lhoUser"
+          id="lhoUser"
+          class="{{
+            lhoUser.invalid && (lhoUser.dirty || lhoUser.touched)
+              ? 'is-invalid'
+              : ''
+          }}"
+          class="form-select"
+          [(ngModel)]="this.newLho.userID"
+          optionLabel="user"
+          placeholder="Select a User"
+          required
+        >
+          <option *ngFor="let user of users" [value]="user.userId">
+            {{ user.empName }}
+          </option>
+        </select>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        pRipple
+        type="button"
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        *ngIf="!isEditMode"
+        pButton
+        [disabled]="lhoFormRef.invalid"
+        pRipple
+        label="Save"
+        icon="pi pi-check"
+        class="p-button-text"
+        type="submit"
+      ></button>
+      <button
+        *ngIf="isEditMode"
+        pButton
+        [disabled]="lhoFormRef.invalid || checkChanges()"
+        pRipple
+        label="Save"
+        icon="pi pi-check"
+        class="p-button-text"
+        type="submit"
+      ></button>
+    </ng-template>
+  </p-dialog>
+</form>
 
 <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+<app-loader *ngIf="showLoader"> </app-loader>

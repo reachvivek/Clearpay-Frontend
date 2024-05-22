@@ -1,3 +1,6 @@
 # Add override in src/api/encoder
-find ./src/swagger/encoder.ts -type f -exec sed -i '' -r 's/encodeKey\(k:/override encodeKey\(k:/' {} \;
-find ./src/swagger/encoder.ts -type f -exec sed -i '' -r 's/encodeValue\(v:/override encodeValue\(v:/' {} \;
+# Replace occurrences of 'encodeKey(k:' with 'override encodeKey(k:'
+find ./src/swagger -type f -name "encoder.ts" -exec sed -i 's/encodeKey(k:/override encodeKey(k:/g' {} +
+
+# Replace occurrences of 'encodeValue(v:' with 'override encodeValue(v:'
+find ./src/swagger -type f -name "encoder.ts" -exec sed -i 's/encodeValue(v:/override encodeValue(v:/g' {} +

@@ -32,10 +32,10 @@ import { DividerModule } from 'primeng/divider';
 import { DockModule } from 'primeng/dock';
 import { DropdownModule } from 'primeng/dropdown';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
-import { FieldsetModule } from 'primeng/fieldset';
 import { FileUploadModule } from 'primeng/fileupload';
 import { GalleriaModule } from 'primeng/galleria';
 import { InplaceModule } from 'primeng/inplace';
+import { FieldsetModule } from 'primeng/fieldset';
 import { InputMaskModule } from 'primeng/inputmask';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
@@ -87,6 +87,10 @@ import { TerminalModule } from 'primeng/terminal';
 import { TieredMenuModule } from 'primeng/tieredmenu';
 import { TimelineModule } from 'primeng/timeline';
 import { ToastModule } from 'primeng/toast';
+import { AnimateModule } from 'primeng/animate';
+import { CardModule } from 'primeng/card';
+import { BlockUIModule } from 'primeng/blockui';
+import { RippleModule } from 'primeng/ripple';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
@@ -94,15 +98,11 @@ import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
 import { TreeModule } from 'primeng/tree';
 import { TreeSelectModule } from 'primeng/treeselect';
 import { TreeTableModule } from 'primeng/treetable';
-import { AnimateModule } from 'primeng/animate';
-import { CardModule } from 'primeng/card';
-import { BlockUIModule } from 'primeng/blockui';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { RippleModule } from 'primeng/ripple';
 import { StyleClassModule } from 'primeng/styleclass';
-
-import { ProductService } from './service/product.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { BASE_PATH } from '../swagger';
+import { environment } from '../environments/dev/environment';
 
 @NgModule({
   declarations: [AppComponent],
@@ -110,9 +110,10 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    AuthenticationModule,
     FormsModule,
     HttpClientModule,
+
+    AuthenticationModule,
 
     AvatarModule,
     AvatarGroupModule,
@@ -207,7 +208,11 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     RippleModule,
     StyleClassModule,
   ],
-  providers: [ProductService, MessageService, ConfirmationService],
+  providers: [
+    MessageService,
+    ConfirmationService,
+    { provide: BASE_PATH, useValue: environment.BASE_PATH },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

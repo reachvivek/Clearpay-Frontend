@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { UserSyncService } from '../../services/user-sync.service';
 
 @Component({
   selector: 'app-login',
@@ -11,33 +11,69 @@ export class LoginComponent {
   private token: string | undefined;
   public passwordType = true;
   public showLoader = false;
+  showInvalidCredentials = false;
+  showAccountBlocked = false;
+  showAccountInactive = false;
   public loginForm = {
-    email: '',
+    employeecode: '',
     password: '',
   };
-
   isInputFocusedOrTyped: boolean = false;
 
   constructor(
-    // private authService: AuthService,
-    private router: Router // private _matSnackBar: MatSnackBar
+    private userSyncService: UserSyncService,
+    private router: Router
   ) {}
   ngOnInit(): void {
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        this.router.navigate(['/user']);
+        this.router.navigate(['/dashboard']);
       }
     } catch (err) {
       console.log(err);
     }
   }
 
+  clearAllInfo() {
+    this.showAccountBlocked = false;
+    this.showInvalidCredentials = false;
+    this.showAccountInactive = false;
+  }
+
   onSubmit = async () => {
-    // console.log(this.loginForm)
+    this.clearAllInfo();
     this.showLoader = true;
-    if (!this.loginForm.email || !this.loginForm.password) {
+    if (!this.loginForm.employeecode || !this.loginForm.password) {
+      this.showLoader = false;
       return;
+    } else {
+      try {
+        this.showLoader = true;
+        const res = await this.userSyncService.sendLoginOTP(this.loginForm);
+        if (res) {
+          this.showLoader = false;
+          this.router.navigate(['/verify-otp']);
+        } else {
+          console.error(res);
+          this.showLoader = false;
+        }
+      } catch (err: any) {
+        if (
+          ['Incorrect Password', 'User not found!'].includes(
+            err.error.toString()
+          )
+        ) {
+          this.showInvalidCredentials = true;
+        }
+        if (err.error.toString().includes('Blocked')) {
+          this.showAccountBlocked = true;
+        }
+        if (err.error.toString().includes('Inactive')) {
+          this.showAccountInactive = true;
+        }
+        this.showLoader = false;
+      }
     }
   };
 

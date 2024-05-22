@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { User } from '../../domain/user';
-import { ProductService } from '../../service/product.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { AdminService, AdminToAddDto, AdminToEditDto } from '../../../swagger';
+import { firstValueFrom } from 'rxjs';
+import { UserSyncService } from '../../services/user-sync.service';
 
 @Component({
   selector: 'app-user-management',
@@ -9,35 +10,70 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   styleUrl: './user-management.component.scss',
 })
 export class UserManagementComponent {
+  isEditMode: boolean = false;
+  isDeleteMode: boolean = false;
+  isBulkDeleteMode: boolean = false;
+
+  showLoader: boolean = false;
   userDialog: boolean = false;
 
-  users!: User[] | any;
+  users!: AdminToAddDto[] | any;
 
-  user!: User;
+  user!: AdminToEditDto;
 
-  selectedUsers!: User[] | null;
+  selectedUser: AdminToEditDto = {};
+
+  selectedUsers!: AdminToAddDto[] | null;
+
+  newUser: AdminToAddDto = {};
 
   submitted: boolean = false;
 
   statuses!: any[];
 
+  roles: [{ id: 2; name: 'LHO User' }, { id: 3; name: 'Finance User' }] = [
+    { id: 2, name: 'LHO User' },
+    { id: 3, name: 'Finance User' },
+  ];
+
   constructor(
-    private userService: ProductService,
+    private adminService: AdminService,
+    private userSyncService: UserSyncService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
   ) {}
 
-  ngOnInit() {
-    this.userService.getUsers().then((data) => (this.users = data));
+  async ngOnInit() {
+    await this.userSyncService.loadState();
+    await this.loadUsers();
+  }
 
-    this.statuses = [
-      { label: 'Active', value: 1 },
-      { label: 'Suspended', value: 0 },
-    ];
+  async loadUsers() {
+    try {
+      this.showLoader = true;
+      const res = await firstValueFrom(this.adminService.adminGetUsersGet());
+      if (res && res.length) {
+        this.users = [...res];
+      }
+      this.statuses = [
+        { label: 'Active', value: 1 },
+        { label: 'Inactive', value: 0 },
+      ];
+      this.showLoader = false;
+    } catch (err: any) {
+      this.showLoader = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: err.toString(),
+        life: 3000,
+      });
+    }
   }
 
   openNew() {
-    this.user = {};
+    this.newUser = {};
+    this.isEditMode = false;
     this.submitted = false;
     this.userDialog = true;
   }
@@ -62,27 +98,55 @@ export class UserManagementComponent {
     });
   }
 
-  editUser(user: User) {
-    this.user = { ...user };
+  editUser(user: AdminToAddDto) {
+    this.isEditMode = true;
+    this.selectedUser = { ...user };
+    this.newUser = { ...user };
     this.userDialog = true;
   }
 
-  deleteUser(user: User) {
+  checkChanges() {
+    if (
+      this.selectedUser.empName !== this.newUser.empName ||
+      this.selectedUser.empEmail !== this.newUser.empEmail ||
+      this.selectedUser.empMobNo !== this.newUser.empMobNo ||
+      this.selectedUser.empCode !== this.newUser.empCode ||
+      this.selectedUser.empRoleID !== this.newUser.empRoleID ||
+      this.selectedUser.active !== this.newUser.active
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  async deleteUser(user: AdminToEditDto) {
     this.confirmationService.confirm({
-      message: 'Are you sure you want to delete ' + user.EmpName + '?',
+      message: 'Are you sure you want to remove ' + user.empName + '?',
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.users = this.users.filter(
-          (val: any) => user.UserId !== user.UserId
-        );
-        this.user = {};
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'User Deleted',
-          life: 3000,
-        });
+      accept: async () => {
+        try {
+          this.showLoader = true;
+          await firstValueFrom(
+            this.adminService.adminDeleteUserUserIdDelete(user.userId!)
+          );
+          this.showLoader = false;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Successful',
+            detail: 'User Deleted Successfully!',
+            life: 3000,
+          });
+          this.loadUsers();
+        } catch (err: any) {
+          this.showLoader = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.toString(),
+            life: 3000,
+          });
+        }
       },
     });
   }
@@ -92,63 +156,89 @@ export class UserManagementComponent {
     this.submitted = false;
   }
 
-  saveUser() {
-    this.submitted = true;
-
-    if (this.user.EmpName?.trim()) {
-      if (this.user.UserId) {
-        this.users[this.findIndexById(this.user.UserId)] = this.user;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'User Updated',
-          life: 3000,
-        });
-      } else {
-        this.user.EmpCode = this.createId();
-        this.users.push(this.user);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'User Created',
-          life: 3000,
-        });
-      }
-
-      this.users = [...this.users];
-      this.userDialog = false;
-      this.user = {};
-    }
-  }
-
-  findIndexById(id: number): number {
-    let index = -1;
-    for (let i = 0; i < this.users.length; i++) {
-      if (this.users[i].UserId === id) {
-        index = i;
+  async saveUser() {
+    switch (this.isEditMode) {
+      case false:
+        this.createNewUser();
         break;
-      }
+      case true:
+        this.updateSelectedUser();
+        break;
+      default:
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: '404 - Bad Request',
+          life: 3000,
+        });
+        break;
     }
-
-    return index;
   }
 
-  createId(): string {
-    let id = '';
-    var chars =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (var i = 0; i < 5; i++) {
-      id += chars.charAt(Math.floor(Math.random() * chars.length));
+  async createNewUser() {
+    try {
+      this.showLoader = true;
+      const res = await firstValueFrom(
+        this.adminService.adminCreateUserPost(this.newUser)
+      );
+      this.loadUsers();
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Successful',
+        detail: 'User Created Successfully!',
+        life: 3000,
+      });
+      this.showLoader = false;
+      this.hideDialog();
+    } catch (err: any) {
+      console.log(err);
+      this.showLoader = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: err.toString(),
+        life: 3000,
+      });
     }
-    return id;
   }
 
-  getSeverity(status: string) {
+  async updateSelectedUser() {
+    try {
+      this.showLoader = true;
+      const res = await firstValueFrom(
+        this.adminService.adminEditUserUserIdPut(
+          this.selectedUser.userId!,
+          this.newUser!
+        )
+      );
+      this.loadUsers();
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Successful',
+        detail: 'User Updated Successfully!',
+        life: 3000,
+      });
+      this.showLoader = false;
+      this.isEditMode = false;
+      this.hideDialog();
+    } catch (err: any) {
+      console.log(err);
+      this.showLoader = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: err.toString(),
+        life: 3000,
+      });
+    }
+  }
+
+  getSeverity(status: any) {
     switch (status) {
-      case 'Active':
+      case 1:
         return 'success';
-      case 'Suspended':
-        return 'warning';
+      case 0:
+        return 'danger';
       default:
         return 'success';
     }

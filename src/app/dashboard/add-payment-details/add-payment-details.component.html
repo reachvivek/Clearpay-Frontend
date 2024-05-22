@@ -1,0 +1,3236 @@
+<div class="card">
+  <div class="container">
+    <p-toast></p-toast>
+    <div class="row mb-2">
+      <div class="col-9">
+        <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a
+                routerLink="/dashboard"
+                class="display-6 fs-5 text-decoration-none"
+                >Dashboard</a
+              >
+            </li>
+            <li
+              class="breadcrumb-item active display-6 fs-5"
+              aria-current="page"
+            >
+              Invoice No #{{ paymentDetails?.invoiceNo }}
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div class="col-3">
+        <button
+          pButton
+          pRipple
+          *ngIf="paymentDetails_Server?.isProcessed"
+          icon="pi pi-file-excel"
+          class="btn btn-primary float-end me-3"
+          (click)="downloadInvoice()"
+        >
+          Download Report
+        </button>
+      </div>
+    </div>
+    <form #addPaymentDetails="ngForm" ngNativeValidate>
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <label for="InvoiceAmount" class="form-label">Invoice Amount</label>
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input
+                type="text"
+                disabled
+                class="form-control"
+                [value]="
+                  paymentDetails_Server?.invoiceAmount
+                    | number : '1.2-5' : 'en-IN'
+                "
+              />
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-group">
+            <label for="InvoiceAmountWithGST" class="form-label"
+              >Invoice Amount With GST</label
+            >
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input
+                type="text"
+                disabled
+                class="form-control"
+                [value]="
+                  paymentDetails_Server?.invoiceAmountWithGST
+                    | number : '1.2-5' : 'en-IN'
+                "
+              />
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-group">
+            <label for="InvoiceAmountPaid" class="form-label"
+              >Invoice Amount Paid</label
+            >
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input
+                #invoiceAmtPaid
+                name="InvoiceAmountPaid"
+                type="number"
+                [(ngModel)]="paymentDetails!.invoiceAmountPaid"
+                (ngModelChange)="updateDifference(1)"
+                [disabled]="paymentDetails_Server?.isProcessed == 1"
+                class="form-control"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-group">
+            <label for="Difference" class="form-label">Difference</label>
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input
+                type="text"
+                disabled
+                class="form-control"
+                [placeholder]="difference || 0 | number : '0.2-5'"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-group">
+            <label for="InvoiceAmountPaidDate" class="form-label"
+              >Invoice Amount Paid Date</label
+            >
+            <input
+              *ngIf="paymentDetails_Server?.isProcessed == 1"
+              #invoiceAmountPaidDate
+              name="invoiceAmountPaidDate"
+              type="text"
+              [value]="
+                paymentDetails_Server!.invoiceAmountPaidDate
+                  | date : 'dd/MM/yyyy'
+              "
+              [disabled]="paymentDetails_Server?.isProcessed == 1"
+              class="form-control"
+            />
+            <div
+              class="input-group"
+              *ngIf="paymentDetails_Server?.isProcessed == 0"
+            >
+              <p-calendar
+                #invoiceAmountPaidDate
+                appendTo="body"
+                name="invoiceAmountPaidDate"
+                [(ngModel)]="dates.invoiceAmountPaidDate"
+                [iconDisplay]="'input'"
+                [showIcon]="true"
+                class="d-flex"
+                inputId="icondisplay"
+                [dateFormat]="dateFormat"
+                showButtonBar
+                (ngModelChange)="convertToString()"
+                [minDate]="minDate"
+                [maxDate]="maxDate"
+                [disabled]="paymentDetails_Server?.isProcessed == 1"
+                required
+              ></p-calendar>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p-stepper orientation="vertical" [linear]="false">
+        <p-stepperPanel header="Invoice Details">
+          <ng-template
+            pTemplate="content"
+            let-nextCallback="nextCallback"
+            let-index="index"
+          >
+            <section class="p-0">
+              <table
+                class="display table table-responsive table-bordered table-sm nowrap m-0 p-0"
+              >
+                <thead>
+                  <tr>
+                    <th>Details</th>
+                    <th>Amount</th>
+                    <th>C GST</th>
+                    <th>S GST</th>
+                    <th>I GST</th>
+                    <th>U GST</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">CN Amount</td>
+                    <td>
+                      <input
+                        #cnAmount
+                        type="number"
+                        id="cnAmount"
+                        name="CNAmount"
+                        class="form-control"
+                        [(ngModel)]="cnDetails.cnAmount"
+                        (ngModelChange)="updateTotal(1)"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cnCGST
+                        type="number"
+                        id="cnCGST"
+                        name="cnCGST"
+                        class="form-control"
+                        [(ngModel)]="cnDetails.cnCGST"
+                        (ngModelChange)="updateTotal(1)"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cnSGST
+                        type="number"
+                        id="cnSGST"
+                        name="cnSGST"
+                        class="form-control"
+                        [(ngModel)]="cnDetails.cnSGST"
+                        (ngModelChange)="updateTotal(1)"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cnIGST
+                        type="number"
+                        id="cnIGST"
+                        name="cnIGST"
+                        class="form-control"
+                        [(ngModel)]="cnDetails.cnIGST"
+                        (ngModelChange)="updateTotal(1)"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cnUGST
+                        type="number"
+                        id="cnUGST"
+                        name="cnUGST"
+                        class="form-control"
+                        [(ngModel)]="cnDetails.cnUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cnTotal
+                        type="number"
+                        id="cnTotal"
+                        name="cnTotal"
+                        class="form-control"
+                        [placeholder]="
+                          cnDetails.cnTotal || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      Incentive DN Amount
+                    </td>
+                    <td>
+                      <input
+                        #dnAmount
+                        type="number"
+                        id="dnAmount"
+                        name="dnAmount"
+                        class="form-control"
+                        [(ngModel)]="dnDetails.dnAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dnCGST
+                        type="number"
+                        id="dnCGST"
+                        name="dnCGST"
+                        class="form-control"
+                        [(ngModel)]="dnDetails.dnCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dnSGST
+                        type="number"
+                        id="dnSGST"
+                        name="dnSGST"
+                        class="form-control"
+                        [(ngModel)]="dnDetails.dnSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dnIGST
+                        type="number"
+                        id="dnIGST"
+                        name="dnIGST"
+                        class="form-control"
+                        [(ngModel)]="dnDetails.dnIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dnUGST
+                        type="number"
+                        id="dnUGST"
+                        name="dnUGST"
+                        class="form-control"
+                        [(ngModel)]="dnDetails.dnUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dnTotal
+                        type="number"
+                        id="dnTotal"
+                        name="dnTotal"
+                        class="form-control"
+                        [placeholder]="
+                          dnDetails.dnTotal || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      Without CN Amount
+                    </td>
+                    <td>
+                      <input
+                        #withoutCNAmount
+                        type="number"
+                        id="withoutCNAmount"
+                        name="withoutCNAmount"
+                        class="form-control"
+                        [(ngModel)]="withoutCNDetails.wcnAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #withoutCNCGST
+                        type="number"
+                        id="withoutCNCGST"
+                        name="withoutCNCGST"
+                        class="form-control"
+                        [(ngModel)]="withoutCNDetails.wcnCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #withoutCNSGST
+                        type="number"
+                        id="withoutCNSGST"
+                        name="withoutCNSGST"
+                        class="form-control"
+                        [(ngModel)]="withoutCNDetails.wcnSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #withoutCNIGST
+                        type="number"
+                        id="withoutCNIGST"
+                        name="withoutCNIGST"
+                        class="form-control"
+                        [(ngModel)]="withoutCNDetails.wcnIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #withoutCNUGST
+                        type="number"
+                        id="withoutCNUGST"
+                        name="withoutCNUGST"
+                        class="form-control"
+                        [(ngModel)]="withoutCNDetails.wcnUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #withoutCNTotal
+                        type="number"
+                        id="withoutCNTotal"
+                        name="withoutCNTotal"
+                        class="form-control"
+                        [placeholder]="
+                          withoutCNDetails.wcnTotal || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">TDS</td>
+                    <td>
+                      <input
+                        #tdsAmount
+                        type="number"
+                        id="tdsAmount"
+                        name="tdsAmount"
+                        class="form-control"
+                        [(ngModel)]="tdsDetails.tdsAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #tdsCGST
+                        type="number"
+                        id="tdsCGST"
+                        name="tdsCGST"
+                        class="form-control"
+                        [(ngModel)]="tdsDetails.tdsCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #tdsSGST
+                        type="number"
+                        id="tdsSGST"
+                        name="tdsSGST"
+                        class="form-control"
+                        [(ngModel)]="tdsDetails.tdsSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #tdsIGST
+                        type="number"
+                        id="tdsIGST"
+                        name="tdsIGST"
+                        class="form-control"
+                        [(ngModel)]="tdsDetails.tdsIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #tdsUGST
+                        type="number"
+                        id="tdsUGST"
+                        name="tdsUGST"
+                        class="form-control"
+                        [(ngModel)]="tdsDetails.tdsUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #tdsTotal
+                        type="number"
+                        id="tdsTotal"
+                        name="tdsTotal"
+                        class="form-control"
+                        [placeholder]="
+                          tdsDetails.tdsTotal || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">GST TDS</td>
+                    <td>
+                      <input
+                        #gstTDSAmount
+                        type="number"
+                        id="gstTDSAmount"
+                        name="gstTDSAmount"
+                        class="form-control"
+                        [(ngModel)]="gstTDSDetails.gstTDSAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #gstTDSCGST
+                        type="number"
+                        id="gstTDSCGST"
+                        name="gstTDSCGST"
+                        class="form-control"
+                        [(ngModel)]="gstTDSDetails.gstTDSCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #gstTDSSGST
+                        type="number"
+                        id="gstTDSSGST"
+                        name="gstTDSSGST"
+                        class="form-control"
+                        [(ngModel)]="gstTDSDetails.gstTDSSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #gstTDSIGST
+                        type="number"
+                        id="gstTDSIGST"
+                        name="gstTDSIGST"
+                        class="form-control"
+                        [(ngModel)]="gstTDSDetails.gstTDSIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #gstTDSUGST
+                        type="number"
+                        id="gstTDSUGST"
+                        name="gstTDSUGST"
+                        class="form-control"
+                        [(ngModel)]="gstTDSDetails.gstTDSUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #gstTDSTotal
+                        type="number"
+                        id="gstTDSTotal"
+                        name="gstTDSTotal"
+                        class="form-control"
+                        [placeholder]="
+                          gstTDSDetails.gstTDSTotal || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      Remaining / Difference
+                    </td>
+                    <td>
+                      <input
+                        #remainingAmount
+                        type="number"
+                        id="remainingAmount"
+                        name="remainingAmount"
+                        class="form-control"
+                        [(ngModel)]="remainingDetails.remainingAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #remainingCGST
+                        type="number"
+                        id="remainingCGST"
+                        name="remainingCGST"
+                        class="form-control"
+                        [(ngModel)]="remainingDetails.remainingCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #remainingSGST
+                        type="number"
+                        id="remainingSGST"
+                        name="remainingSGST"
+                        class="form-control"
+                        [(ngModel)]="remainingDetails.remainingSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #remainingIGST
+                        type="number"
+                        id="remainingIGST"
+                        name="remainingIGST"
+                        class="form-control"
+                        [(ngModel)]="remainingDetails.remainingIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #remainingUGST
+                        type="number"
+                        id="remainingUGST"
+                        name="remainingUGST"
+                        class="form-control"
+                        [(ngModel)]="remainingDetails.remainingUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #remainingTotal
+                        type="number"
+                        id="remainingTotal"
+                        name="remainingTotal"
+                        class="form-control"
+                        [placeholder]="
+                          remainingDetails.remainingTotal || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <div class="flex py-4">
+              <p-button
+                label="Save & Continue"
+                *ngIf="paymentDetails_Server?.isProcessed == 0"
+                (onClick)="nextCallback.emit()"
+                (onClick)="saveInvoiceDetails()"
+                iconPos="right"
+              />
+              <p-button
+                label="Next"
+                *ngIf="paymentDetails_Server?.isProcessed == 1"
+                (onClick)="nextCallback.emit()"
+                iconPos="right"
+              /></div
+          ></ng-template>
+        </p-stepperPanel>
+        <p-stepperPanel header="Categorical Details">
+          <ng-template
+            pTemplate="content"
+            let-prevCallback="prevCallback"
+            let-nextCallback="nextCallback"
+            let-index="index"
+          >
+            <section>
+              <table
+                class="display table table-responsive table-bordered table-sm text-nowrap m-0 p-0 custom-table"
+              >
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>C GST</th>
+                    <th>S GST</th>
+                    <th>I GST</th>
+                    <th>U GST</th>
+                    <th>CN</th>
+                    <th>Without CN</th>
+                    <th>DN</th>
+                    <th>Without DN</th>
+                    <th>Document</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">FOS</td>
+                    <td>
+                      <input
+                        #fosAmount
+                        type="number"
+                        id="fosAmount"
+                        name="fosAmount"
+                        class="form-control"
+                        [(ngModel)]="fosDetails.fosAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #fosCGST
+                        type="number"
+                        id="fosCGST"
+                        name="fosCGST"
+                        class="form-control"
+                        [(ngModel)]="fosDetails.fosCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #fosSGST
+                        type="number"
+                        id="fosSGST"
+                        name="fosSGST"
+                        class="form-control"
+                        [(ngModel)]="fosDetails.fosSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #fosIGST
+                        type="number"
+                        id="fosIGST"
+                        name="fosIGST"
+                        class="form-control"
+                        [(ngModel)]="fosDetails.fosIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #fosUGST
+                        type="number"
+                        id="fosUGST"
+                        name="fosUGST"
+                        class="form-control"
+                        [(ngModel)]="fosDetails.fosUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #fosCN
+                        type="number"
+                        id="fosCN"
+                        name="fosCN"
+                        class="form-control"
+                        [(ngModel)]="fosDetails.fosCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #fosWCN
+                        type="number"
+                        id="fosWCN"
+                        name="fosWCN"
+                        class="form-control"
+                        [(ngModel)]="fosDetails.fosWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #fosDN
+                        type="number"
+                        id="fosDN"
+                        name="fosDN"
+                        class="form-control"
+                        [(ngModel)]="fosDetails.fosDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #fosWDN
+                        type="number"
+                        id="fosWDN"
+                        name="fosWDN"
+                        class="form-control"
+                        [(ngModel)]="fosDetails.fosWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">Downtime</td>
+                    <td>
+                      <input
+                        #downtimeAmount
+                        type="number"
+                        id="downtimeAmount"
+                        name="downtimeAmount"
+                        class="form-control"
+                        [(ngModel)]="downtimeDetails.downtimeAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #downtimeCGST
+                        type="number"
+                        id="downtimeCGST"
+                        name="downtimeCGST"
+                        class="form-control"
+                        [(ngModel)]="downtimeDetails.downtimeCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #downtimeSGST
+                        type="number"
+                        id="downtimeSGST"
+                        name="downtimeSGST"
+                        class="form-control"
+                        [(ngModel)]="downtimeDetails.downtimeSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #downtimeIGST
+                        type="number"
+                        id="downtimeIGST"
+                        name="downtimeIGST"
+                        class="form-control"
+                        [(ngModel)]="downtimeDetails.downtimeIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #downtimeUGST
+                        type="number"
+                        id="downtimeUGST"
+                        name="downtimeUGST"
+                        class="form-control"
+                        [(ngModel)]="downtimeDetails.downtimeUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #downtimeCN
+                        type="number"
+                        id="downtimeCN"
+                        name="downtimeCN"
+                        class="form-control"
+                        [(ngModel)]="downtimeDetails.downtimeCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #downtimeWCN
+                        type="number"
+                        id="downtimeWCN"
+                        name="downtimeWCN"
+                        class="form-control"
+                        [(ngModel)]="downtimeDetails.downtimeWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #downtimeDN
+                        type="number"
+                        id="downtimeDN"
+                        name="downtimeDN"
+                        class="form-control"
+                        [(ngModel)]="downtimeDetails.downtimeDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #downtimeWDN
+                        type="number"
+                        id="downtimeWDN"
+                        name="downtimeWDN"
+                        class="form-control"
+                        [(ngModel)]="downtimeDetails.downtimeWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      Cash Out Penalty
+                    </td>
+                    <td>
+                      <input
+                        #cashoutpenaltyAmount
+                        type="number"
+                        id="cashoutpenaltyAmount"
+                        name="cashoutpenaltyAmount"
+                        class="form-control"
+                        [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashoutpenaltyCGST
+                        type="number"
+                        id="cashoutpenaltyCGST"
+                        name="cashoutpenaltyCGST"
+                        class="form-control"
+                        [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashoutpenaltySGST
+                        type="number"
+                        id="cashoutpenaltySGST"
+                        name="cashoutpenaltySGST"
+                        class="form-control"
+                        [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltySGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashoutpenaltyIGST
+                        type="number"
+                        id="cashoutpenaltyIGST"
+                        name="cashoutpenaltyIGST"
+                        class="form-control"
+                        [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashoutpenaltyUGST
+                        type="number"
+                        id="cashoutpenaltyUGST"
+                        name="cashoutpenaltyUGST"
+                        class="form-control"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyUGST"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashoutpenaltyCN
+                        type="number"
+                        id="cashoutpenaltyCN"
+                        name="cashoutpenaltyCN"
+                        class="form-control"
+                        [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashoutpenaltyWCN
+                        type="number"
+                        id="cashoutpenaltyWCN"
+                        name="cashoutpenaltyWCN"
+                        class="form-control"
+                        [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashoutpenaltyDN
+                        type="number"
+                        id="cashoutpenaltyDN"
+                        name="cashoutpenaltyDN"
+                        class="form-control"
+                        [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashoutpenaltyWDN
+                        type="number"
+                        id="cashoutpenaltyWDN"
+                        name="cashoutpenaltyWDN"
+                        class="form-control"
+                        [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      House Keeping
+                    </td>
+                    <td>
+                      <input
+                        #housekeepingAmount
+                        type="number"
+                        id="housekeepingAmount"
+                        name="housekeepingAmount"
+                        class="form-control"
+                        [(ngModel)]="housekeepingDetails.housekeepingAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #housekeepingCGST
+                        type="number"
+                        id="housekeepingCGST"
+                        name="housekeepingCGST"
+                        class="form-control"
+                        [(ngModel)]="housekeepingDetails.housekeepingCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #housekeepingSGST
+                        type="number"
+                        id="housekeepingSGST"
+                        name="housekeepingSGST"
+                        class="form-control"
+                        [(ngModel)]="housekeepingDetails.housekeepingSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #housekeepingIGST
+                        type="number"
+                        id="housekeepingIGST"
+                        name="housekeepingIGST"
+                        class="form-control"
+                        [(ngModel)]="housekeepingDetails.housekeepingIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #housekeepingUGST
+                        type="number"
+                        id="housekeepingUGST"
+                        name="housekeepingUGST"
+                        class="form-control"
+                        [(ngModel)]="housekeepingDetails.housekeepingUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #housekeepingCN
+                        type="number"
+                        id="housekeepingCN"
+                        name="housekeepingCN"
+                        class="form-control"
+                        [(ngModel)]="housekeepingDetails.housekeepingCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #housekeepingWCN
+                        type="number"
+                        id="housekeepingWCN"
+                        name="housekeepingWCN"
+                        class="form-control"
+                        [(ngModel)]="housekeepingDetails.housekeepingWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #housekeepingDN
+                        type="number"
+                        id="housekeepingDN"
+                        name="housekeepingDN"
+                        class="form-control"
+                        [(ngModel)]="housekeepingDetails.housekeepingDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #housekeepingWDN
+                        type="number"
+                        id="housekeepingWDN"
+                        name="housekeepingWDN"
+                        class="form-control"
+                        [(ngModel)]="housekeepingDetails.housekeepingWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">Reject Bin</td>
+
+                    <td>
+                      <input
+                        #rejectbinAmount
+                        type="number"
+                        id="rejectbinAmount"
+                        name="rejectbinAmount"
+                        class="form-control"
+                        [(ngModel)]="rejectbinDetails.rejectbinAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #rejectbinCGST
+                        type="number"
+                        id="rejectbinCGST"
+                        name="rejectbinCGST"
+                        class="form-control"
+                        [(ngModel)]="rejectbinDetails.rejectbinCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #rejectbinSGST
+                        type="number"
+                        id="rejectbinSGST"
+                        name="rejectbinSGST"
+                        class="form-control"
+                        [(ngModel)]="rejectbinDetails.rejectbinSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #rejectbinIGST
+                        type="number"
+                        id="rejectbinIGST"
+                        name="rejectbinIGST"
+                        class="form-control"
+                        [(ngModel)]="rejectbinDetails.rejectbinIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #rejectbinUGST
+                        type="number"
+                        id="rejectbinUGST"
+                        name="rejectbinUGST"
+                        class="form-control"
+                        [(ngModel)]="rejectbinDetails.rejectbinUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #rejectbinCN
+                        type="number"
+                        id="rejectbinCN"
+                        name="rejectbinCN"
+                        class="form-control"
+                        [(ngModel)]="rejectbinDetails.rejectbinCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #rejectbinWCN
+                        type="number"
+                        id="rejectbinWCN"
+                        name="rejectbinWCN"
+                        class="form-control"
+                        [(ngModel)]="rejectbinDetails.rejectbinWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #rejectbinDN
+                        type="number"
+                        id="rejectbinDN"
+                        name="rejectbinDN"
+                        class="form-control"
+                        [(ngModel)]="rejectbinDetails.rejectbinDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #rejectbinWDN
+                        type="number"
+                        id="rejectbinWDN"
+                        name="rejectbinWDN"
+                        class="form-control"
+                        [(ngModel)]="rejectbinDetails.rejectbinWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">Consumable</td>
+
+                    <td>
+                      <input
+                        #consumableAmount
+                        type="number"
+                        id="consumableAmount"
+                        name="consumableAmount"
+                        class="form-control"
+                        [(ngModel)]="consumableDetails.consumableAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #consumableCGST
+                        type="number"
+                        id="consumableCGST"
+                        name="consumableCGST"
+                        class="form-control"
+                        [(ngModel)]="consumableDetails.consumableCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #consumableSGST
+                        type="number"
+                        id="consumableSGST"
+                        name="consumableSGST"
+                        class="form-control"
+                        [(ngModel)]="consumableDetails.consumableSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #consumableIGST
+                        type="number"
+                        id="consumableIGST"
+                        name="consumableIGST"
+                        class="form-control"
+                        [(ngModel)]="consumableDetails.consumableIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #consumableUGST
+                        type="number"
+                        id="consumableUGST"
+                        name="consumableUGST"
+                        class="form-control"
+                        [(ngModel)]="consumableDetails.consumableUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #consumableCN
+                        type="number"
+                        id="consumableCN"
+                        name="consumableCN"
+                        class="form-control"
+                        [(ngModel)]="consumableDetails.consumableCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #consumableWCN
+                        type="number"
+                        id="consumableWCN"
+                        name="consumableWCN"
+                        class="form-control"
+                        [(ngModel)]="consumableDetails.consumableWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #consumableDN
+                        type="number"
+                        id="consumableDN"
+                        name="consumableDN"
+                        class="form-control"
+                        [(ngModel)]="consumableDetails.consumableDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #consumableWDN
+                        type="number"
+                        id="consumableWDN"
+                        name="consumableWDN"
+                        class="form-control"
+                        [(ngModel)]="consumableDetails.consumableWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">DOS</td>
+                    <td>
+                      <input
+                        #dosAmount
+                        type="number"
+                        id="dosAmount"
+                        name="dosAmount"
+                        class="form-control"
+                        [(ngModel)]="dosDetails.dosAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dosCGST
+                        type="number"
+                        id="dosCGST"
+                        name="dosCGST"
+                        class="form-control"
+                        [(ngModel)]="dosDetails.dosCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dosSGST
+                        type="number"
+                        id="dosSGST"
+                        name="dosSGST"
+                        class="form-control"
+                        [(ngModel)]="dosDetails.dosSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dosIGST
+                        type="number"
+                        id="dosIGST"
+                        name="dosIGST"
+                        class="form-control"
+                        [(ngModel)]="dosDetails.dosIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dosUGST
+                        type="number"
+                        id="dosUGST"
+                        name="dosUGST"
+                        class="form-control"
+                        [(ngModel)]="dosDetails.dosUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dosCN
+                        type="number"
+                        id="dosCN"
+                        name="dosCN"
+                        class="form-control"
+                        [(ngModel)]="dosDetails.dosCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dosWCN
+                        type="number"
+                        id="dosWCN"
+                        name="dosWCN"
+                        class="form-control"
+                        [(ngModel)]="dosDetails.dosWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dosDN
+                        type="number"
+                        id="dosDN"
+                        name="dosDN"
+                        class="form-control"
+                        [(ngModel)]="dosDetails.dosDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #dosWDN
+                        type="number"
+                        id="dosWDN"
+                        name="dosWDN"
+                        class="form-control"
+                        [(ngModel)]="dosDetails.dosWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      Excess Billing
+                    </td>
+                    <td>
+                      <input
+                        #excessbillingAmount
+                        type="number"
+                        id="excessbillingAmount"
+                        name="excessbillingAmount"
+                        class="form-control"
+                        [(ngModel)]="excessbillingDetails.excessbillingAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #excessbillingCGST
+                        type="number"
+                        id="excessbillingCGST"
+                        name="excessbillingCGST"
+                        class="form-control"
+                        [(ngModel)]="excessbillingDetails.excessbillingCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #excessbillingSGST
+                        type="number"
+                        id="excessbillingSGST"
+                        name="excessbillingSGST"
+                        class="form-control"
+                        [(ngModel)]="excessbillingDetails.excessbillingSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #excessbillingIGST
+                        type="number"
+                        id="excessbillingIGST"
+                        name="excessbillingIGST"
+                        class="form-control"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        [(ngModel)]="excessbillingDetails.excessbillingIGST"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #excessbillingUGST
+                        type="number"
+                        id="excessbillingUGST"
+                        name="excessbillingUGST"
+                        class="form-control"
+                        [(ngModel)]="excessbillingDetails.excessbillingUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #excessbillingCN
+                        type="number"
+                        id="excessbillingCN"
+                        name="excessbillingCN"
+                        class="form-control"
+                        [(ngModel)]="excessbillingDetails.excessbillingCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #excessbillingWCN
+                        type="number"
+                        id="excessbillingWCN"
+                        name="excessbillingWCN"
+                        class="form-control"
+                        [(ngModel)]="excessbillingDetails.excessbillingWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #excessbillingDN
+                        type="number"
+                        id="excessbillingDN"
+                        name="excessbillingDN"
+                        class="form-control"
+                        [(ngModel)]="excessbillingDetails.excessbillingDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #excessbillingWDN
+                        type="number"
+                        id="excessbillingWDN"
+                        name="excessbillingWDN"
+                        class="form-control"
+                        [(ngModel)]="excessbillingDetails.excessbillingWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      Incentive Amt Without DN
+                    </td>
+
+                    <td>
+                      <input
+                        #incentiveamountwithoutdnAmount
+                        type="number"
+                        id="incentiveamountwithoutdnAmount"
+                        name="incentiveamountwithoutdnAmount"
+                        class="form-control"
+                        [(ngModel)]="
+                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnAmount
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #incentiveamountwithoutdnCGST
+                        type="number"
+                        id="incentiveamountwithoutdnCGST"
+                        name="incentiveamountwithoutdnCGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnCGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #incentiveamountwithoutdnSGST
+                        type="number"
+                        id="incentiveamountwithoutdnSGST"
+                        name="incentiveamountwithoutdnSGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnSGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #incentiveamountwithoutdnIGST
+                        type="number"
+                        id="incentiveamountwithoutdnIGST"
+                        name="incentiveamountwithoutdnIGST"
+                        class="form-control"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        [(ngModel)]="
+                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnIGST
+                        "
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #incentiveamountwithoutdnUGST
+                        type="number"
+                        id="incentiveamountwithoutdnUGST"
+                        name="incentiveamountwithoutdnUGST"
+                        class="form-control"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        [(ngModel)]="
+                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnUGST
+                        "
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #incentiveamountwithoutdnCN
+                        type="number"
+                        id="incentiveamountwithoutdnCN"
+                        name="incentiveamountwithoutdnCN"
+                        class="form-control"
+                        [(ngModel)]="
+                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnCN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #incentiveamountwithoutdnWCN
+                        type="number"
+                        id="incentiveamountwithoutdnWCN"
+                        name="incentiveamountwithoutdnWCN"
+                        class="form-control"
+                        [(ngModel)]="
+                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnWCN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #incentiveamountwithoutdnDN
+                        type="number"
+                        id="incentiveamountwithoutdnDN"
+                        name="incentiveamountwithoutdnDN"
+                        class="form-control"
+                        [(ngModel)]="
+                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnDN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #incentiveamountwithoutdnWDN
+                        type="number"
+                        id="incentiveamountwithoutdnWDN"
+                        name="incentiveamountwithoutdnWDN"
+                        class="form-control"
+                        [(ngModel)]="
+                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnWDN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      Recon Penalty
+                    </td>
+                    <td>
+                      <input
+                        #reconpenaltyAmount
+                        type="number"
+                        id="reconpenaltyAmount"
+                        name="reconpenaltyAmount"
+                        class="form-control"
+                        [(ngModel)]="reconpenaltyDetails.reconpenaltyAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #reconpenaltyCGST
+                        type="number"
+                        id="reconpenaltyCGST"
+                        name="reconpenaltyCGST"
+                        class="form-control"
+                        [(ngModel)]="reconpenaltyDetails.reconpenaltyCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #reconpenaltySGST
+                        type="number"
+                        id="reconpenaltySGST"
+                        name="reconpenaltySGST"
+                        class="form-control"
+                        [(ngModel)]="reconpenaltyDetails.reconpenaltySGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #reconpenaltyIGST
+                        type="number"
+                        id="reconpenaltyIGST"
+                        name="reconpenaltyIGST"
+                        class="form-control"
+                        [(ngModel)]="reconpenaltyDetails.reconpenaltyIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #reconpenaltyUGST
+                        type="number"
+                        id="reconpenaltyUGST"
+                        name="reconpenaltyUGST"
+                        class="form-control"
+                        [(ngModel)]="reconpenaltyDetails.reconpenaltyUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #reconpenaltyCN
+                        type="number"
+                        id="reconpenaltyCN"
+                        name="reconpenaltyCN"
+                        class="form-control"
+                        [(ngModel)]="reconpenaltyDetails.reconpenaltyCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #reconpenaltyWCN
+                        type="number"
+                        id="reconpenaltyWCN"
+                        name="reconpenaltyWCN"
+                        class="form-control"
+                        [(ngModel)]="reconpenaltyDetails.reconpenaltyWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #reconpenaltyDN
+                        type="number"
+                        id="reconpenaltyDN"
+                        name="reconpenaltyDN"
+                        class="form-control"
+                        [(ngModel)]="reconpenaltyDetails.reconpenaltyDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #reconpenaltyWDN
+                        type="number"
+                        id="reconpenaltyWDN"
+                        name="reconpenaltyWDN"
+                        class="form-control"
+                        [(ngModel)]="reconpenaltyDetails.reconpenaltyWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">EJ Deduction</td>
+                    <td>
+                      <input
+                        #ejdeductionAmount
+                        type="number"
+                        id="ejdeductionAmount"
+                        name="ejdeductionAmount"
+                        class="form-control"
+                        [(ngModel)]="ejdeductionDetails.ejdeductionAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #ejdeductionCGST
+                        type="number"
+                        id="ejdeductionCGST"
+                        name="ejdeductionCGST"
+                        class="form-control"
+                        [(ngModel)]="ejdeductionDetails.ejdeductionCGST"
+                        placeholder="₹"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #ejdeductionSGST
+                        type="number"
+                        id="ejdeductionSGST"
+                        name="ejdeductionSGST"
+                        class="form-control"
+                        [(ngModel)]="ejdeductionDetails.ejdeductionSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #ejdeductionIGST
+                        type="number"
+                        id="ejdeductionIGST"
+                        name="ejdeductionIGST"
+                        class="form-control"
+                        [(ngModel)]="ejdeductionDetails.ejdeductionIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #ejdeductionUGST
+                        type="number"
+                        id="ejdeductionUGST"
+                        name="ejdeductionUGST"
+                        class="form-control"
+                        [(ngModel)]="ejdeductionDetails.ejdeductionUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #ejdeductionCN
+                        type="number"
+                        id="ejdeductionCN"
+                        name="ejdeductionCN"
+                        class="form-control"
+                        [(ngModel)]="ejdeductionDetails.ejdeductionCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #ejdeductionWCN
+                        type="number"
+                        id="ejdeductionWCN"
+                        name="ejdeductionWCN"
+                        class="form-control"
+                        [(ngModel)]="ejdeductionDetails.ejdeductionWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #ejdeductionDN
+                        type="number"
+                        id="ejdeductionDN"
+                        name="ejdeductionDN"
+                        class="form-control"
+                        [(ngModel)]="ejdeductionDetails.ejdeductionDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #ejdeductionWDN
+                        type="number"
+                        id="ejdeductionWDN"
+                        name="ejdeductionWDN"
+                        class="form-control"
+                        [(ngModel)]="ejdeductionDetails.ejdeductionWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">ESS Footages</td>
+                    <td>
+                      <input
+                        #essfootagesAmount
+                        type="number"
+                        id="essfootagesAmount"
+                        name="essfootagesAmount"
+                        class="form-control"
+                        [(ngModel)]="essfootagesDetails.essfootagesAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #essfootagesCGST
+                        type="number"
+                        id="essfootagesCGST"
+                        name="essfootagesCGST"
+                        class="form-control"
+                        [(ngModel)]="essfootagesDetails.essfootagesCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #essfootagesSGST
+                        type="number"
+                        id="essfootagesSGST"
+                        name="essfootagesSGST"
+                        class="form-control"
+                        [(ngModel)]="essfootagesDetails.essfootagesSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #essfootagesIGST
+                        type="number"
+                        id="essfootagesIGST"
+                        name="essfootagesIGST"
+                        class="form-control"
+                        [(ngModel)]="essfootagesDetails.essfootagesIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #essfootagesUGST
+                        type="number"
+                        id="essfootagesUGST"
+                        name="essfootagesUGST"
+                        class="form-control"
+                        [(ngModel)]="essfootagesDetails.essfootagesUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #essfootagesCN
+                        type="number"
+                        id="essfootagesCN"
+                        name="essfootagesCN"
+                        class="form-control"
+                        [(ngModel)]="essfootagesDetails.essfootagesCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #essfootagesWCN
+                        type="number"
+                        id="essfootagesWCN"
+                        name="essfootagesWCN"
+                        class="form-control"
+                        [(ngModel)]="essfootagesDetails.essfootagesWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #essfootagesDN
+                        type="number"
+                        id="essfootagesDN"
+                        name="essfootagesDN"
+                        class="form-control"
+                        [(ngModel)]="essfootagesDetails.essfootagesDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #essfootagesWDN
+                        type="number"
+                        id="essfootagesWDN"
+                        name="essfootagesWDN"
+                        class="form-control"
+                        [(ngModel)]="essfootagesDetails.essfootagesWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      E-Sur Downtime
+                    </td>
+                    <td>
+                      <input
+                        #esurdowntimeAmount
+                        type="number"
+                        id="esurdowntimeAmount"
+                        name="esurdowntimeAmount"
+                        class="form-control"
+                        [(ngModel)]="esurdowntimeDetails.esurdowntimeAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurdowntimeCGST
+                        type="number"
+                        id="esurdowntimeCGST"
+                        name="esurdowntimeCGST"
+                        class="form-control"
+                        [(ngModel)]="esurdowntimeDetails.esurdowntimeCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurdowntimeSGST
+                        type="number"
+                        id="esurdowntimeSGST"
+                        name="esurdowntimeSGST"
+                        class="form-control"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        [(ngModel)]="esurdowntimeDetails.esurdowntimeSGST"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurdowntimeIGST
+                        type="number"
+                        id="esurdowntimeIGST"
+                        name="esurdowntimeIGST"
+                        class="form-control"
+                        [(ngModel)]="esurdowntimeDetails.esurdowntimeIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurdowntimeUGST
+                        type="number"
+                        id="esurdowntimeUGST"
+                        name="esurdowntimeUGST"
+                        class="form-control"
+                        [(ngModel)]="esurdowntimeDetails.esurdowntimeUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurdowntimeCN
+                        type="number"
+                        id="esurdowntimeCN"
+                        name="esurdowntimeCN"
+                        class="form-control"
+                        [(ngModel)]="esurdowntimeDetails.esurdowntimeCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurdowntimeWCN
+                        type="number"
+                        id="esurdowntimeWCN"
+                        name="esurdowntimeWCN"
+                        class="form-control"
+                        [(ngModel)]="esurdowntimeDetails.esurdowntimeWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurdowntimeDN
+                        type="number"
+                        id="esurdowntimeDN"
+                        name="esurdowntimeDN"
+                        class="form-control"
+                        [(ngModel)]="esurdowntimeDetails.esurdowntimeDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurdowntimeWDN
+                        type="number"
+                        id="esurdowntimeWDN"
+                        name="esurdowntimeWDN"
+                        class="form-control"
+                        [(ngModel)]="esurdowntimeDetails.esurdowntimeWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      E-Sur Not Installed
+                    </td>
+                    <td>
+                      <input
+                        #esurnotinstalledAmount
+                        type="number"
+                        id="esurnotinstalledAmount"
+                        name="esurnotinstalledAmount"
+                        class="form-control"
+                        [(ngModel)]="
+                          esurnotinstalledDetails.esurnotinstalledAmount
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurnotinstalledCGST
+                        type="number"
+                        id="esurnotinstalledCGST"
+                        name="esurnotinstalledCGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          esurnotinstalledDetails.esurnotinstalledCGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurnotinstalledSGST
+                        type="number"
+                        id="esurnotinstalledSGST"
+                        name="esurnotinstalledSGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          esurnotinstalledDetails.esurnotinstalledSGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurnotinstalledIGST
+                        type="number"
+                        id="esurnotinstalledIGST"
+                        name="esurnotinstalledIGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          esurnotinstalledDetails.esurnotinstalledIGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurnotinstalledUGST
+                        type="number"
+                        id="esurnotinstalledUGST"
+                        name="esurnotinstalledUGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          esurnotinstalledDetails.esurnotinstalledUGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurnotinstalledCN
+                        type="number"
+                        id="esurnotinstalledCN"
+                        name="esurnotinstalledCN"
+                        class="form-control"
+                        [(ngModel)]="esurnotinstalledDetails.esurnotinstalledCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurnotinstalledWCN
+                        type="number"
+                        id="esurnotinstalledWCN"
+                        name="esurnotinstalledWCN"
+                        class="form-control"
+                        [(ngModel)]="
+                          esurnotinstalledDetails.esurnotinstalledWCN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurnotinstalledDN
+                        type="number"
+                        id="esurnotinstalledDN"
+                        name="esurnotinstalledDN"
+                        class="form-control"
+                        [(ngModel)]="esurnotinstalledDetails.esurnotinstalledDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #esurnotinstalledWDN
+                        type="number"
+                        id="esurnotinstalledWDN"
+                        name="esurnotinstalledWDN"
+                        class="form-control"
+                        [(ngModel)]="
+                          esurnotinstalledDetails.esurnotinstalledWDN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      CRA Services Issues
+                    </td>
+                    <td>
+                      <input
+                        #craservicesissuesAmount
+                        type="number"
+                        id="craservicesissuesAmount"
+                        name="craservicesissuesAmount"
+                        class="form-control"
+                        [(ngModel)]="
+                          craservicesissuesDetails.craservicesissuesAmount
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #craservicesissuesCGST
+                        type="number"
+                        id="craservicesissuesCGST"
+                        name="craservicesissuesCGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          craservicesissuesDetails.craservicesissuesCGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #craservicesissuesSGST
+                        type="number"
+                        id="craservicesissuesSGST"
+                        name="craservicesissuesSGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          craservicesissuesDetails.craservicesissuesSGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #craservicesissuesIGST
+                        type="number"
+                        id="craservicesissuesIGST"
+                        name="craservicesissuesIGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          craservicesissuesDetails.craservicesissuesIGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #craservicesissuesUGST
+                        type="number"
+                        id="craservicesissuesUGST"
+                        name="craservicesissuesUGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          craservicesissuesDetails.craservicesissuesUGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #craservicesissuesCN
+                        type="number"
+                        id="craservicesissuesCN"
+                        name="craservicesissuesCN"
+                        class="form-control"
+                        [(ngModel)]="
+                          craservicesissuesDetails.craservicesissuesCN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #craservicesissuesWCN
+                        type="number"
+                        id="craservicesissuesWCN"
+                        name="craservicesissuesWCN"
+                        class="form-control"
+                        [(ngModel)]="
+                          craservicesissuesDetails.craservicesissuesWCN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #craservicesissuesDN
+                        type="number"
+                        id="craservicesissuesDN"
+                        name="craservicesissuesDN"
+                        class="form-control"
+                        [(ngModel)]="
+                          craservicesissuesDetails.craservicesissuesDN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #craservicesissuesWDN
+                        type="number"
+                        id="craservicesissuesWDN"
+                        name="craservicesissuesWDN"
+                        class="form-control"
+                        [(ngModel)]="
+                          craservicesissuesDetails.craservicesissuesWDN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      Robbery / Theft
+                    </td>
+                    <td>
+                      <input
+                        #robberyAmount
+                        type="number"
+                        id="robberyAmount"
+                        name="robberyAmount"
+                        class="form-control"
+                        [(ngModel)]="robberyDetails.robberyAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #robberyCGST
+                        type="number"
+                        id="robberyCGST"
+                        name="robberyCGST"
+                        class="form-control"
+                        [(ngModel)]="robberyDetails.robberyCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #robberySGST
+                        type="number"
+                        id="robberySGST"
+                        name="robberySGST"
+                        class="form-control"
+                        [(ngModel)]="robberyDetails.robberySGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #robberyIGST
+                        type="number"
+                        id="robberyIGST"
+                        name="robberyIGST"
+                        class="form-control"
+                        [(ngModel)]="robberyDetails.robberyIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #robberyUGST
+                        type="number"
+                        id="robberyUGST"
+                        name="robberyUGST"
+                        class="form-control"
+                        [(ngModel)]="robberyDetails.robberyUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #robberyCN
+                        type="number"
+                        id="robberyCN"
+                        name="robberyCN"
+                        class="form-control"
+                        [(ngModel)]="robberyDetails.robberyCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #robberyWCN
+                        type="number"
+                        id="robberyWCN"
+                        name="robberyWCN"
+                        class="form-control"
+                        [(ngModel)]="robberyDetails.robberyWCN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #robberyDN
+                        type="number"
+                        id="robberyDN"
+                        name="robberyDN"
+                        class="form-control"
+                        [(ngModel)]="robberyDetails.robberyDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #robberyWDN
+                        type="number"
+                        id="robberyWDN"
+                        name="robberyWDN"
+                        class="form-control"
+                        [(ngModel)]="robberyDetails.robberyWDN"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      Cash Misappropriation
+                    </td>
+                    <td>
+                      <input
+                        #cashmisappropriationAmount
+                        type="number"
+                        id="cashmisappropriationAmount"
+                        name="cashmisappropriationAmount"
+                        class="form-control"
+                        [(ngModel)]="
+                          cashmisappropriationDetails.cashmisappropriationAmount
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(1)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashmisappropriationCGST
+                        type="number"
+                        id="cashmisappropriationCGST"
+                        name="cashmisappropriationCGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          cashmisappropriationDetails.cashmisappropriationCGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(2)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashmisappropriationSGST
+                        type="number"
+                        id="cashmisappropriationSGST"
+                        name="cashmisappropriationSGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          cashmisappropriationDetails.cashmisappropriationSGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(3)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashmisappropriationIGST
+                        type="number"
+                        id="cashmisappropriationIGST"
+                        name="cashmisappropriationIGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          cashmisappropriationDetails.cashmisappropriationIGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(4)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashmisappropriationUGST
+                        type="number"
+                        id="cashmisappropriationUGST"
+                        name="cashmisappropriationUGST"
+                        class="form-control"
+                        [(ngModel)]="
+                          cashmisappropriationDetails.cashmisappropriationUGST
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(5)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashmisappropriationCN
+                        type="number"
+                        id="cashmisappropriationCN"
+                        name="cashmisappropriationCN"
+                        class="form-control"
+                        [(ngModel)]="
+                          cashmisappropriationDetails.cashmisappropriationCN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(6)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashmisappropriationWCN
+                        type="number"
+                        id="cashmisappropriationWCN"
+                        name="cashmisappropriationWCN"
+                        class="form-control"
+                        [(ngModel)]="
+                          cashmisappropriationDetails.cashmisappropriationWCN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(7)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashmisappropriationDN
+                        type="number"
+                        id="cashmisappropriationDN"
+                        name="cashmisappropriationDN"
+                        class="form-control"
+                        [(ngModel)]="
+                          cashmisappropriationDetails.cashmisappropriationDN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(8)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #cashmisappropriationWDN
+                        type="number"
+                        id="cashmisappropriationWDN"
+                        name="cashmisappropriationWDN"
+                        class="form-control"
+                        [(ngModel)]="
+                          cashmisappropriationDetails.cashmisappropriationWDN
+                        "
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateCategoricalTotal(9)"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        pButton
+                        pRipple
+                        class="p-button-info m-0 p-0"
+                        icon="pi pi-file-arrow-up"
+                      >
+                        Upload
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">Total</td>
+                    <td>
+                      <input
+                        #totalAmount
+                        type="number"
+                        id="totalAmount"
+                        name="totalAmount"
+                        class="form-control"
+                        [placeholder]="
+                          totalDetails.totalAmount || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #totalCGST
+                        type="number"
+                        id="totalCGST"
+                        name="totalCGST"
+                        class="form-control"
+                        [placeholder]="
+                          totalDetails.totalCGST || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #totalSGST
+                        type="number"
+                        id="totalSGST"
+                        name="totalSGST"
+                        class="form-control"
+                        [placeholder]="
+                          totalDetails.totalSGST || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #totalIGST
+                        type="number"
+                        id="totalIGST"
+                        name="totalIGST"
+                        class="form-control"
+                        [placeholder]="
+                          totalDetails.totalIGST || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #totalUGST
+                        type="number"
+                        id="totalUGST"
+                        name="totalUGST"
+                        class="form-control"
+                        [placeholder]="
+                          totalDetails.totalUGST || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #totalCN
+                        type="number"
+                        id="totalCN"
+                        name="totalCN"
+                        class="form-control"
+                        [placeholder]="
+                          totalDetails.totalCN || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #totalWCN
+                        type="number"
+                        id="totalWCN"
+                        name="totalWCN"
+                        class="form-control"
+                        [placeholder]="
+                          totalDetails.totalWCN || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #totalDN
+                        type="number"
+                        id="totalDN"
+                        name="totalDN"
+                        class="form-control"
+                        [placeholder]="
+                          totalDetails.totalDN || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #totalWDN
+                        type="number"
+                        id="totalWDN"
+                        name="totalWDN"
+                        class="form-control"
+                        [placeholder]="
+                          totalDetails.totalWDN || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <div class="flex py-4 gap-2">
+              <p-button
+                label="Back"
+                severity="secondary"
+                (onClick)="saveCategoricalDetails()"
+                (onClick)="prevCallback.emit()"
+              />
+              <p-button
+                *ngIf="paymentDetails_Server?.isProcessed == 0"
+                label="Save & Continue"
+                severity="primary"
+                (onClick)="saveCategoricalDetails()"
+                (onClick)="nextCallback.emit()"
+              />
+              <p-button
+                *ngIf="paymentDetails_Server?.isProcessed == 1"
+                label="Next"
+                severity="primary"
+                (onClick)="nextCallback.emit()"
+              /></div
+          ></ng-template>
+        </p-stepperPanel>
+
+        <p-stepperPanel
+          header="{{
+            paymentDetails_Server!.isProcessed == 1 ? 'Done' : 'Confirmation'
+          }}"
+        >
+          <ng-template
+            pTemplate="content"
+            let-prevCallback="prevCallback"
+            let-index="index"
+          >
+            <div class="flex flex-column h-12rem">
+              <div
+                class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium"
+              >
+                <section *ngIf="paymentDetails_Server?.isProcessed == 0">
+                  Are you sure you want to submit the payment details for
+                  Invoice
+                  {{ paymentDetails_Server?.invoiceNo }}?
+                </section>
+                <section *ngIf="paymentDetails_Server?.isProcessed == 1">
+                  The payment details have been successfully processed for
+                  Invoice {{ paymentDetails_Server?.invoiceNo }}
+                </section>
+              </div>
+            </div>
+            <div class="flex py-4">
+              <p-button label="Back" (onClick)="prevCallback.emit()" />
+              <p-button
+                *ngIf="paymentDetails_Server?.isProcessed == 0"
+                label="Submit"
+                class="ms-1"
+                (onClick)="submitPaymentDetails()"
+              ></p-button></div
+          ></ng-template>
+        </p-stepperPanel>
+      </p-stepper>
+    </form>
+  </div>
+</div>
+<app-loader *ngIf="showLoader"></app-loader>

@@ -5,9 +5,8 @@
       class="sign-in-section"
     >
       <img
-        class="mb-2"
+        class="mb-2 logo"
         src="assets/img/brand/CMS_RMS_logo-removebg.png"
-        style="max-width: 145px"
         alt=""
       />
 
@@ -17,63 +16,61 @@
       <form #login="ngForm" (submit)="onSubmit()" ngNativeValidate>
         <div>
           <div class="form-group">
-            <label for="email">Email Address</label>
+            <label for="email">Employee Code</label>
             <input
               #email="ngModel"
-              [(ngModel)]="this.loginForm.email"
+              [(ngModel)]="this.loginForm.employeecode"
               (focus)="onInputFocusOrTyping()"
               (blur)="onInputBlur()"
               (input)="onInputFocusOrTyping()"
-              class="form-control"
-              type="email"
-              email
-              name="emailId"
-              id="emailId"
+              class="form-control {{
+                !email.invalid && !showInvalidCredentials ? 'is-valid' : ''
+              }}{{ showInvalidCredentials ? 'is-invalid' : '' }}"
+              type="text"
+              name="employeecode"
+              id="employeecode"
               required
             />
-            <p
-              *ngIf="email.invalid && (email.dirty || email.touched)"
-              class="form-text text-danger text-start"
-            >
-              Email address is required
-            </p>
           </div>
           <!-- group -->
 
           <div class="form-group">
             <label for="password">Password</label>
-            <div class="input-group">
-              <input
-                #password="ngModel"
-                [type]="this.passwordType ? 'password' : 'text'"
-                [(ngModel)]="this.loginForm.password"
-                (focus)="onInputFocusOrTyping()"
-                (blur)="onInputBlur()"
-                (input)="onInputFocusOrTyping()"
-                required
-                name="password"
-                id="password"
-                minlength="8"
-                class="form-control"
-              />
-              <button
-                (click)="this.passwordType = !this.passwordType"
-                type="button"
-                class="btn btn-outline-secondary"
-              >
-                <i
-                  [ngClass]="
-                    this.passwordType ? 'ri-eye-off-line' : 'ri-eye-line'
-                  "
-                ></i>
-              </button>
-            </div>
+            <input
+              #password="ngModel"
+              [type]="this.passwordType ? 'password' : 'text'"
+              [(ngModel)]="this.loginForm.password"
+              (focus)="onInputFocusOrTyping()"
+              (blur)="onInputBlur()"
+              (input)="onInputFocusOrTyping()"
+              required
+              name="password"
+              id="password"
+              minlength="8"
+              class="form-control {{
+                showInvalidCredentials ? 'is-invalid' : ''
+              }}"
+            />
             <!-- input -->
             <p
-              *ngIf="password.invalid && (password.dirty || password.touched)"
-              class="form-text text-danger text-start"
+              *ngIf="showInvalidCredentials"
+              class="form-text text-danger text-start nowrap"
             >
-              Password is required
+              Invalid credentials. Please check your employee code and password.
+            </p>
+            <p
+              *ngIf="showAccountBlocked"
+              class="form-text text-danger text-start nowrap"
+            >
+              <em>Account Blocked:</em> Your account has been blocked for 15
+              minutes due to multiple incorrect attempts.
+            </p>
+            <p
+              *ngIf="showAccountInactive"
+              class="form-text text-danger text-start nowrap"
+            >
+              <em>Account Inactive:</em> Kindly reach out to the administrator
+              for further assistance.
             </p>
           </div>
           <!-- group -->
@@ -91,7 +88,6 @@
           <div class="text-center mt-3">
             <button
               [disabled]="login.invalid"
-              routerLink="../verify-otp"
               type="submit"
               class="btn btn-primary btn-block w-50 mb-1"
             >
@@ -109,3 +105,4 @@
     </div>
   </div>
 </div>
+<app-loader *ngIf="showLoader"></app-loader>

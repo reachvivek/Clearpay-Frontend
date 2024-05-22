@@ -1,9 +1,90 @@
 <div class="card">
   <p-toast></p-toast>
+  <div class="container">
+    <div class="d-flex">
+      <ul class="nav nav-tabs mb-2 mt-1">
+        <li class="nav-item">
+          <button
+            class="nav-link cursor {{ active_index == 1 ? 'active' : '' }}"
+            (click)="loadBillsCategorically(1)"
+          >
+            Total ({{ allBills.length }})
+          </button>
+        </li>
+        <li class="nav-item">
+          <button
+            class="nav-link  {{ active_index == 2 ? 'active' : '' }}"
+            (click)="loadBillsCategorically(2)"
+          >
+            Pending ({{ pendingBills.length }})
+          </button>
+        </li>
+        <li class="nav-item">
+          <button
+            class="nav-link  {{ active_index == 3 ? 'active' : '' }}"
+            (click)="loadBillsCategorically(3)"
+          >
+            Processed ({{ processedBills.length }})
+          </button>
+        </li>
+      </ul>
+      <!-- <div class="flex-fill">
+        <p-button
+          icon="pi pi-download"
+          class="float-end mt-2"
+          label="Download Bills"
+        ></p-button>
+      </div> -->
+    </div>
+    <!-- <p class="display-6 text-body-secondary fs-4 m-0">Filters</p> -->
+    <div class="row">
+      <div class="col-sm-6 col-md-3 col-lg-2">
+        <div class="form-group">
+          <label for="BankFilter" class="form-label">Bank</label>
+          <select class="form-select"></select>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3 col-lg-2">
+        <div class="form-group">
+          <label for="InvoiceYearFilter" class="form-label">Invoice Year</label>
+          <select class="form-select"></select>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3 col-lg-2">
+        <div class="form-group">
+          <label for="InvoiceMonthFilter" class="form-label"
+            >Invoice Month</label
+          >
+          <select class="form-select"></select>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3 col-lg-2">
+        <div class="form-group">
+          <label for="StateFilter" class="form-label">State</label>
+          <select class="form-select"></select>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3 col-lg-2">
+        <div class="form-group">
+          <label for="LhoFilter" class="form-label">LHO</label>
+          <select class="form-select"></select>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-3 col-lg-2">
+        <div class="form-group">
+          <label for="TypeOfServiceFilter" class="form-label"
+            >Type of Service</label
+          >
+          <select class="form-select"></select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p-toast></p-toast>
 
   <p-table
     #dt
-    [value]="users"
+    [value]="bills"
     [rows]="4"
     [rowsPerPageOptions]="[4, 10, 25]"
     [paginator]="true"
@@ -16,9 +97,8 @@
       'text-overflow': 'ellipsis'
     }"
     styleClass="p-datatable-sm"
-    [globalFilterFields]="['EmpName', 'EmpEmail', 'EmpMobNo']"
+    [globalFilterFields]="['billId', 'details']"
     [tableStyle]="{ 'min-width': '50rem' }"
-    [(selection)]="selectedUsers"
     [rowHover]="true"
     dataKey="id"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
@@ -26,26 +106,8 @@
   >
     <ng-template pTemplate="caption">
       <div class="d-flex align-items-center justify-content-between">
-        <h5 class="m-0">Dashboard</h5>
+        <h5 class="m-0">Bill Details</h5>
         <div>
-          <button
-            pButton
-            pRipple
-            label="New"
-            icon="pi pi-plus"
-            class="m-1 p-element p-button-success mr-2 p-button p-component ng-star-inserted rounded-pill"
-            (click)="openNew()"
-            rounded="true"
-          ></button>
-          <button
-            pButton
-            pRipple
-            label="Delete"
-            icon="pi pi-trash"
-            class="m-1 p-button-danger rounded-pill"
-            (click)="deleteSelectedUsers()"
-            [disabled]="!selectedUsers || !selectedUsers.length"
-          ></button>
           <span class="p-input-icon-left m-1">
             <i class="pi pi-search"></i>
             <input
@@ -61,156 +123,198 @@
     </ng-template>
     <ng-template pTemplate="header">
       <tr>
-        <th>
+        <!-- <th>
           <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th> -->
+        <th pSortableColumn="invoiceNo">
+          Invoice No<p-sortIcon field="invoiceNo"></p-sortIcon>
         </th>
-        <th pSortableColumn="EmpName">
-          Name <p-sortIcon field="EmpName"></p-sortIcon>
+        <th pSortableColumn="bankName">
+          Bank<p-sortIcon field="bankName"></p-sortIcon>
         </th>
-        <th pSortableColumn="EmpMobNo">
-          Mobile No <p-sortIcon field="EmpMobNo"></p-sortIcon>
+        <th>Attachment</th>
+        <th>Date of Submission</th>
+        <th>Upload Acknowledgement</th>
+        <th *ngIf="active_index == 1" pSortableColumn="isProcessed">
+          Status<p-sortIcon field="isProcessed"></p-sortIcon>
         </th>
-        <th pSortableColumn="EmpEmail">
-          Email ID <p-sortIcon field="EmpEmail"></p-sortIcon>
-        </th>
-        <th pSortableColumn="Active">
-          Status <p-sortIcon field="Active"></p-sortIcon>
-        </th>
-        <th></th>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-user>
+    <ng-template pTemplate="body" let-bill>
       <tr>
-        <td>
+        <!-- <td>
           <p-tableCheckbox [value]="user"></p-tableCheckbox>
-        </td>
-        <td>{{ user.EmpName }}</td>
-        <td>{{ user.EmpMobNo }}</td>
-        <td>{{ user.EmpEmail }}</td>
+        </td> -->
         <td>
-          <p-tag
-            [value]="user.Active ? 'Active' : 'Inactive'"
-            [severity]="getSeverity(user.Active)"
-          ></p-tag>
+          {{ bill.dateOfSubmission ? "" : bill.invoiceNo }}
+          <a
+            *ngIf="bill.dateOfSubmission != '' || bill.dateOfSubmission"
+            routerLink="./add-payment-details/{{ bill.billID }}"
+            >{{ bill.invoiceNo }}</a
+          >
+        </td>
+        <td>{{ bill.bankName }}</td>
+        <td>
+          <a href="">
+            <i class="pi pi-paperclip"></i>
+          </a>
         </td>
         <td>
-          <div class="row d-flex justify-content-start">
-            <div class="col-md-4">
-              <button
-                pButton
-                pRipple
-                [rounded]="true"
-                icon="pi pi-pencil"
-                class="p-button-rounded p-button-success rounded-circle m-0"
-                (click)="editUser(user)"
-              ></button>
-            </div>
-            <div class="col-md-4">
-              <button
-                pButton
-                pRipple
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-warning rounded-circle m-0"
-                (click)="deleteUser(user)"
-              ></button>
-            </div>
+          {{ bill.dateOfSubmission | date }}
+          <div
+            *ngIf="!bill.dateOfSubmission || bill.dateOfSubmission == ''"
+            class="row d-flex justify-content-center"
+          >
+            <button
+              pButton
+              pRipple
+              [rounded]="true"
+              icon="pi pi-calendar"
+              class="p-button-rounded p-button-secondary rounded-circle m-0"
+              (click)="toggleSubmissionDateDialog(bill.billID)"
+            ></button>
           </div>
+        </td>
+        <td>
+          <div class="row d-flex justify-content-center">
+            <button
+              pButton
+              pRipple
+              [rounded]="true"
+              [disabled]="!bill.dateOfSubmission || bill.dateOfSubmission == ''"
+              icon="pi pi-file-arrow-up"
+              class="p-button-rounded p-button-primary rounded-circle m-0"
+              (click)="toggleUploadAcknowledgementDialog(bill.billID)"
+            ></button>
+          </div>
+        </td>
+        <td *ngIf="active_index == 1">
+          <p-tag [severity]="bill.isProcessed ? 'success' : 'warning'">{{
+            bill.isProcessed ? "Processed" : "Pending"
+          }}</p-tag>
         </td>
       </tr>
     </ng-template>
   </p-table>
 </div>
 
-<p-dialog
-  [(visible)]="userDialog"
-  [style]="{ width: '450px' }"
-  header="User Details"
-  [modal]="true"
-  styleClass="p-fluid"
+<!-- Create/Edit User Dialog -->
+<form
+  #submissionDateForm="ngForm"
+  (submit)="addSubmissionDate()"
+  ngNativeValidate
 >
-  <ng-template pTemplate="content">
-    <div class="field">
-      <label for="name">Name</label>
-      <input
-        type="text"
-        pInputText
-        id="name"
-        [(ngModel)]="user.EmpName"
-        required
-        autofocus
-      />
-      <small class="p-error" *ngIf="submitted && !user.EmpName"
-        >Name is required.</small
-      >
-    </div>
-    <div class="field">
-      <label for="description">Mobile Number</label>
-      <textarea
-        id="description"
-        pInputTextarea
-        [(ngModel)]="user.EmpMobNo"
-        required
-        rows="1"
-        cols="20"
-      ></textarea>
-    </div>
-
-    <div class="field">
-      <label for="status">User Status</label>
-      <p-dropdown
-        [(ngModel)]="user.Active"
-        inputId="status"
-        [options]="statuses"
-      >
-        <ng-template pTemplate="selectedItem">
-          <p-tag
-            [value]="user.Active ? 'Active' : 'Suspended'"
-            [severity]="getSeverity(user.Active ? 'Active' : 'Suspended')"
-          ></p-tag>
-        </ng-template>
-        <ng-template let-option pTemplate="item">
-          <p-tag
-            [value]="option.label"
-            [severity]="getSeverity(option.label)"
-          ></p-tag>
-        </ng-template>
-      </p-dropdown>
-    </div>
-
-    <div class="formgrid grid">
-      <div class="field">
-        <label for="EmpEmail">Email ID</label>
-
-        <input
-          id="email"
-          [(ngModel)]="user.EmpEmail"
-          type="text"
-          pInputText
+  <p-dialog
+    [(visible)]="showSubmissionDateDialog"
+    [style]="{ width: '450px' }"
+    header="Date of Submission"
+    [modal]="true"
+    styleClass="p-fluid"
+  >
+    <ng-template pTemplate="content">
+      <div class="field form-group">
+        <label for="name" class="form-label">Select Submission Date</label>
+        <p-calendar
+          #DateOfSubmission
+          appendTo="body"
+          [(ngModel)]="editBill.submissionDate"
+          name="DateOfSubmission"
+          [iconDisplay]="'input'"
+          [showIcon]="true"
+          class="d-flex"
+          inputId="icondisplay"
+          [dateFormat]="dateFormat"
+          showButtonBar
+          (ngModelChange)="convertToString()"
+          [minDate]="minDate"
+          [maxDate]="maxDate"
           required
-          autofocus
-        />
+        ></p-calendar>
       </div>
-    </div>
-  </ng-template>
+    </ng-template>
 
-  <ng-template pTemplate="footer">
-    <button
-      pButton
-      pRipple
-      label="Cancel"
-      icon="pi pi-times"
-      class="p-button-text"
-      (click)="hideDialog()"
-    ></button>
-    <button
-      pButton
-      pRipple
-      label="Save"
-      icon="pi pi-check"
-      class="p-button-text"
-      (click)="saveUser()"
-    ></button>
-  </ng-template>
-</p-dialog>
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        pRipple
+        type="button"
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        pButton
+        [disabled]="submissionDateForm.invalid"
+        pRipple
+        label="Save"
+        icon="pi pi-check"
+        class="p-button-text"
+        type="submit"
+      ></button>
+    </ng-template>
+  </p-dialog>
+</form>
+
+<!-- Create/Edit User Dialog -->
+<form
+  #submissionDateForm="ngForm"
+  (submit)="uploadAcknowledgement()"
+  ngNativeValidate
+>
+  <p-dialog
+    [(visible)]="showUploadAcknowledgementDialog"
+    [style]="{ width: '450px' }"
+    header="Upload Acknowledgement"
+    [modal]="true"
+    styleClass="p-fluid"
+  >
+    <ng-template pTemplate="content">
+      <div class="field form-group">
+        <label for="name" class="form-label"
+          >Select the file to be uploaded</label
+        >
+        <p-fileUpload
+          name="demo[]"
+          url="https://www.primefaces.org/cdn/api/upload.php"
+          (onUpload)="onUpload($event)"
+          [multiple]="true"
+          accept="image/*"
+          maxFileSize="1000000"
+        >
+          <ng-template pTemplate="content">
+            <ul *ngIf="uploadedFiles.length">
+              <li *ngFor="let file of uploadedFiles">
+                {{ file.name }} - {{ file.size }} bytes
+              </li>
+            </ul>
+          </ng-template>
+        </p-fileUpload>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        pRipple
+        type="button"
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        pButton
+        [disabled]="submissionDateForm.invalid"
+        pRipple
+        label="Save"
+        icon="pi pi-check"
+        class="p-button-text"
+        type="submit"
+      ></button>
+    </ng-template>
+  </p-dialog>
+</form>
 
 <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+<app-loader *ngIf="showLoader"></app-loader>

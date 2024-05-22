@@ -1,7 +1,13 @@
 import { Component } from '@angular/core';
-import { ProductService } from '../../service/product.service';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { User } from '../../domain/user';
+import { InvoiceService } from '../../../swagger';
+import { firstValueFrom } from 'rxjs';
+import { UserSyncService } from '../../services/user-sync.service';
+import { MessageService } from 'primeng/api';
+
+interface UploadEvent {
+  originalEvent: Event;
+  files: File[];
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -9,148 +15,165 @@ import { User } from '../../domain/user';
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
-  userDialog: boolean = false;
+  showLoader: boolean = false;
+  showSubmissionDateDialog: boolean = false;
+  showUploadAcknowledgementDialog: boolean = false;
+  selectedBill: any = { billID: undefined };
+  editBill: { submissionDate: Date | undefined } = {
+    submissionDate: undefined,
+  };
+  dateFormat: string = 'dd/mm/yy';
 
-  users!: User[] | any;
+  minDate: Date | undefined;
+  maxDate: Date | undefined;
+  items: any[] = [
+    { label: 'Total', index: 1 },
+    { label: 'Pending', index: 2 },
+    { label: 'Processed', index: 3 },
+  ];
+  active_index: any = 1;
 
-  user!: User;
+  type: any = 1;
 
-  selectedUsers!: User[] | null;
+  bills: any = [];
 
-  submitted: boolean = false;
+  pendingBills: any = [];
 
-  statuses!: any[];
+  processedBills: any = [];
+
+  allBills: any = [];
+
+  bill!: any;
+
+  uploadedFiles: any[] = [];
 
   constructor(
-    private userService: ProductService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private userSyncService: UserSyncService,
+    private invoiceService: InvoiceService,
+    private messageService: MessageService
   ) {}
 
-  ngOnInit() {
-    this.userService.getUsers().then((data) => (this.users = data));
-
-    this.statuses = [
-      { label: 'Active', value: 1 },
-      { label: 'Suspended', value: 0 },
-    ];
+  async ngOnInit() {
+    this.userSyncService.loadState();
+    await this.loadBills();
+    this.loadBillsCategorically(1);
   }
 
-  openNew() {
-    this.user = {};
-    this.submitted = false;
-    this.userDialog = true;
-  }
+  async loadBills() {
+    this.showLoader = true;
+    try {
+      const allBills = await firstValueFrom(
+        this.invoiceService.invoiceGetAllBillsGet()
+      );
 
-  deleteSelectedUsers() {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete the selected users?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.users = this.users.filter(
-          (val: any) => !this.selectedUsers?.includes(val)
-        );
-        this.selectedUsers = null;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Users Deleted',
-          life: 3000,
-        });
-      },
-    });
-  }
-
-  editUser(user: User) {
-    this.user = { ...user };
-    this.userDialog = true;
-  }
-
-  deleteUser(user: User) {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete ' + user.EmpName + '?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.users = this.users.filter(
-          (val: any) => user.UserId !== user.UserId
-        );
-        this.user = {};
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'User Deleted',
-          life: 3000,
-        });
-      },
-    });
-  }
-
-  hideDialog() {
-    this.userDialog = false;
-    this.submitted = false;
-  }
-
-  saveUser() {
-    this.submitted = true;
-
-    if (this.user.EmpName?.trim()) {
-      if (this.user.UserId) {
-        this.users[this.findIndexById(this.user.UserId)] = this.user;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'User Updated',
-          life: 3000,
-        });
-      } else {
-        this.user.EmpCode = this.createId();
-        this.users.push(this.user);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'User Created',
-          life: 3000,
-        });
+      if (allBills && allBills.length) {
+        this.allBills = allBills;
       }
 
-      this.users = [...this.users];
-      this.userDialog = false;
-      this.user = {};
+      const pendingBills = await firstValueFrom(
+        this.invoiceService.invoiceGetPendingBillsGet()
+      );
+
+      if (pendingBills && pendingBills.length) {
+        this.pendingBills = pendingBills;
+      }
+
+      const processedBills = await firstValueFrom(
+        this.invoiceService.invoiceGetProcessedBillsGet()
+      );
+
+      if (processedBills && processedBills.length) {
+        this.processedBills = processedBills;
+      }
+      this.showLoader = false;
+    } catch (err: any) {
+      console.error(err);
+      this.showLoader = false;
     }
   }
 
-  findIndexById(id: number): number {
-    let index = -1;
-    for (let i = 0; i < this.users.length; i++) {
-      if (this.users[i].UserId === id) {
-        index = i;
+  toggleSubmissionDateDialog(id: number | null = null) {
+    this.showSubmissionDateDialog = !this.showSubmissionDateDialog;
+    if (id) {
+      this.selectedBill.billId = id;
+    } else {
+      this.selectedBill.billId = null;
+    }
+  }
+
+  toggleUploadAcknowledgementDialog(id: number) {
+    this.selectedBill.billId = id;
+    this.showUploadAcknowledgementDialog =
+      !this.showUploadAcknowledgementDialog;
+  }
+
+  loadBillsCategorically(ind: number) {
+    this.active_index = ind;
+    switch (ind) {
+      case 1:
+        this.bills = [...this.allBills];
         break;
-      }
-    }
-
-    return index;
-  }
-
-  createId(): string {
-    let id = '';
-    var chars =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (var i = 0; i < 5; i++) {
-      id += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return id;
-  }
-
-  getSeverity(status: string) {
-    switch (status) {
-      case 'Active':
-        return 'success';
-      case 'Suspended':
-        return 'warning';
+      case 2:
+        this.bills = [...this.pendingBills];
+        break;
+      case 3:
+        this.bills = [...this.processedBills];
+        break;
       default:
-        return 'success';
+        this.bills = [...this.allBills];
+        break;
     }
   }
+
+  onUpload(event: any) {
+    for (let file of event.files) {
+      this.uploadedFiles.push(file);
+    }
+
+    this.messageService.add({
+      severity: 'info',
+      summary: 'File Uploaded',
+      detail: '',
+    });
+  }
+
+  async addSubmissionDate() {
+    this.showLoader = true;
+    try {
+      const res = await firstValueFrom(
+        this.invoiceService.invoiceUpdateDateOfSubmissionPost({
+          billId: this.selectedBill.billId,
+          dateOfSubmission: this.selectedBill.submissionDate,
+        })
+      );
+      this.toggleSubmissionDateDialog();
+      if (res && res.updated) {
+        await this.loadBills();
+        this.loadBillsCategorically(1);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Successful',
+          detail: 'Date Of Submission Updated',
+          life: 3000,
+        });
+        this.showLoader = false;
+      }
+    } catch (err: any) {
+      console.log(err);
+      this.showLoader = false;
+    }
+  }
+  convertToString() {
+    const dateToUpdate = this.editBill.submissionDate;
+    const offset = dateToUpdate!.getTimezoneOffset();
+    const updatedDate = new Date(dateToUpdate!.getTime() - offset * 60 * 1000)
+      .toISOString()
+      .split('T')[0];
+
+    this.selectedBill.submissionDate = updatedDate;
+    console.log(updatedDate);
+  }
+  hideDialog() {}
+
+  uploadAcknowledgement() {}
 }

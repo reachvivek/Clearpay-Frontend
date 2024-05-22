@@ -1,7 +1,15 @@
 import { Component } from '@angular/core';
-import { User } from '../../domain/user';
-import { ProductService } from '../../service/product.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import {
+  AdminService,
+  Lho,
+  LhoService,
+  State,
+  StateService,
+  User,
+} from '../../../swagger';
+import { UserSyncService } from '../../services/user-sync.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-lho-management',
@@ -9,148 +17,264 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   styleUrl: './lho-management.component.scss',
 })
 export class LhoManagementComponent {
-  userDialog: boolean = false;
-
-  users!: User[] | any;
-
-  user!: User;
-
-  selectedUsers!: User[] | null;
-
+  showLoader: boolean = false;
+  users: User[] = [];
+  lhoDialog: boolean = false;
+  lhos!: Lho[] | any;
+  lho!: Lho;
+  selectedLhos!: Lho[] | null;
+  newLho: Lho = {};
+  selectedLho!: Lho;
+  isEditMode: boolean = false;
   submitted: boolean = false;
-
   statuses!: any[];
+  states: State[] = [];
+  selectedStates: any = [];
+  roles: [{ id: 2; name: 'LHO User' }, { id: 3; name: 'Finance User' }] = [
+    { id: 2, name: 'LHO User' },
+    { id: 3, name: 'Finance User' },
+  ];
+
+  showSelected() {
+    let stateNames = '';
+    this.selectedStates.map((val: any) => {
+      stateNames =
+        stateNames + (stateNames.length > 0 ? ', ' : '') + val.state_Name;
+    });
+    this.newLho.state = stateNames;
+  }
 
   constructor(
-    private userService: ProductService,
+    private userSyncService: UserSyncService,
+    private lhoService: LhoService,
+    private stateService: StateService,
+    private adminService: AdminService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
   ) {}
 
-  ngOnInit() {
-    this.userService.getUsers().then((data) => (this.users = data));
-
-    this.statuses = [
-      { label: 'Active', value: 1 },
-      { label: 'Suspended', value: 0 },
-    ];
+  async ngOnInit() {
+    await this.userSyncService.loadState();
+    await this.loadLhos();
+    await this.loadStates();
+    await this.loadUsers();
   }
 
+  async loadStates() {
+    try {
+      this.showLoader = true;
+      const res = await firstValueFrom(this.stateService.stateGetStatesGet());
+      if (res && res.length) {
+        this.states = [...res];
+      }
+      this.showLoader = false;
+    } catch (err: any) {
+      this.showLoader = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: err.toString(),
+        life: 3000,
+      });
+    }
+  }
+
+  async loadUsers() {
+    try {
+      this.showLoader = true;
+      const res = await firstValueFrom(this.adminService.adminGetUsersGet());
+      if (res && res.length) {
+        this.users = [...res];
+      }
+      this.showLoader = false;
+    } catch (err: any) {
+      this.showLoader = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: err.toString(),
+        life: 3000,
+      });
+    }
+  }
+
+  async loadLhos() {
+    try {
+      this.showLoader = true;
+      const res = await firstValueFrom(this.lhoService.lhoGetLhosGet());
+      if (res && res.length) {
+        this.lhos = [...res];
+      }
+      this.showLoader = false;
+    } catch (err: any) {
+      this.showLoader = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: err.toString(),
+        life: 3000,
+      });
+    }
+  }
   openNew() {
-    this.user = {};
+    this.newLho = {};
+    this.selectedStates = [];
+    this.isEditMode = false;
     this.submitted = false;
-    this.userDialog = true;
+    this.lhoDialog = true;
   }
 
-  deleteSelectedUsers() {
+  deleteSelectedLhos() {
     this.confirmationService.confirm({
       message: 'Are you sure you want to delete the selected users?',
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.users = this.users.filter(
-          (val: any) => !this.selectedUsers?.includes(val)
+        this.lhos = this.lhos.filter(
+          (val: any) => !this.selectedLhos?.includes(val)
         );
-        this.selectedUsers = null;
+        this.selectedLhos = null;
         this.messageService.add({
           severity: 'success',
           summary: 'Successful',
-          detail: 'Users Deleted',
+          detail: 'Lhos Deleted',
           life: 3000,
         });
       },
     });
   }
 
-  editUser(user: User) {
-    this.user = { ...user };
-    this.userDialog = true;
+  editLho(lho: Lho) {
+    this.isEditMode = true;
+    this.selectedLho = { ...lho };
+    this.newLho = { ...lho };
+    this.lhoDialog = true;
+    let statesArray = this.selectedLho.state?.split(', ');
+    this.selectedStates = [];
+    statesArray?.forEach((item: any) => {
+      this.selectedStates.push({ state_Name: item });
+    });
   }
 
-  deleteUser(user: User) {
+  checkChanges() {
+    if (
+      this.selectedLho.lhoName !== this.newLho.lhoName ||
+      this.selectedLho.state !== this.newLho.state ||
+      this.selectedLho.userID !== this.newLho.userID
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  async deleteLho(lho: Lho) {
     this.confirmationService.confirm({
-      message: 'Are you sure you want to delete ' + user.EmpName + '?',
+      message: 'Are you sure you want to remove ' + lho.lhoName + '?',
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.users = this.users.filter(
-          (val: any) => user.UserId !== user.UserId
-        );
-        this.user = {};
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'User Deleted',
-          life: 3000,
-        });
+      accept: async () => {
+        try {
+          this.showLoader = true;
+          const res = await firstValueFrom(
+            this.lhoService.lhoDeleteLhoLhoIDDelete(lho.lhoID!)
+          );
+          this.showLoader = false;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Successful',
+            detail: 'LHO Deleted Successfully!',
+            life: 3000,
+          });
+          await this.loadLhos();
+        } catch (err: any) {
+          this.showLoader = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.toString(),
+            life: 3000,
+          });
+        }
       },
     });
   }
 
   hideDialog() {
-    this.userDialog = false;
+    this.lhoDialog = false;
     this.submitted = false;
   }
 
-  saveUser() {
-    this.submitted = true;
-
-    if (this.user.EmpName?.trim()) {
-      if (this.user.UserId) {
-        this.users[this.findIndexById(this.user.UserId)] = this.user;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'User Updated',
-          life: 3000,
-        });
-      } else {
-        this.user.EmpCode = this.createId();
-        this.users.push(this.user);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'User Created',
-          life: 3000,
-        });
-      }
-
-      this.users = [...this.users];
-      this.userDialog = false;
-      this.user = {};
-    }
-  }
-
-  findIndexById(id: number): number {
-    let index = -1;
-    for (let i = 0; i < this.users.length; i++) {
-      if (this.users[i].UserId === id) {
-        index = i;
+  async saveLho() {
+    switch (this.isEditMode) {
+      case false:
+        this.createNewLho();
         break;
-      }
-    }
-
-    return index;
-  }
-
-  createId(): string {
-    let id = '';
-    var chars =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (var i = 0; i < 5; i++) {
-      id += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return id;
-  }
-
-  getSeverity(status: string) {
-    switch (status) {
-      case 'Active':
-        return 'success';
-      case 'Suspended':
-        return 'warning';
+      case true:
+        this.updateSelectedLho();
+        break;
       default:
-        return 'success';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: '404 - Bad Request',
+          life: 3000,
+        });
+        break;
+    }
+  }
+
+  async createNewLho() {
+    try {
+      this.showLoader = true;
+      const res = await firstValueFrom(
+        this.lhoService.lhoCreateLhoPost(this.newLho)
+      );
+      this.loadLhos();
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Successful',
+        detail: 'LHO Created Successfully!',
+        life: 3000,
+      });
+      this.showLoader = false;
+      this.hideDialog();
+    } catch (err: any) {
+      console.error(err);
+      this.showLoader = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: err.toString(),
+        life: 3000,
+      });
+    }
+  }
+
+  async updateSelectedLho() {
+    try {
+      this.showLoader = true;
+      const res = await firstValueFrom(
+        this.lhoService.lhoUpdateLhoPut(this.newLho!)
+      );
+      this.loadLhos();
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Successful',
+        detail: 'LHO Updated Successfully!',
+        life: 3000,
+      });
+      this.showLoader = false;
+      this.isEditMode = false;
+      this.hideDialog();
+    } catch (err: any) {
+      console.error(err);
+      this.showLoader = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: err.toString(),
+        life: 3000,
+      });
     }
   }
 }

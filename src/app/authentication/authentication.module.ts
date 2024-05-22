@@ -9,6 +9,9 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { InputOtpModule } from 'primeng/inputotp';
 import { ButtonModule } from 'primeng/button';
 import { SetPasswordComponent } from './set-password/set-password.component';
+import { LoaderComponent } from '../standalone/loader/loader.component';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -23,6 +26,9 @@ import { SetPasswordComponent } from './set-password/set-password.component';
     FormsModule,
     InputOtpModule,
     ButtonModule,
+    LoaderComponent,
+    ToastModule,
   ],
+  providers: [MessageService],
 })
 export class AuthenticationModule {}

@@ -1,8 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './authentication/login/login.component';
+import { isLoggedIn } from './guards/isLoggedIn.guard';
 
 const routes: Routes = [
+  {
+    path: '',
+    redirectTo: '/auth',
+    pathMatch: 'full',
+  },
   {
     path: 'auth',
     loadChildren: () =>
@@ -11,23 +16,15 @@ const routes: Routes = [
       ),
   },
   {
-    path: '',
-    redirectTo: '/auth/login',
-    pathMatch: 'full',
-  },
-  {
     path: 'dashboard',
     loadChildren: () =>
       import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
-  },
-  {
-    path: '**',
-    component: LoginComponent,
+    canActivate: [isLoggedIn],
   },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { bindToComponentInputs: true })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

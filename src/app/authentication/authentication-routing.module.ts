@@ -4,6 +4,7 @@ import { LoginComponent } from './login/login.component';
 import { VerifyOtpComponent } from './verify-otp/verify-otp.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { SetPasswordComponent } from './set-password/set-password.component';
+import { isLoggedIn } from '../guards/isLoggedIn.guard';
 
 const routes: Routes = [
   {

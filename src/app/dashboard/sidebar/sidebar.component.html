@@ -22,7 +22,11 @@
       <!-- Sidebar Item -->
     </li>
 
-    <li routerLink="../dashboard/user-management" routerLinkActive="active">
+    <li
+      *ngIf="isAdminUser"
+      routerLink="../dashboard/user-management"
+      routerLinkActive="active"
+    >
       <div class="icon-link">
         <a routerLink="../dashboard/user-management">
           <i class="bx bx-user"></i>
@@ -37,7 +41,11 @@
       <!-- Sidebar Item -->
     </li>
 
-    <li routerLink="../dashboard/lho-management" routerLinkActive="active">
+    <li
+      *ngIf="isAdminUser"
+      routerLink="../dashboard/lho-management"
+      routerLinkActive="active"
+    >
       <div class="icon-link">
         <a routerLink="../dashboard/lho-management">
           <i class="bx bx-map"></i>
@@ -47,6 +55,21 @@
       <ul class="sub-menu blank">
         <li>
           <a class="link_name" href="#">LHO Management</a>
+        </li>
+      </ul>
+      <!-- Sidebar Item -->
+    </li>
+
+    <li routerLink="../dashboard/reports" routerLinkActive="active">
+      <div class="icon-link">
+        <a routerLink="../dashboard/reports">
+          <i class="bx bxs-report"></i>
+          <span class="link_name">Reports</span>
+        </a>
+      </div>
+      <ul class="sub-menu blank">
+        <li>
+          <a class="link_name" href="#">Reports</a>
         </li>
       </ul>
       <!-- Sidebar Item -->
@@ -82,9 +105,9 @@
       </ul>
     </li> -->
     <!-- Sidebar Item With Sub Menu-->
-    <li>
+    <li (click)="logout()">
       <div class="logout-section">
-        <a href="#">
+        <a>
           <i class="bx bx-exit"></i> <span class="link_name">Sign out</span>
         </a>
       </div>
@@ -94,8 +117,13 @@
 </div>
 
 <section class="home-section">
-  <div class="home-content">
-    <i class="bx bx-menu" (click)="toggleSidebar()"></i>
+  <div class="home-content d-flex justify-content-between me-4">
+    <div>
+      <i class="bx bx-menu" (click)="toggleSidebar()"></i>
+      <span class="fs-4 display-5 ms-1">{{ routeTitle }}</span>
+    </div>
+    <span>Admin</span>
   </div>
   <router-outlet></router-outlet>
 </section>
+<app-loader *ngIf="showLoader"></app-loader>

@@ -4,6 +4,10 @@ import { LayoutComponent } from './layout/layout.component';
 import { UserManagementComponent } from './user-management/user-management.component';
 import { LhoManagementComponent } from './lho-management/lho-management.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { adminGuard } from '../guards/admin.guard';
+import { AddPaymentDetailsComponent } from './add-payment-details/add-payment-details.component';
+import { isLoggedIn } from '../guards/isLoggedIn.guard';
+import { ReportsComponent } from './reports/reports.component';
 
 const routes: Routes = [
   {
@@ -13,12 +17,28 @@ const routes: Routes = [
       {
         path: '',
         component: DashboardComponent,
+        data: { title: 'Dashboard' },
       },
       {
         path: 'user-management',
         component: UserManagementComponent,
+        canActivate: [adminGuard],
       },
-      { path: 'lho-management', component: LhoManagementComponent },
+      {
+        path: 'lho-management',
+        component: LhoManagementComponent,
+        canActivate: [adminGuard],
+      },
+      {
+        path: 'add-payment-details/:billId',
+        component: AddPaymentDetailsComponent,
+        canActivate: [isLoggedIn],
+      },
+      {
+        path: 'reports',
+        component: ReportsComponent,
+        canActivate: [isLoggedIn],
+      },
     ],
   },
   {
@@ -28,6 +48,14 @@ const routes: Routes = [
   {
     path: 'lho-management',
     component: LhoManagementComponent,
+  },
+  {
+    path: 'add-payment-details/:billId',
+    component: AddPaymentDetailsComponent,
+  },
+  {
+    path: 'reports',
+    component: ReportsComponent,
   },
 ];
 

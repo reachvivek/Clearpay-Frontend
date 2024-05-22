@@ -1,0 +1,128 @@
+<div class="card">
+  <p-table
+    #dt
+    [value]="reports"
+    [rows]="5"
+    [rowsPerPageOptions]="[5, 10, 25]"
+    [paginator]="true"
+    styleClass="p-datatable-sm"
+    [globalFilterFields]="['lhoName', 'location', 'state']"
+    [tableStyle]="{ 'min-width': '50rem', 'white-space': 'nowrap' }"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="caption">
+      <div class="d-flex align-items-center justify-content-between">
+        <h5 class="m-0">Invoice Reports</h5>
+        <div>
+          <span class="p-input-icon-left m-1">
+            <i class="pi pi-search"></i>
+            <input
+              #searchInput
+              pInputText
+              type="text"
+              (input)="dt.filterGlobal(searchInput.value, 'contains')"
+              placeholder="Search..."
+            />
+          </span>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="date">
+          Date<p-sortIcon field="date"></p-sortIcon>
+        </th>
+        <th pSortableColumn="invoiceNo">
+          Invoice No <p-sortIcon field="invoiceNo"></p-sortIcon>
+        </th>
+        <th pSortableColumn="customer">
+          Customer <p-sortIcon field="customer"></p-sortIcon>
+        </th>
+        <th pSortableColumn="serviceMonth">
+          Service Month <p-sortIcon field="serviceMonth"></p-sortIcon>
+        </th>
+        <th pSortableColumn="financialYear">
+          Financial Year <p-sortIcon field="financialYear"></p-sortIcon>
+        </th>
+        <th pSortableColumn="project">
+          Project <p-sortIcon field="project"></p-sortIcon>
+        </th>
+        <th pSortableColumn="cnTotal">
+          Credit Note <p-sortIcon field="cnTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="dnTotal">
+          Debit Note <p-sortIcon field="dnTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="fosTotal">
+          FOS <p-sortIcon field="fosTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="downtimeTotal">
+          Downtime <p-sortIcon field="downtimeTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="cashoutpenaltyTotal">
+          Cash Out Penalty <p-sortIcon field="cashoutpenaltyTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="housekeepingTotal">
+          House Keeping <p-sortIcon field="housekeepingTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="rejectbinTotal">
+          Reject Bin <p-sortIcon field="rejectbinTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="consumableTotal">
+          Consumable <p-sortIcon field="consumableTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="dosTotal">
+          DOS <p-sortIcon field="dosTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="excessbillingTotal">
+          Excess Billing <p-sortIcon field="excessbillingTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="incentiveamtwithoutdnTotal">
+          Incentive Amt Without DN
+          <p-sortIcon field="incentiveamtwithoutdnTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="reconpenaltyTotal">
+          Recon Penalty <p-sortIcon field="reconpenaltyTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="ejdeductionTotal">
+          EJ Deduction <p-sortIcon field="ejdeductionTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="essfootagesTotal">
+          ESS Footages <p-sortIcon field="essfootagesTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="esurdowntimeTotal">
+          E-Sur Downtime <p-sortIcon field="esurdowntimeTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="esurnotinstalledTotal">
+          E-Sur Not Installed
+          <p-sortIcon field="esurnotinstalledTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="craservicesTotal">
+          CRA Services Issues
+          <p-sortIcon field="craservicesTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="robberyTotal">
+          Robbery / Theft
+          <p-sortIcon field="robberyTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="cashmisappropriationTotal">
+          Cash Misappropriation
+          <p-sortIcon field="cashmisappropriationTotal"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-bill>
+      <tr>
+        <td>{{ bill.dateOfSubmission }}</td>
+        <td>{{ bill.state }}</td>
+        <td>{{ bill.empName || "NA" }}</td>
+        <td>
+          <div class="row d-flex justify-content-start"></div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { SidebarComponent } from './sidebar/sidebar.component';
@@ -99,8 +99,11 @@ import { BlockUIModule } from 'primeng/blockui';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { RippleModule } from 'primeng/ripple';
 import { StyleClassModule } from 'primeng/styleclass';
-import { ProductService } from '../service/product.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { LoaderComponent } from '../standalone/loader/loader.component';
+import { AddPaymentDetailsComponent } from './add-payment-details/add-payment-details.component';
+import { withComponentInputBinding } from '@angular/router';
+import { ReportsComponent } from './reports/reports.component';
 
 @NgModule({
   declarations: [
@@ -109,10 +112,13 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     UserManagementComponent,
     LhoManagementComponent,
     DashboardComponent,
+    AddPaymentDetailsComponent,
+    ReportsComponent,
   ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
+    LoaderComponent,
 
     AvatarModule,
     AvatarGroupModule,
@@ -206,6 +212,6 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     RippleModule,
     StyleClassModule,
   ],
-  providers: [ProductService, MessageService, ConfirmationService],
+  providers: [MessageService, ConfirmationService, DecimalPipe],
 })
 export class DashboardModule {}

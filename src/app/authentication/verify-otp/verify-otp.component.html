@@ -5,9 +5,8 @@
       class="sign-in-section"
     >
       <img
-        class="mb-2"
+        class="logo mb-2"
         src="assets/img/brand/CMS_RMS_logo-removebg.png"
-        style="max-width: 145px"
         alt=""
       />
 
@@ -23,7 +22,7 @@
             <div class="d-flex flex-column align-items-center">
               <div class="font-bold fs-5">Authenticate Your Account</div>
               <p class="text-color-secondary block mt-2">
-                Please enter the code sent to your email or phone.
+                Please enter the code sent to your phone.
               </p>
             </div>
             <p-inputOtp
@@ -32,6 +31,7 @@
               name="otp"
               [length]="otpLength"
               style="gap: 0"
+              (onChange)="autoSubmit()"
             >
               <ng-template
                 pTemplate="input"
@@ -52,6 +52,7 @@
                   (keydown)="events.keydown($event)"
                   [attr.value]="token"
                   class="custom-otp-input"
+                  autofocus
                   required
                 />
                 <div *ngIf="index === 3" class="px-3">
@@ -63,21 +64,46 @@
               *ngIf="otp.invalid && (otp.dirty || otp.touched)"
               class="form-text text-danger text-start"
             >
-              Code is required
+              OTP is required
+            </p>
+            <p
+              *ngIf="showAccountBlocked"
+              class="form-text text-danger text-start nowrap"
+            >
+              <em>Account Blocked:</em> Your account has been blocked for 15
+              minutes due to multiple incorrect attempts.
+            </p>
+            <p
+              *ngIf="showIncorrectOTP"
+              class="form-text text-danger text-start"
+            >
+              The One-Time Password (OTP) you entered is incorrect.
+            </p>
+            <p
+              class="form-text text-success"
+              *ngIf="!showIncorrectOTP && showOTPSent"
+            >
+              The One-Time Password (OTP) has been sent successfully.
             </p>
           </div>
           <!-- group -->
 
           <div class="d-flex flex-column align-items-center">
             <div class="d-flex justify-content-between mt-3 align-self-stretch">
-              <button class="btn btn-outline btn-block mb-1">
+              <button
+                class="btn {{
+                  isDisabled ? 'btn-secondary' : 'btn-warning'
+                }} btn-block mb-1"
+                type="button"
+                (click)="resendOTP()"
+                [disabled]="isDisabled"
+              >
                 Resend Code
               </button>
               <button
                 [disabled]="otp.invalid"
                 type="submit"
                 class="btn btn-primary btn-block mb-1"
-                (click)="submitCode()"
               >
                 Submit Code
               </button>
@@ -89,3 +115,4 @@
     </div>
   </div>
 </div>
+<app-loader *ngIf="showLoader"></app-loader>

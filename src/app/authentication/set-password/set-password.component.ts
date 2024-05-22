@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { UserSyncService } from '../../services/user-sync.service';
+import { firstValueFrom } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-set-password',
@@ -24,20 +27,24 @@ export class SetPasswordComponent {
   public hasMinLength = false;
 
   constructor(
-    // private authService: AuthService,
+    private userSyncService: UserSyncService,
+    private messageService: MessageService,
     private router: Router // private _matSnackBar: MatSnackBar
   ) {}
   ngOnInit(): void {
+    this.checktoken();
+  }
+
+  checktoken() {
     try {
-      const token = localStorage.getItem('token');
-      if (token) {
-        this.router.navigate(['/user']);
+      const token = localStorage.getItem('employeeToken');
+      if (!token) {
+        this.router.navigate(['/auth']);
       }
     } catch (err) {
       console.log(err);
     }
   }
-
   showPasswordRules() {
     this.isPasswordFocused = true;
     this.isInputFocusedOrTyped = true;
@@ -58,10 +65,40 @@ export class SetPasswordComponent {
   }
 
   onSubmit = async () => {
-    // console.log(this.loginForm)
     this.showLoader = true;
     if (!this.newPassword || !this.confirmPassword) {
+      this.showLoader = false;
       return;
+    }
+    if (this.newPassword !== this.confirmPassword) {
+      this.showLoader = false;
+      return;
+    }
+    if (this.newPassword.length < 8) {
+      this.showLoader = false;
+      return;
+    }
+    try {
+      const res = await this.userSyncService.setNewPassword({
+        password: this.newPassword,
+      });
+      if (res) {
+        this.showLoader = false;
+        localStorage.clear();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Successful',
+          detail: 'Password Changed Successfully. Redirecting...',
+          life: 3000,
+        });
+        setTimeout(
+          () => this.router.navigate(['/auth'], { replaceUrl: true }),
+          3000
+        );
+      }
+    } catch (err: any) {
+      console.log(err);
+      this.showLoader = false;
     }
   };
 
