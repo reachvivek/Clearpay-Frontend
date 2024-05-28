@@ -97,7 +97,7 @@
       'text-overflow': 'ellipsis'
     }"
     styleClass="p-datatable-sm"
-    [globalFilterFields]="['billId', 'details']"
+    [globalFilterFields]="['bankName', 'invoiceNo']"
     [tableStyle]="{ 'min-width': '50rem' }"
     [rowHover]="true"
     dataKey="id"
@@ -241,7 +241,7 @@
         label="Cancel"
         icon="pi pi-times"
         class="p-button-text"
-        (click)="hideDialog()"
+        (click)="toggleSubmissionDateDialog()"
       ></button>
       <button
         pButton
@@ -301,7 +301,7 @@
         label="Cancel"
         icon="pi pi-times"
         class="p-button-text"
-        (click)="hideDialog()"
+        (click)="toggleUploadAcknowledgementDialog()"
       ></button>
       <button
         pButton

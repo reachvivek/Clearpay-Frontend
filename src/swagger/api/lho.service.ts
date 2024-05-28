@@ -20,6 +20,7 @@ import { Observable }                                        from 'rxjs';
 import { Lho } from '../model/lho';
 import { LhoToAddDto } from '../model/lhoToAddDto';
 import { LhoToGetDto } from '../model/lhoToGetDto';
+import { State } from '../model/state';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -147,49 +148,6 @@ export class LhoService {
     /**
      * 
      * 
-     * @param LhoID 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public lhoGetLhoLhoIDGet(LhoID: number, observe?: 'body', reportProgress?: boolean): Observable<Lho>;
-    public lhoGetLhoLhoIDGet(LhoID: number, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Lho>>;
-    public lhoGetLhoLhoIDGet(LhoID: number, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Lho>>;
-    public lhoGetLhoLhoIDGet(LhoID: number, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
-
-        if (LhoID === null || LhoID === undefined) {
-            throw new Error('Required parameter LhoID was null or undefined when calling lhoGetLhoLhoIDGet.');
-        }
-
-        let headers = this.defaultHeaders;
-
-        // to determine the Accept header
-        let httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        if (httpHeaderAcceptSelected != undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
-
-        return this.httpClient.request<Lho>('get',`${this.basePath}/Lho/GetLho/${encodeURIComponent(String(LhoID))}`,
-            {
-                withCredentials: this.configuration.withCredentials,
-                headers: headers,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * 
-     * 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -216,6 +174,44 @@ export class LhoService {
         ];
 
         return this.httpClient.request<Array<LhoToGetDto>>('get',`${this.basePath}/Lho/GetLhos`,
+            {
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * 
+     * 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public lhoGetStatesGet(observe?: 'body', reportProgress?: boolean): Observable<Array<State>>;
+    public lhoGetStatesGet(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<State>>>;
+    public lhoGetStatesGet(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<State>>>;
+    public lhoGetStatesGet(observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+
+        let headers = this.defaultHeaders;
+
+        // to determine the Accept header
+        let httpHeaderAccepts: string[] = [
+            'text/plain',
+            'application/json',
+            'text/json'
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected != undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+        ];
+
+        return this.httpClient.request<Array<State>>('get',`${this.basePath}/Lho/GetStates`,
             {
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,

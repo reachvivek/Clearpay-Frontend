@@ -14,6 +14,6 @@ export interface LhoToGetDto {
     lhoID?: number;
     lhoName?: string;
     state?: string;
-    userID?: number;
+    userIds?: string;
     empName?: string;
 }

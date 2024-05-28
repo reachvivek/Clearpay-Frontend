@@ -10,13 +10,13 @@
     >
       <div class="icon-link">
         <a routerLink="../dashboard">
-          <i class="bx bx-grid-alt"></i>
-          <span class="link_name">Dashboard</span>
+          <i class="bx bx-money-withdraw"></i>
+          <span class="link_name">Bills Management</span>
         </a>
       </div>
       <ul class="sub-menu blank">
         <li>
-          <a class="link_name" href="#">Dashboard</a>
+          <a class="link_name" href="#">Bills Management</a>
         </li>
       </ul>
       <!-- Sidebar Item -->
@@ -122,7 +122,7 @@
       <i class="bx bx-menu" (click)="toggleSidebar()"></i>
       <span class="fs-4 display-5 ms-1">{{ routeTitle }}</span>
     </div>
-    <span>Admin</span>
+    <span *ngIf="isAdminUser">Admin</span>
   </div>
   <router-outlet></router-outlet>
 </section>

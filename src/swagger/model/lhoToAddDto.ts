@@ -13,5 +13,5 @@
 export interface LhoToAddDto { 
     lhoName?: string;
     state?: string;
-    userID?: number;
+    userIds?: string;
 }

@@ -8,7 +8,6 @@ import { AuthService } from './api/auth.service';
 import { DatabaseManagementService } from './api/databaseManagement.service';
 import { InvoiceService } from './api/invoice.service';
 import { LhoService } from './api/lho.service';
-import { StateService } from './api/state.service';
 
 @NgModule({
   imports:      [],
@@ -19,8 +18,7 @@ import { StateService } from './api/state.service';
     AuthService,
     DatabaseManagementService,
     InvoiceService,
-    LhoService,
-    StateService ]
+    LhoService ]
 })
 export class ApiModule {
     public static forRoot(configurationFactory: () => Configuration): ModuleWithProviders<ApiModule> {

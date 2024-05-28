@@ -147,7 +147,8 @@
           </div>
         </div>
       </div>
-      <p-stepper orientation="vertical" [linear]="false">
+
+      <p-stepper orientation="vertical" [linear]="true">
         <p-stepperPanel header="Invoice Details">
           <ng-template
             pTemplate="content"
@@ -181,6 +182,7 @@
                         class="form-control"
                         [(ngModel)]="cnDetails.cnAmount"
                         (ngModelChange)="updateTotal(1)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         placeholder="₹"
                       />
@@ -194,6 +196,7 @@
                         class="form-control"
                         [(ngModel)]="cnDetails.cnCGST"
                         (ngModelChange)="updateTotal(1)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         placeholder="₹"
                       />
@@ -207,6 +210,7 @@
                         class="form-control"
                         [(ngModel)]="cnDetails.cnSGST"
                         (ngModelChange)="updateTotal(1)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         placeholder="₹"
                       />
@@ -220,6 +224,7 @@
                         class="form-control"
                         [(ngModel)]="cnDetails.cnIGST"
                         (ngModelChange)="updateTotal(1)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         placeholder="₹"
                       />
@@ -234,6 +239,7 @@
                         [(ngModel)]="cnDetails.cnUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(1)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -267,6 +273,7 @@
                         [(ngModel)]="dnDetails.dnAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(2)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -280,6 +287,7 @@
                         [(ngModel)]="dnDetails.dnCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(2)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -293,6 +301,7 @@
                         [(ngModel)]="dnDetails.dnSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(2)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -306,6 +315,7 @@
                         [(ngModel)]="dnDetails.dnIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(2)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -319,6 +329,7 @@
                         [(ngModel)]="dnDetails.dnUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(2)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -352,6 +363,7 @@
                         [(ngModel)]="withoutCNDetails.wcnAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -365,6 +377,7 @@
                         [(ngModel)]="withoutCNDetails.wcnCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -378,6 +391,7 @@
                         [(ngModel)]="withoutCNDetails.wcnSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -391,6 +405,7 @@
                         [(ngModel)]="withoutCNDetails.wcnIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -404,6 +419,7 @@
                         [(ngModel)]="withoutCNDetails.wcnUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -435,6 +451,7 @@
                         [(ngModel)]="tdsDetails.tdsAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(4)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -448,6 +465,7 @@
                         [(ngModel)]="tdsDetails.tdsCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(4)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -461,6 +479,7 @@
                         [(ngModel)]="tdsDetails.tdsSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(4)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -474,6 +493,7 @@
                         [(ngModel)]="tdsDetails.tdsIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(4)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -487,6 +507,7 @@
                         [(ngModel)]="tdsDetails.tdsUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(4)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -518,6 +539,7 @@
                         [(ngModel)]="gstTDSDetails.gstTDSAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(5)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -531,6 +553,7 @@
                         [(ngModel)]="gstTDSDetails.gstTDSCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(5)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -544,6 +567,7 @@
                         [(ngModel)]="gstTDSDetails.gstTDSSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(5)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -557,6 +581,7 @@
                         [(ngModel)]="gstTDSDetails.gstTDSIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(5)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -570,6 +595,7 @@
                         [(ngModel)]="gstTDSDetails.gstTDSUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateTotal(5)"
+                        (ngModelChange)="checkInvoiceTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -589,7 +615,7 @@
                     </td>
                   </tr>
 
-                  <tr>
+                  <!-- <tr>
                     <td class="text-secondary text-nowrap p-2">
                       Remaining / Difference
                     </td>
@@ -672,7 +698,7 @@
                         disabled
                       />
                     </td>
-                  </tr>
+                  </tr> -->
                 </tbody>
               </table>
             </section>
@@ -683,6 +709,7 @@
                 *ngIf="paymentDetails_Server?.isProcessed == 0"
                 (onClick)="nextCallback.emit()"
                 (onClick)="saveInvoiceDetails()"
+                [disabled]="this.invoiceTotal !== this.difference"
                 iconPos="right"
               />
               <p-button
@@ -693,6 +720,7 @@
               /></div
           ></ng-template>
         </p-stepperPanel>
+
         <p-stepperPanel header="Categorical Details">
           <ng-template
             pTemplate="content"
@@ -732,6 +760,7 @@
                         [(ngModel)]="fosDetails.fosAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -745,6 +774,7 @@
                         [(ngModel)]="fosDetails.fosCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -758,6 +788,7 @@
                         [(ngModel)]="fosDetails.fosSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -771,6 +802,7 @@
                         [(ngModel)]="fosDetails.fosIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -784,6 +816,7 @@
                         [(ngModel)]="fosDetails.fosUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -797,6 +830,7 @@
                         [(ngModel)]="fosDetails.fosCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -810,6 +844,7 @@
                         [(ngModel)]="fosDetails.fosWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -823,6 +858,7 @@
                         [(ngModel)]="fosDetails.fosDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -836,6 +872,7 @@
                         [(ngModel)]="fosDetails.fosWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -863,6 +900,7 @@
                         [(ngModel)]="downtimeDetails.downtimeAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -876,6 +914,7 @@
                         [(ngModel)]="downtimeDetails.downtimeCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -889,6 +928,7 @@
                         [(ngModel)]="downtimeDetails.downtimeSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -902,6 +942,7 @@
                         [(ngModel)]="downtimeDetails.downtimeIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -915,6 +956,7 @@
                         [(ngModel)]="downtimeDetails.downtimeUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -928,6 +970,7 @@
                         [(ngModel)]="downtimeDetails.downtimeCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -941,6 +984,7 @@
                         [(ngModel)]="downtimeDetails.downtimeWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -954,6 +998,7 @@
                         [(ngModel)]="downtimeDetails.downtimeDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -967,6 +1012,7 @@
                         [(ngModel)]="downtimeDetails.downtimeWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -996,6 +1042,7 @@
                         [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1009,6 +1056,7 @@
                         [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1022,6 +1070,7 @@
                         [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltySGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1035,6 +1084,7 @@
                         [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1047,6 +1097,7 @@
                         class="form-control"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyUGST"
                         placeholder="₹"
                       />
@@ -1061,6 +1112,7 @@
                         [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1074,6 +1126,7 @@
                         [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1087,6 +1140,7 @@
                         [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1100,6 +1154,7 @@
                         [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1129,6 +1184,7 @@
                         [(ngModel)]="housekeepingDetails.housekeepingAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1142,6 +1198,7 @@
                         [(ngModel)]="housekeepingDetails.housekeepingCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1155,6 +1212,7 @@
                         [(ngModel)]="housekeepingDetails.housekeepingSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1168,6 +1226,7 @@
                         [(ngModel)]="housekeepingDetails.housekeepingIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1181,6 +1240,7 @@
                         [(ngModel)]="housekeepingDetails.housekeepingUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1194,6 +1254,7 @@
                         [(ngModel)]="housekeepingDetails.housekeepingCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1207,6 +1268,7 @@
                         [(ngModel)]="housekeepingDetails.housekeepingWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1220,6 +1282,7 @@
                         [(ngModel)]="housekeepingDetails.housekeepingDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1233,6 +1296,7 @@
                         [(ngModel)]="housekeepingDetails.housekeepingWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1261,6 +1325,7 @@
                         [(ngModel)]="rejectbinDetails.rejectbinAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1274,6 +1339,7 @@
                         [(ngModel)]="rejectbinDetails.rejectbinCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1287,6 +1353,7 @@
                         [(ngModel)]="rejectbinDetails.rejectbinSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1300,6 +1367,7 @@
                         [(ngModel)]="rejectbinDetails.rejectbinIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1313,6 +1381,7 @@
                         [(ngModel)]="rejectbinDetails.rejectbinUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1326,6 +1395,7 @@
                         [(ngModel)]="rejectbinDetails.rejectbinCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1339,6 +1409,7 @@
                         [(ngModel)]="rejectbinDetails.rejectbinWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1352,6 +1423,7 @@
                         [(ngModel)]="rejectbinDetails.rejectbinDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1365,6 +1437,7 @@
                         [(ngModel)]="rejectbinDetails.rejectbinWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1393,6 +1466,7 @@
                         [(ngModel)]="consumableDetails.consumableAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1406,6 +1480,7 @@
                         [(ngModel)]="consumableDetails.consumableCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1419,6 +1494,7 @@
                         [(ngModel)]="consumableDetails.consumableSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1432,6 +1508,7 @@
                         [(ngModel)]="consumableDetails.consumableIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1445,6 +1522,7 @@
                         [(ngModel)]="consumableDetails.consumableUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1458,6 +1536,7 @@
                         [(ngModel)]="consumableDetails.consumableCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1471,6 +1550,7 @@
                         [(ngModel)]="consumableDetails.consumableWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1484,6 +1564,7 @@
                         [(ngModel)]="consumableDetails.consumableDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1497,6 +1578,7 @@
                         [(ngModel)]="consumableDetails.consumableWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1524,6 +1606,7 @@
                         [(ngModel)]="dosDetails.dosAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1537,6 +1620,7 @@
                         [(ngModel)]="dosDetails.dosCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1550,6 +1634,7 @@
                         [(ngModel)]="dosDetails.dosSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1563,6 +1648,7 @@
                         [(ngModel)]="dosDetails.dosIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1576,6 +1662,7 @@
                         [(ngModel)]="dosDetails.dosUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1589,6 +1676,7 @@
                         [(ngModel)]="dosDetails.dosCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1602,6 +1690,7 @@
                         [(ngModel)]="dosDetails.dosWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1615,6 +1704,7 @@
                         [(ngModel)]="dosDetails.dosDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1628,6 +1718,7 @@
                         [(ngModel)]="dosDetails.dosWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1657,6 +1748,7 @@
                         [(ngModel)]="excessbillingDetails.excessbillingAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1670,6 +1762,7 @@
                         [(ngModel)]="excessbillingDetails.excessbillingCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1683,6 +1776,7 @@
                         [(ngModel)]="excessbillingDetails.excessbillingSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1695,6 +1789,7 @@
                         class="form-control"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         [(ngModel)]="excessbillingDetails.excessbillingIGST"
                         placeholder="₹"
                       />
@@ -1709,6 +1804,7 @@
                         [(ngModel)]="excessbillingDetails.excessbillingUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1722,6 +1818,7 @@
                         [(ngModel)]="excessbillingDetails.excessbillingCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1735,6 +1832,7 @@
                         [(ngModel)]="excessbillingDetails.excessbillingWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1748,6 +1846,7 @@
                         [(ngModel)]="excessbillingDetails.excessbillingDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1761,6 +1860,7 @@
                         [(ngModel)]="excessbillingDetails.excessbillingWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1793,6 +1893,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1808,6 +1909,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1823,6 +1925,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1835,6 +1938,7 @@
                         class="form-control"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         [(ngModel)]="
                           incentiveamountwithoutdnDetails.incentiveamountwithoutdnIGST
                         "
@@ -1850,6 +1954,7 @@
                         class="form-control"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         [(ngModel)]="
                           incentiveamountwithoutdnDetails.incentiveamountwithoutdnUGST
                         "
@@ -1868,6 +1973,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1883,6 +1989,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1898,6 +2005,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1913,6 +2021,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1942,6 +2051,7 @@
                         [(ngModel)]="reconpenaltyDetails.reconpenaltyAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1955,6 +2065,7 @@
                         [(ngModel)]="reconpenaltyDetails.reconpenaltyCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1968,6 +2079,7 @@
                         [(ngModel)]="reconpenaltyDetails.reconpenaltySGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1981,6 +2093,7 @@
                         [(ngModel)]="reconpenaltyDetails.reconpenaltyIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -1994,6 +2107,7 @@
                         [(ngModel)]="reconpenaltyDetails.reconpenaltyUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2007,6 +2121,7 @@
                         [(ngModel)]="reconpenaltyDetails.reconpenaltyCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2020,6 +2135,7 @@
                         [(ngModel)]="reconpenaltyDetails.reconpenaltyWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2033,6 +2149,7 @@
                         [(ngModel)]="reconpenaltyDetails.reconpenaltyDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2046,6 +2163,7 @@
                         [(ngModel)]="reconpenaltyDetails.reconpenaltyWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2073,6 +2191,7 @@
                         [(ngModel)]="ejdeductionDetails.ejdeductionAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2087,6 +2206,7 @@
                         placeholder="₹"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                       />
                     </td>
                     <td>
@@ -2099,6 +2219,7 @@
                         [(ngModel)]="ejdeductionDetails.ejdeductionSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2112,6 +2233,7 @@
                         [(ngModel)]="ejdeductionDetails.ejdeductionIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2125,6 +2247,7 @@
                         [(ngModel)]="ejdeductionDetails.ejdeductionUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2138,6 +2261,7 @@
                         [(ngModel)]="ejdeductionDetails.ejdeductionCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2151,6 +2275,7 @@
                         [(ngModel)]="ejdeductionDetails.ejdeductionWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2164,6 +2289,7 @@
                         [(ngModel)]="ejdeductionDetails.ejdeductionDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2177,6 +2303,7 @@
                         [(ngModel)]="ejdeductionDetails.ejdeductionWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2204,6 +2331,7 @@
                         [(ngModel)]="essfootagesDetails.essfootagesAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2217,6 +2345,7 @@
                         [(ngModel)]="essfootagesDetails.essfootagesCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2230,6 +2359,7 @@
                         [(ngModel)]="essfootagesDetails.essfootagesSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2243,6 +2373,7 @@
                         [(ngModel)]="essfootagesDetails.essfootagesIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2256,6 +2387,7 @@
                         [(ngModel)]="essfootagesDetails.essfootagesUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2269,6 +2401,7 @@
                         [(ngModel)]="essfootagesDetails.essfootagesCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2282,6 +2415,7 @@
                         [(ngModel)]="essfootagesDetails.essfootagesWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2295,6 +2429,7 @@
                         [(ngModel)]="essfootagesDetails.essfootagesDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2308,6 +2443,7 @@
                         [(ngModel)]="essfootagesDetails.essfootagesWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2337,6 +2473,7 @@
                         [(ngModel)]="esurdowntimeDetails.esurdowntimeAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2350,6 +2487,7 @@
                         [(ngModel)]="esurdowntimeDetails.esurdowntimeCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2362,6 +2500,7 @@
                         class="form-control"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         [(ngModel)]="esurdowntimeDetails.esurdowntimeSGST"
                         placeholder="₹"
                       />
@@ -2376,6 +2515,7 @@
                         [(ngModel)]="esurdowntimeDetails.esurdowntimeIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2389,6 +2529,7 @@
                         [(ngModel)]="esurdowntimeDetails.esurdowntimeUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2402,6 +2543,7 @@
                         [(ngModel)]="esurdowntimeDetails.esurdowntimeCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2415,6 +2557,7 @@
                         [(ngModel)]="esurdowntimeDetails.esurdowntimeWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2428,6 +2571,7 @@
                         [(ngModel)]="esurdowntimeDetails.esurdowntimeDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2441,6 +2585,7 @@
                         [(ngModel)]="esurdowntimeDetails.esurdowntimeWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2472,6 +2617,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2487,6 +2633,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2502,6 +2649,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2517,6 +2665,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2532,6 +2681,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2545,6 +2695,7 @@
                         [(ngModel)]="esurnotinstalledDetails.esurnotinstalledCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2560,6 +2711,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2573,6 +2725,7 @@
                         [(ngModel)]="esurnotinstalledDetails.esurnotinstalledDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2588,6 +2741,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2619,6 +2773,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2634,6 +2789,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2649,6 +2805,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2664,6 +2821,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2679,6 +2837,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2694,6 +2853,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2709,6 +2869,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2724,6 +2885,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2739,6 +2901,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2768,6 +2931,7 @@
                         [(ngModel)]="robberyDetails.robberyAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2781,6 +2945,7 @@
                         [(ngModel)]="robberyDetails.robberyCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2794,6 +2959,7 @@
                         [(ngModel)]="robberyDetails.robberySGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2807,6 +2973,7 @@
                         [(ngModel)]="robberyDetails.robberyIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2820,6 +2987,7 @@
                         [(ngModel)]="robberyDetails.robberyUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2833,6 +3001,7 @@
                         [(ngModel)]="robberyDetails.robberyCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2846,6 +3015,7 @@
                         [(ngModel)]="robberyDetails.robberyWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2859,6 +3029,7 @@
                         [(ngModel)]="robberyDetails.robberyDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2872,6 +3043,7 @@
                         [(ngModel)]="robberyDetails.robberyWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2903,6 +3075,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2918,6 +3091,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2933,6 +3107,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2948,6 +3123,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(4)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2963,6 +3139,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2978,6 +3155,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -2993,6 +3171,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -3008,6 +3187,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -3023,6 +3203,7 @@
                         "
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
+                        (ngModelChange)="checkCategoricalTotal()"
                         placeholder="₹"
                       />
                     </td>
@@ -3184,6 +3365,7 @@
                 severity="primary"
                 (onClick)="saveCategoricalDetails()"
                 (onClick)="nextCallback.emit()"
+                [disabled]="difference !== 0"
               />
               <p-button
                 *ngIf="paymentDetails_Server?.isProcessed == 1"
@@ -3226,6 +3408,7 @@
                 label="Submit"
                 class="ms-1"
                 (onClick)="submitPaymentDetails()"
+                [disabled]="difference !== 0"
               ></p-button></div
           ></ng-template>
         </p-stepperPanel>

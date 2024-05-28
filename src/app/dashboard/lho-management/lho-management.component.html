@@ -67,7 +67,7 @@
       <tr>
         <td>{{ lho.lhoName }}</td>
         <td>{{ lho.state }}</td>
-        <td>{{ lho.empName || "NA" }}</td>
+        <td>{{ lho.empNames || "NA" }}</td>
         <td>
           <div class="row d-flex justify-content-start">
             <div class="col-md-4">
@@ -116,6 +116,7 @@
           id="name"
           (input)="this.isEditMode ? checkChanges() : null"
           name="lhoName"
+          (change)="this.newLho.lhoName = this.newLho.lhoName?.toUpperCase()"
           autocomplete="off"
           class="form-control {{
             lhoName.invalid && (lhoName.dirty || lhoName.touched)
@@ -134,7 +135,7 @@
       </div>
 
       <div class="field">
-        <label for="description" class="row form-label">State</label>
+        <label for="lhoState" class="row form-label">State</label>
         <p-multiSelect
           #lhoState
           name="lhoState"
@@ -172,8 +173,20 @@
       </p>
 
       <div class="field mt-3">
-        <label for="description" class="row form-label">LHO User</label>
-        <select
+        <label for="lhoUser" class="row form-label">LHO User</label>
+        <p-multiSelect
+          #lhoUser
+          name="lhoUser"
+          [options]="users"
+          optionLabel="empName"
+          [(ngModel)]="selectedUsers"
+          (onChange)="showSelectedUsers()"
+          placeholder="Select Users"
+          [filter]="true"
+          appendTo="body"
+          required
+        ></p-multiSelect>
+        <!-- <select
           #lhoUser="ngModel"
           (input)="this.isEditMode ? checkChanges() : null"
           name="lhoUser"
@@ -192,8 +205,11 @@
           <option *ngFor="let user of users" [value]="user.userId">
             {{ user.empName }}
           </option>
-        </select>
+        </select> -->
       </div>
+      <p *ngIf="!selectedUsers.length" class="form-text text-danger d-inline">
+        Users is a required field
+      </p>
     </ng-template>
 
     <ng-template pTemplate="footer">

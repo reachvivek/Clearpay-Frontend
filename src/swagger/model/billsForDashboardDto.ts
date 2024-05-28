@@ -21,4 +21,5 @@ export interface BillsForDashboardDto {
     serviceType?: string;
     invoiceYear?: number;
     invoiceMonth?: string;
+    dateOfSubmission?: string;
 }

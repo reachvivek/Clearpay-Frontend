@@ -102,7 +102,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { StyleClassModule } from 'primeng/styleclass';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BASE_PATH } from '../swagger';
-import { environment } from '../environments/dev/environment';
+import { environment } from '../environments/prod/environment';
 
 @NgModule({
   declarations: [AppComponent],

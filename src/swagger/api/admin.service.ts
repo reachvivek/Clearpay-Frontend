@@ -197,49 +197,6 @@ export class AdminService {
     /**
      * 
      * 
-     * @param userId 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public adminGetUserUserIdGet(userId: number, observe?: 'body', reportProgress?: boolean): Observable<User>;
-    public adminGetUserUserIdGet(userId: number, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<User>>;
-    public adminGetUserUserIdGet(userId: number, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<User>>;
-    public adminGetUserUserIdGet(userId: number, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
-
-        if (userId === null || userId === undefined) {
-            throw new Error('Required parameter userId was null or undefined when calling adminGetUserUserIdGet.');
-        }
-
-        let headers = this.defaultHeaders;
-
-        // to determine the Accept header
-        let httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        if (httpHeaderAcceptSelected != undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
-
-        return this.httpClient.request<User>('get',`${this.basePath}/Admin/GetUser/${encodeURIComponent(String(userId))}`,
-            {
-                withCredentials: this.configuration.withCredentials,
-                headers: headers,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * 
-     * 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */

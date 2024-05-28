@@ -30,6 +30,8 @@ export class AddPaymentDetailsComponent {
   gstTDSDetails: any = {};
   remainingDetails: any = {};
 
+  invoiceTotal: number = 0;
+
   // Categorical Details
   fosDetails: any = {};
   downtimeDetails: any = {};
@@ -48,6 +50,8 @@ export class AddPaymentDetailsComponent {
   craservicesissuesDetails: any = {};
   robberyDetails: any = {};
   cashmisappropriationDetails: any = {};
+
+  categoricalTotal: number = 0;
 
   totalDetails: any = {};
 
@@ -71,7 +75,10 @@ export class AddPaymentDetailsComponent {
   async ngOnInit() {
     await this.loadBillDetails();
     if (this.paymentDetails_Server?.isProcessed == 0) {
-      this.loadFromLocalStorage();
+      await this.loadFromLocalStorage();
+      this.updateDifference(1);
+      this.checkInvoiceTotal();
+      this.checkCategoricalTotal();
     }
   }
 
@@ -147,7 +154,7 @@ export class AddPaymentDetailsComponent {
     localStorage.setItem(this.billId, JSON.stringify(this.paymentDetails));
   }
 
-  loadFromLocalStorage() {
+  async loadFromLocalStorage() {
     try {
       const savedHistory: InvoiceDetailsDto | undefined = JSON.parse(
         localStorage.getItem(this.billId)!
@@ -315,12 +322,8 @@ export class AddPaymentDetailsComponent {
   async loadBillDetails() {
     this.showLoader = true;
     try {
-      const invoice = {
-        billId: parseInt(this.billId),
-      };
-      console.log(invoice);
       const res = await firstValueFrom(
-        this.invoiceService.invoiceGetInvoiceDetailsPost(invoice)
+        this.invoiceService.invoiceGetInvoiceDetailsBillIdGet(this.billId)
       );
       if (res) {
         this.paymentDetails_Server = res;
@@ -531,6 +534,29 @@ export class AddPaymentDetailsComponent {
         return;
         break;
     }
+  }
+
+  checkInvoiceTotal(): void {
+    this.invoiceTotal =
+      (this.cnDetails.cnTotal || 0) +
+      (this.dnDetails.dnTotal || 0) +
+      (this.withoutCNDetails.wcnTotal || 0) +
+      (this.tdsDetails.tdsTotal || 0) +
+      (this.gstTDSDetails.gstTDSTotal || 0);
+  }
+
+  checkCategoricalTotal(): void {
+    this.categoricalTotal =
+      (this.totalDetails.totalAmount || 0) +
+      (this.totalDetails.totalCGST || 0) +
+      (this.totalDetails.totalSGST || 0) +
+      (this.totalDetails.totalIGST || 0) +
+      (this.totalDetails.totalUGST || 0) +
+      (this.totalDetails.totalCN || 0) +
+      (this.totalDetails.totalWCN || 0) +
+      (this.totalDetails.totalDN || 0) +
+      (this.totalDetails.totalWDN || 0);
+    this.difference = this.invoiceTotal - this.categoricalTotal;
   }
 
   updateCategoricalTotal(ind: number) {

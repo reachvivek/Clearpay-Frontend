@@ -6,7 +6,6 @@ import {
   Configuration,
   InvoiceService,
   LhoService,
-  StateService,
 } from '../../swagger';
 import { Router } from '@angular/router';
 import { HttpHeaders } from '@angular/common/http';
@@ -23,7 +22,6 @@ export class UserSyncService {
     private authService: AuthService,
     private adminService: AdminService,
     private lhoService: LhoService,
-    private stateService: StateService,
     private invoiceService: InvoiceService
   ) {}
 
@@ -176,7 +174,6 @@ export class UserSyncService {
 
     this.authService.defaultHeaders = headers;
     this.adminService.defaultHeaders = headers;
-    this.stateService.defaultHeaders = headers;
     this.lhoService.defaultHeaders = headers;
     this.invoiceService.defaultHeaders = headers;
   }

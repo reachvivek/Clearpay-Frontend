@@ -119,9 +119,9 @@ export class UserManagementComponent {
     return true;
   }
 
-  async deleteUser(user: AdminToEditDto) {
+  async suspendUser(user: AdminToEditDto) {
     this.confirmationService.confirm({
-      message: 'Are you sure you want to remove ' + user.empName + '?',
+      message: 'Are you sure you want to suspend ' + user.empName + '?',
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       accept: async () => {
@@ -134,7 +134,39 @@ export class UserManagementComponent {
           this.messageService.add({
             severity: 'success',
             summary: 'Successful',
-            detail: 'User Deleted Successfully!',
+            detail: 'User Suspended Successfully!',
+            life: 3000,
+          });
+          this.loadUsers();
+        } catch (err: any) {
+          this.showLoader = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.toString(),
+            life: 3000,
+          });
+        }
+      },
+    });
+  }
+
+  async activateUser(user: AdminToEditDto) {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to activate ' + user.empName + '?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: async () => {
+        try {
+          this.showLoader = true;
+          await firstValueFrom(
+            this.adminService.adminDeleteUserUserIdDelete(user.userId!)
+          );
+          this.showLoader = false;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Successful',
+            detail: 'User Activated Successfully!',
             life: 3000,
           });
           this.loadUsers();

@@ -8,6 +8,4 @@ export * from './invoice.service';
 import { InvoiceService } from './invoice.service';
 export * from './lho.service';
 import { LhoService } from './lho.service';
-export * from './state.service';
-import { StateService } from './state.service';
-export const APIS = [AdminService, AuthService, DatabaseManagementService, InvoiceService, LhoService, StateService];
+export const APIS = [AdminService, AuthService, DatabaseManagementService, InvoiceService, LhoService];

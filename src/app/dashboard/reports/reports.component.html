@@ -2,11 +2,20 @@
   <p-table
     #dt
     [value]="reports"
+    [columns]="cols"
+    [exportFilename]="exportFileName"
     [rows]="5"
     [rowsPerPageOptions]="[5, 10, 25]"
     [paginator]="true"
     styleClass="p-datatable-sm"
-    [globalFilterFields]="['lhoName', 'location', 'state']"
+    [globalFilterFields]="[
+      'customer',
+      'invoiceNo',
+      'serviceMonth',
+      'project',
+      'financialYear',
+      'bankName'
+    ]"
     [tableStyle]="{ 'min-width': '50rem', 'white-space': 'nowrap' }"
     [rowHover]="true"
     dataKey="id"
@@ -16,24 +25,33 @@
     <ng-template pTemplate="caption">
       <div class="d-flex align-items-center justify-content-between">
         <h5 class="m-0">Invoice Reports</h5>
-        <div>
-          <span class="p-input-icon-left m-1">
-            <i class="pi pi-search"></i>
-            <input
-              #searchInput
-              pInputText
-              type="text"
-              (input)="dt.filterGlobal(searchInput.value, 'contains')"
-              placeholder="Search..."
-            />
-          </span>
+        <div class="d-flex flex-row">
+          <p-button
+            *ngIf="reports.length"
+            icon="pi pi-file-excel"
+            label="Download Reports"
+            (click)="dt.exportCSV()"
+            class="p-2"
+          />
+          <div>
+            <span class="p-input-icon-left m-1">
+              <i class="pi pi-search"></i>
+              <input
+                #searchInput
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal(searchInput.value, 'contains')"
+                placeholder="Search..."
+              />
+            </span>
+          </div>
         </div>
       </div>
     </ng-template>
     <ng-template pTemplate="header">
       <tr>
         <th pSortableColumn="date">
-          Date<p-sortIcon field="date"></p-sortIcon>
+          Date of Submission<p-sortIcon field="date"></p-sortIcon>
         </th>
         <th pSortableColumn="invoiceNo">
           Invoice No <p-sortIcon field="invoiceNo"></p-sortIcon>
@@ -116,9 +134,119 @@
     </ng-template>
     <ng-template pTemplate="body" let-bill>
       <tr>
-        <td>{{ bill.dateOfSubmission }}</td>
-        <td>{{ bill.state }}</td>
-        <td>{{ bill.empName || "NA" }}</td>
+        <td>{{ bill.dateOfSubmission | date }}</td>
+        <td>{{ bill.invoiceNo }}</td>
+        <td>{{ bill.bankName }}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+          {{ bill.cnTotal || 0 | currency : "INR" : "symbol-narrow" : "0.2-2" }}
+        </td>
+        <td>
+          {{ bill.dnTotal || 0 | currency : "INR" : "symbol-narrow" : "0.2-2" }}
+        </td>
+        <td>
+          {{
+            bill.fosTotal || 0 | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.downtimeTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.cashoutpenaltyTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.housekeepingTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.rejectbinTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.consumableTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.dosTotal || 0 | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.excessbillingTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.incentiveamountwithoutdnTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.reconpenaltyTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.ejdeductionTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.essfootagesTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.esurdowntimeTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.esurnotinstalledTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.craservicesTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.robberyTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+        <td>
+          {{
+            bill.cashmisappropriationTotal || 0
+              | currency : "INR" : "symbol-narrow" : "0.2-2"
+          }}
+        </td>
+
         <td>
           <div class="row d-flex justify-content-start"></div>
         </td>

@@ -99,18 +99,27 @@
                 pButton
                 pRipple
                 [rounded]="true"
-                icon="pi pi-pencil"
+                icon="pi pi-user-edit"
                 class="p-button-rounded p-button-success rounded-circle m-0"
                 (click)="editUser(user)"
               ></button>
             </div>
             <div class="col-md-4">
               <button
+                *ngIf="user.active == 1"
+                pButton
+                pRipple
+                class="p-button-rounded p-button-danger rounded-circle m-0"
+                icon="pi pi-ban"
+                (click)="suspendUser(user)"
+              ></button>
+              <button
+                *ngIf="user.active == 0"
                 pButton
                 pRipple
                 class="p-button-rounded p-button-warning rounded-circle m-0"
-                icon="pi pi-trash"
-                (click)="deleteUser(user)"
+                icon="pi pi-undo"
+                (click)="activateUser(user)"
               ></button>
             </div>
           </div>

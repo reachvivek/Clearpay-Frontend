@@ -101,7 +101,7 @@ export class DashboardComponent {
     }
   }
 
-  toggleUploadAcknowledgementDialog(id: number) {
+  toggleUploadAcknowledgementDialog(id: number | null = null) {
     this.selectedBill.billId = id;
     this.showUploadAcknowledgementDialog =
       !this.showUploadAcknowledgementDialog;

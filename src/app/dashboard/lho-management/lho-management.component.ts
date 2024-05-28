@@ -1,13 +1,6 @@
 import { Component } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import {
-  AdminService,
-  Lho,
-  LhoService,
-  State,
-  StateService,
-  User,
-} from '../../../swagger';
+import { AdminService, Lho, LhoService, State, User } from '../../../swagger';
 import { UserSyncService } from '../../services/user-sync.service';
 import { firstValueFrom } from 'rxjs';
 
@@ -18,22 +11,39 @@ import { firstValueFrom } from 'rxjs';
 })
 export class LhoManagementComponent {
   showLoader: boolean = false;
-  users: User[] = [];
+  users: User[] | any[] = [];
   lhoDialog: boolean = false;
   lhos!: Lho[] | any;
   lho!: Lho;
   selectedLhos!: Lho[] | null;
   newLho: Lho = {};
-  selectedLho!: Lho;
+  selectedLho!: any;
   isEditMode: boolean = false;
   submitted: boolean = false;
   statuses!: any[];
   states: State[] = [];
   selectedStates: any = [];
+  selectedUsers: any[] = [];
   roles: [{ id: 2; name: 'LHO User' }, { id: 3; name: 'Finance User' }] = [
     { id: 2, name: 'LHO User' },
     { id: 3, name: 'Finance User' },
   ];
+  userMap = new Map<number, string>();
+
+  constructor(
+    private userSyncService: UserSyncService,
+    private lhoService: LhoService,
+    private adminService: AdminService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
+  ) {}
+
+  async ngOnInit() {
+    await this.userSyncService.loadState();
+    await this.loadUsers();
+    await this.loadLhos();
+    await this.loadStates();
+  }
 
   showSelected() {
     let stateNames = '';
@@ -44,26 +54,20 @@ export class LhoManagementComponent {
     this.newLho.state = stateNames;
   }
 
-  constructor(
-    private userSyncService: UserSyncService,
-    private lhoService: LhoService,
-    private stateService: StateService,
-    private adminService: AdminService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService
-  ) {}
-
-  async ngOnInit() {
-    await this.userSyncService.loadState();
-    await this.loadLhos();
-    await this.loadStates();
-    await this.loadUsers();
+  showSelectedUsers() {
+    console.log(this.selectedUsers);
+    const userIds: any = [];
+    this.selectedUsers.map((entry: any) => {
+      userIds.push(entry.userId);
+    });
+    this.newLho.userIds = JSON.stringify(userIds);
+    console.log(this.newLho.userIds);
   }
 
   async loadStates() {
     try {
       this.showLoader = true;
-      const res = await firstValueFrom(this.stateService.stateGetStatesGet());
+      const res = await firstValueFrom(this.lhoService.lhoGetStatesGet());
       if (res && res.length) {
         this.states = [...res];
       }
@@ -104,6 +108,23 @@ export class LhoManagementComponent {
       const res = await firstValueFrom(this.lhoService.lhoGetLhosGet());
       if (res && res.length) {
         this.lhos = [...res];
+
+        // Create a map for quick lookup of userId to empName
+
+        this.users.forEach((user: User) => {
+          this.userMap.set(user.userId!, user.empName!);
+        });
+
+        // Iterate over lhos and map userIds to empNames
+        this.lhos.forEach((entry: any) => {
+          entry.userIds = JSON.parse(entry.userIds);
+          entry.empNames = entry.userIds
+            .map((userId: number) => this.userMap.get(userId))
+            .filter((empName: string | undefined) => empName !== undefined);
+
+          // Join the empNames with comma if there are multiple names
+          entry.empNames = entry.empNames.join(', ');
+        });
       }
       this.showLoader = false;
     } catch (err: any) {
@@ -119,29 +140,10 @@ export class LhoManagementComponent {
   openNew() {
     this.newLho = {};
     this.selectedStates = [];
+    this.selectedUsers = [];
     this.isEditMode = false;
     this.submitted = false;
     this.lhoDialog = true;
-  }
-
-  deleteSelectedLhos() {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete the selected users?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.lhos = this.lhos.filter(
-          (val: any) => !this.selectedLhos?.includes(val)
-        );
-        this.selectedLhos = null;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Lhos Deleted',
-          life: 3000,
-        });
-      },
-    });
   }
 
   editLho(lho: Lho) {
@@ -154,13 +156,22 @@ export class LhoManagementComponent {
     statesArray?.forEach((item: any) => {
       this.selectedStates.push({ state_Name: item });
     });
+    this.selectedUsers = [];
+    const userIds = this.selectedLho.userIds;
+    if (typeof userIds === 'string') {
+      this.selectedLho.userIds = JSON.parse(userIds);
+    }
+
+    this.selectedUsers = this.users.filter((user) =>
+      this.selectedLho.userIds.includes(user.userId)
+    );
   }
 
   checkChanges() {
     if (
       this.selectedLho.lhoName !== this.newLho.lhoName ||
       this.selectedLho.state !== this.newLho.state ||
-      this.selectedLho.userID !== this.newLho.userID
+      this.selectedLho.userIds?.length !== this.newLho.userIds?.length
     ) {
       return false;
     }
