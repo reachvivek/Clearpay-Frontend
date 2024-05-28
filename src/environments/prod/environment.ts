@@ -1,3 +1,3 @@
 export const environment = {
-  BASE_PATH: 'http://localhost:3200',
+  BASE_PATH: 'https://msuatsrv.cms.com:8001',
 };
