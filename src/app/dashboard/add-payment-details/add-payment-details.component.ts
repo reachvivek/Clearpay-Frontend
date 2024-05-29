@@ -460,9 +460,10 @@ export class AddPaymentDetailsComponent {
     switch (ind) {
       case 1:
         {
-          this.difference =
+          this.difference = (
             (this.paymentDetails_Server!.invoiceAmountWithGST || 0) -
-            (this.paymentDetails!.invoiceAmountPaid || 0);
+            (this.paymentDetails!.invoiceAmountPaid || 0)
+          ).toFixed(2);
         }
         break;
     }
@@ -543,6 +544,7 @@ export class AddPaymentDetailsComponent {
       (this.withoutCNDetails.wcnTotal || 0) +
       (this.tdsDetails.tdsTotal || 0) +
       (this.gstTDSDetails.gstTDSTotal || 0);
+    console.log('Difference: ', this.difference, 'Total: ', this.invoiceTotal);
   }
 
   checkCategoricalTotal(): void {

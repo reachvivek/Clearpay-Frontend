@@ -709,7 +709,7 @@
                 *ngIf="paymentDetails_Server?.isProcessed == 0"
                 (onClick)="nextCallback.emit()"
                 (onClick)="saveInvoiceDetails()"
-                [disabled]="this.invoiceTotal !== this.difference"
+                [disabled]="this.invoiceTotal != this.difference"
                 iconPos="right"
               />
               <p-button
