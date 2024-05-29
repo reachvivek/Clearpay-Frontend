@@ -62,7 +62,7 @@ export class AddPaymentDetailsComponent {
   dateFormat: string = 'dd/mm/yy';
 
   minDate: Date | undefined;
-  maxDate: Date | undefined;
+  maxDate: Date | undefined = new Date();
 
   constructor(
     private invoiceService: InvoiceService,
@@ -99,7 +99,7 @@ export class AddPaymentDetailsComponent {
     );
 
     if (savedHistory) {
-      savedHistory = { ...this.paymentDetails, ...savedHistory };
+      savedHistory = { ...savedHistory, ...this.paymentDetails };
     } else {
       savedHistory = { ...this.paymentDetails };
     }

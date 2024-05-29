@@ -41,13 +41,23 @@
       <div class="col-sm-6 col-md-3 col-lg-2">
         <div class="form-group">
           <label for="BankFilter" class="form-label">Bank</label>
-          <select class="form-select"></select>
+          <select class="form-select">
+            <option value="" selected>All</option>
+            <option *ngFor="let bank of banks" [value]="bank">
+              {{ bank }}
+            </option>
+          </select>
         </div>
       </div>
       <div class="col-sm-6 col-md-3 col-lg-2">
         <div class="form-group">
           <label for="InvoiceYearFilter" class="form-label">Invoice Year</label>
-          <select class="form-select"></select>
+          <select class="form-select">
+            <option value="" selected>All</option>
+            <option *ngFor="let year of invoiceYears" [value]="year">
+              {{ year }}
+            </option>
+          </select>
         </div>
       </div>
       <div class="col-sm-6 col-md-3 col-lg-2">
@@ -55,19 +65,32 @@
           <label for="InvoiceMonthFilter" class="form-label"
             >Invoice Month</label
           >
-          <select class="form-select"></select>
+          <select class="form-select">
+            <option value="" selected>All</option>
+            <option *ngFor="let month of invoiceMonths" [value]="month">
+              {{ month }}
+            </option>
+          </select>
         </div>
       </div>
       <div class="col-sm-6 col-md-3 col-lg-2">
         <div class="form-group">
           <label for="StateFilter" class="form-label">State</label>
-          <select class="form-select"></select>
+          <select class="form-select">
+            <option value="" selected>All</option>
+            <option *ngFor="let state of states" [value]="state.code">
+              {{ state.name }}
+            </option>
+          </select>
         </div>
       </div>
       <div class="col-sm-6 col-md-3 col-lg-2">
         <div class="form-group">
           <label for="LhoFilter" class="form-label">LHO</label>
-          <select class="form-select"></select>
+          <select class="form-select">
+            <option value="" selected>All</option>
+            <option *ngFor="let lho of lhos" [value]="lho">{{ lho }}</option>
+          </select>
         </div>
       </div>
       <div class="col-sm-6 col-md-3 col-lg-2">
@@ -75,7 +98,15 @@
           <label for="TypeOfServiceFilter" class="form-label"
             >Type of Service</label
           >
-          <select class="form-select"></select>
+          <select class="form-select">
+            <option value="" selected>All</option>
+            <option
+              *ngFor="let servicetype of servicetypes"
+              [value]="servicetype"
+            >
+              {{ servicetype }}
+            </option>
+          </select>
         </div>
       </div>
     </div>
@@ -155,7 +186,7 @@
         </td>
         <td>{{ bill.bankName }}</td>
         <td>
-          <a href="">
+          <a aria-disabled>
             <i class="pi pi-paperclip"></i>
           </a>
         </td>

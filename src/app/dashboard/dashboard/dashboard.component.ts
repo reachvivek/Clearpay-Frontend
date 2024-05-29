@@ -23,9 +23,55 @@ export class DashboardComponent {
     submissionDate: undefined,
   };
   dateFormat: string = 'dd/mm/yy';
+  banks: string[] = [];
+  invoiceYears: number[] = [];
+  invoiceMonths: string[] = [];
+  states: { code: string; name: string }[] = [];
+  stateNames: { [code: string]: string } = {
+    AD: 'Andhra Pradesh',
+    AN: 'Andaman Nicobar',
+    AR: 'Arunachal Pradesh',
+    AS: 'Assam',
+    BH: 'Bihar',
+    CH: 'Chandigarh',
+    CT: 'Chattisgarh',
+    DD: 'Daman & Diu',
+    DL: 'Delhi',
+    DN: 'Dadra and Nagar Haveli',
+    GA: 'Goa',
+    GJ: 'Gujarat',
+    HP: 'Himachal Pradesh',
+    HR: 'Haryana',
+    JH: 'Jharkhand',
+    JK: 'Jammu & Kashmir',
+    KA: 'Karnataka',
+    KL: 'Kerala',
+    LA: 'LADAKH',
+    LD: 'Lakshadweep',
+    ME: 'Meghalaya',
+    MH: 'Maharashtra',
+    MI: 'Mizoram',
+    MN: 'Manipur',
+    MP: 'Madhya Pradesh',
+    NL: 'Nagaland',
+    OR: 'Orissa',
+    PB: 'Punjab',
+    PY: 'Pondicherry',
+    RJ: 'Rajasthan',
+    SK: 'Sikkim',
+    SZ: 'Maharashtra-SZ',
+    TN: 'Tamil Nadu',
+    TR: 'Tripura',
+    TS: 'Telangana',
+    UP: 'Uttar Pradesh',
+    UT: 'Uttarakhand',
+    WB: 'West Bengal',
+  };
+  lhos: string[] = [];
+  servicetypes: string[] = [];
 
   minDate: Date | undefined;
-  maxDate: Date | undefined;
+  maxDate: Date | undefined = new Date();
   items: any[] = [
     { label: 'Total', index: 1 },
     { label: 'Pending', index: 2 },
@@ -57,6 +103,30 @@ export class DashboardComponent {
     this.userSyncService.loadState();
     await this.loadBills();
     this.loadBillsCategorically(1);
+    this.loadFilters();
+  }
+
+  async loadFilters() {
+    this.showLoader = true;
+    try {
+      const res = await firstValueFrom(
+        this.invoiceService.invoiceLoadFiltersGet()
+      );
+      this.banks = res['Banks']?.split(',');
+      this.invoiceYears = res['InvoiceYears']?.split(',');
+      this.invoiceMonths = res['InvoiceMonths']?.split(',');
+      const stateCodes = res['States'] ? res['States'].split(',') : [];
+      this.states = stateCodes.map((code: any) => ({
+        code,
+        name: this.stateNames[code] || code,
+      }));
+      this.lhos = res['LhoNames']?.split(',');
+      this.servicetypes = res['ServiceTypes']?.split(',');
+      this.showLoader = false;
+    } catch (err: any) {
+      console.log(err);
+      this.showLoader = false;
+    }
   }
 
   async loadBills() {

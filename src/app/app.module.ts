@@ -102,7 +102,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { StyleClassModule } from 'primeng/styleclass';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BASE_PATH } from '../swagger';
-import { environment } from '../environments/prod/environment';
+import { environment as dev } from '../environments/dev/environment';
+import { environment as prod } from '../environments/prod/environment';
 
 @NgModule({
   declarations: [AppComponent],
@@ -211,7 +212,7 @@ import { environment } from '../environments/prod/environment';
   providers: [
     MessageService,
     ConfirmationService,
-    { provide: BASE_PATH, useValue: environment.BASE_PATH },
+    { provide: BASE_PATH, useValue: dev.BASE_PATH },
   ],
   bootstrap: [AppComponent],
 })

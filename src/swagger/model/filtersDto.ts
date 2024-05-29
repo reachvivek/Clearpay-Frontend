@@ -10,9 +10,11 @@
  * Do not edit the class manually.
  */
 
-export interface LhoToGetDto { 
-    lhoID?: number;
-    lhoName?: string;
-    state?: string;
-    userIds?: string;
+export interface FiltersDto { 
+    banks?: Array<string>;
+    invoiceMonths?: Array<string>;
+    invoiceYears?: Array<number>;
+    states?: Array<string>;
+    lhoNames?: Array<string>;
+    serviceTypes?: Array<string>;
 }
