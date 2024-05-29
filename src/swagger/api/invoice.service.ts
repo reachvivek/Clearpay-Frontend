@@ -17,8 +17,8 @@ import { CustomHttpUrlEncodingCodec }                        from '../encoder';
 
 import { Observable }                                        from 'rxjs';
 
-import { BillsForDashboardDto } from '../model/billsForDashboardDto';
 import { BillsForReportDto } from '../model/billsForReportDto';
+import { DashboardBillsResponseDto } from '../model/dashboardBillsResponseDto';
 import { InvoiceDateOfSubmissionDto } from '../model/invoiceDateOfSubmissionDto';
 import { InvoiceDetailsDto } from '../model/invoiceDetailsDto';
 import { InvoiceDetailsToUpdateDto } from '../model/invoiceDetailsToUpdateDto';
@@ -64,13 +64,45 @@ export class InvoiceService {
     /**
      * 
      * 
+     * @param bank 
+     * @param invoiceYear 
+     * @param invoiceMonth 
+     * @param state 
+     * @param lho 
+     * @param serviceType 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public invoiceGetAllBillsGet(observe?: 'body', reportProgress?: boolean): Observable<Array<BillsForDashboardDto>>;
-    public invoiceGetAllBillsGet(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<BillsForDashboardDto>>>;
-    public invoiceGetAllBillsGet(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<BillsForDashboardDto>>>;
-    public invoiceGetAllBillsGet(observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, observe?: 'body', reportProgress?: boolean): Observable<DashboardBillsResponseDto>;
+    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<DashboardBillsResponseDto>>;
+    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<DashboardBillsResponseDto>>;
+    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+
+
+
+
+
+
+
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (bank !== undefined && bank !== null) {
+            queryParameters = queryParameters.set('bank', <any>bank);
+        }
+        if (invoiceYear !== undefined && invoiceYear !== null) {
+            queryParameters = queryParameters.set('invoiceYear', <any>invoiceYear);
+        }
+        if (invoiceMonth !== undefined && invoiceMonth !== null) {
+            queryParameters = queryParameters.set('invoiceMonth', <any>invoiceMonth);
+        }
+        if (state !== undefined && state !== null) {
+            queryParameters = queryParameters.set('state', <any>state);
+        }
+        if (lho !== undefined && lho !== null) {
+            queryParameters = queryParameters.set('lho', <any>lho);
+        }
+        if (serviceType !== undefined && serviceType !== null) {
+            queryParameters = queryParameters.set('serviceType', <any>serviceType);
+        }
 
         let headers = this.defaultHeaders;
 
@@ -89,8 +121,9 @@ export class InvoiceService {
         const consumes: string[] = [
         ];
 
-        return this.httpClient.request<Array<BillsForDashboardDto>>('get',`${this.basePath}/Invoice/GetAllBills`,
+        return this.httpClient.request<DashboardBillsResponseDto>('get',`${this.basePath}/Invoice/GetBills`,
             {
+                params: queryParameters,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -133,82 +166,6 @@ export class InvoiceService {
         ];
 
         return this.httpClient.request<InvoiceDetailsDto>('get',`${this.basePath}/Invoice/GetInvoiceDetails/${encodeURIComponent(String(billId))}`,
-            {
-                withCredentials: this.configuration.withCredentials,
-                headers: headers,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * 
-     * 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public invoiceGetPendingBillsGet(observe?: 'body', reportProgress?: boolean): Observable<Array<BillsForDashboardDto>>;
-    public invoiceGetPendingBillsGet(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<BillsForDashboardDto>>>;
-    public invoiceGetPendingBillsGet(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<BillsForDashboardDto>>>;
-    public invoiceGetPendingBillsGet(observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
-
-        let headers = this.defaultHeaders;
-
-        // to determine the Accept header
-        let httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        if (httpHeaderAcceptSelected != undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
-
-        return this.httpClient.request<Array<BillsForDashboardDto>>('get',`${this.basePath}/Invoice/GetPendingBills`,
-            {
-                withCredentials: this.configuration.withCredentials,
-                headers: headers,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * 
-     * 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public invoiceGetProcessedBillsGet(observe?: 'body', reportProgress?: boolean): Observable<Array<BillsForDashboardDto>>;
-    public invoiceGetProcessedBillsGet(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<BillsForDashboardDto>>>;
-    public invoiceGetProcessedBillsGet(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<BillsForDashboardDto>>>;
-    public invoiceGetProcessedBillsGet(observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
-
-        let headers = this.defaultHeaders;
-
-        // to determine the Accept header
-        let httpHeaderAccepts: string[] = [
-            'text/plain',
-            'application/json',
-            'text/json'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        if (httpHeaderAcceptSelected != undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
-
-        return this.httpClient.request<Array<BillsForDashboardDto>>('get',`${this.basePath}/Invoice/GetProcessedBills`,
             {
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,

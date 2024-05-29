@@ -2,6 +2,7 @@ export * from './adminToAddDto';
 export * from './adminToEditDto';
 export * from './billsForDashboardDto';
 export * from './billsForReportDto';
+export * from './dashboardBillsResponseDto';
 export * from './forgotPasswordDto';
 export * from './forgotPasswordOtpDto';
 export * from './invoiceDateOfSubmissionDto';

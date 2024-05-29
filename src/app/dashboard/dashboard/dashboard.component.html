@@ -8,7 +8,7 @@
             class="nav-link cursor {{ active_index == 1 ? 'active' : '' }}"
             (click)="loadBillsCategorically(1)"
           >
-            Total ({{ allBills.length }})
+            Total ({{ totalBillsCount }})
           </button>
         </li>
         <li class="nav-item">
@@ -16,7 +16,7 @@
             class="nav-link  {{ active_index == 2 ? 'active' : '' }}"
             (click)="loadBillsCategorically(2)"
           >
-            Pending ({{ pendingBills.length }})
+            Pending ({{ pendingBillsCount }})
           </button>
         </li>
         <li class="nav-item">
@@ -24,7 +24,7 @@
             class="nav-link  {{ active_index == 3 ? 'active' : '' }}"
             (click)="loadBillsCategorically(3)"
           >
-            Processed ({{ processedBills.length }})
+            Processed ({{ processedBillsCount }})
           </button>
         </li>
       </ul>
@@ -41,7 +41,11 @@
       <div class="col-sm-6 col-md-3 col-lg-2">
         <div class="form-group">
           <label for="BankFilter" class="form-label">Bank</label>
-          <select class="form-select">
+          <select
+            class="form-select"
+            [(ngModel)]="filters.bank"
+            (ngModelChange)="applyFilters()"
+          >
             <option value="" selected>All</option>
             <option *ngFor="let bank of banks" [value]="bank">
               {{ bank }}
@@ -52,7 +56,11 @@
       <div class="col-sm-6 col-md-3 col-lg-2">
         <div class="form-group">
           <label for="InvoiceYearFilter" class="form-label">Invoice Year</label>
-          <select class="form-select">
+          <select
+            class="form-select"
+            [(ngModel)]="filters.invoiceYear"
+            (ngModelChange)="applyFilters()"
+          >
             <option value="" selected>All</option>
             <option *ngFor="let year of invoiceYears" [value]="year">
               {{ year }}
@@ -65,7 +73,11 @@
           <label for="InvoiceMonthFilter" class="form-label"
             >Invoice Month</label
           >
-          <select class="form-select">
+          <select
+            class="form-select"
+            [(ngModel)]="filters.invoiceMonth"
+            (ngModelChange)="applyFilters()"
+          >
             <option value="" selected>All</option>
             <option *ngFor="let month of invoiceMonths" [value]="month">
               {{ month }}
@@ -76,7 +88,11 @@
       <div class="col-sm-6 col-md-3 col-lg-2">
         <div class="form-group">
           <label for="StateFilter" class="form-label">State</label>
-          <select class="form-select">
+          <select
+            class="form-select"
+            [(ngModel)]="filters.state"
+            (ngModelChange)="applyFilters()"
+          >
             <option value="" selected>All</option>
             <option *ngFor="let state of states" [value]="state.code">
               {{ state.name }}
@@ -87,7 +103,11 @@
       <div class="col-sm-6 col-md-3 col-lg-2">
         <div class="form-group">
           <label for="LhoFilter" class="form-label">LHO</label>
-          <select class="form-select">
+          <select
+            class="form-select"
+            [(ngModel)]="filters.lho"
+            (ngModelChange)="applyFilters()"
+          >
             <option value="" selected>All</option>
             <option *ngFor="let lho of lhos" [value]="lho">{{ lho }}</option>
           </select>
@@ -98,7 +118,11 @@
           <label for="TypeOfServiceFilter" class="form-label"
             >Type of Service</label
           >
-          <select class="form-select">
+          <select
+            class="form-select"
+            [(ngModel)]="filters.serviceType"
+            (ngModelChange)="applyFilters()"
+          >
             <option value="" selected>All</option>
             <option
               *ngFor="let servicetype of servicetypes"

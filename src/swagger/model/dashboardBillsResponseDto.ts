@@ -9,8 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { BillsForDashboardDto } from './billsForDashboardDto';
 
-export interface OtpDto { 
-    email?: string;
-    password?: string;
+export interface DashboardBillsResponseDto { 
+    totalBills?: number;
+    processedBills?: number;
+    pendingBills?: number;
+    bills?: Array<BillsForDashboardDto>;
 }

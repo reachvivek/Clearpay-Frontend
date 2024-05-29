@@ -70,6 +70,22 @@ export class DashboardComponent {
   lhos: string[] = [];
   servicetypes: string[] = [];
 
+  filters: {
+    bank: string;
+    invoiceYear: string;
+    invoiceMonth: string;
+    state: string;
+    lho: string;
+    serviceType: string;
+  } = {
+    bank: '',
+    invoiceYear: '',
+    invoiceMonth: '',
+    state: '',
+    lho: '',
+    serviceType: '',
+  };
+
   minDate: Date | undefined;
   maxDate: Date | undefined = new Date();
   items: any[] = [
@@ -88,6 +104,10 @@ export class DashboardComponent {
   processedBills: any = [];
 
   allBills: any = [];
+
+  totalBillsCount: number = 0;
+  pendingBillsCount: number = 0;
+  processedBillsCount: number = 0;
 
   bill!: any;
 
@@ -112,16 +132,16 @@ export class DashboardComponent {
       const res = await firstValueFrom(
         this.invoiceService.invoiceLoadFiltersGet()
       );
-      this.banks = res['Banks']?.split(',');
-      this.invoiceYears = res['InvoiceYears']?.split(',');
-      this.invoiceMonths = res['InvoiceMonths']?.split(',');
-      const stateCodes = res['States'] ? res['States'].split(',') : [];
+      this.banks = res['banks']?.split(',');
+      this.invoiceYears = res['invoiceYears']?.split(',');
+      this.invoiceMonths = res['invoiceMonths']?.split(',');
+      const stateCodes = res['states'] ? res['states'].split(',') : [];
       this.states = stateCodes.map((code: any) => ({
         code,
         name: this.stateNames[code] || code,
       }));
-      this.lhos = res['LhoNames']?.split(',');
-      this.servicetypes = res['ServiceTypes']?.split(',');
+      this.lhos = res['lhoNames']?.split(',');
+      this.servicetypes = res['serviceTypes']?.split(',');
       this.showLoader = false;
     } catch (err: any) {
       console.log(err);
@@ -129,32 +149,46 @@ export class DashboardComponent {
     }
   }
 
-  async loadBills() {
+  async applyFilters() {
+    await this.loadBills(this.filters);
+    await this.loadBillsCategorically(this.active_index);
+  }
+
+  async loadBills(
+    filters: {
+      bank: string;
+      invoiceYear: string;
+      invoiceMonth: string;
+      state: string;
+      lho: string;
+      serviceType: string;
+    } | null = null
+  ) {
     this.showLoader = true;
     try {
       const allBills = await firstValueFrom(
-        this.invoiceService.invoiceGetAllBillsGet()
+        this.invoiceService.invoiceGetBillsGet(
+          filters?.bank,
+          filters?.invoiceYear,
+          filters?.invoiceMonth,
+          filters?.state,
+          filters?.lho,
+          filters?.serviceType
+        )
       );
 
-      if (allBills && allBills.length) {
-        this.allBills = allBills;
-      }
+      this.allBills = [...allBills.bills!];
+      this.totalBillsCount = allBills.totalBills!;
+      this.pendingBillsCount = allBills.pendingBills!;
+      this.processedBillsCount = allBills.processedBills!;
 
-      const pendingBills = await firstValueFrom(
-        this.invoiceService.invoiceGetPendingBillsGet()
+      this.processedBills = this.allBills.filter(
+        (bill: any) => bill.isProcessed == 1
       );
 
-      if (pendingBills && pendingBills.length) {
-        this.pendingBills = pendingBills;
-      }
-
-      const processedBills = await firstValueFrom(
-        this.invoiceService.invoiceGetProcessedBillsGet()
+      this.pendingBills = this.allBills.filter(
+        (bill: any) => bill.isPending == 1
       );
-
-      if (processedBills && processedBills.length) {
-        this.processedBills = processedBills;
-      }
       this.showLoader = false;
     } catch (err: any) {
       console.error(err);
@@ -182,6 +216,7 @@ export class DashboardComponent {
     switch (ind) {
       case 1:
         this.bills = [...this.allBills];
+        console.log(this.bills);
         break;
       case 2:
         this.bills = [...this.pendingBills];
