@@ -212,7 +212,7 @@ import { environment as prod } from '../environments/prod/environment';
   providers: [
     MessageService,
     ConfirmationService,
-    { provide: BASE_PATH, useValue: dev.BASE_PATH },
+    { provide: BASE_PATH, useValue: prod.BASE_PATH },
   ],
   bootstrap: [AppComponent],
 })
