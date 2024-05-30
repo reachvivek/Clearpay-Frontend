@@ -264,6 +264,7 @@
     [style]="{ width: '450px' }"
     header="Date of Submission"
     [modal]="true"
+    (onHide)="editBill.submissionDate = undefined"
     styleClass="p-fluid"
   >
     <ng-template pTemplate="content">

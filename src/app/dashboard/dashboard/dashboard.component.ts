@@ -203,6 +203,9 @@ export class DashboardComponent {
     } else {
       this.selectedBill.billId = null;
     }
+    if (this.showSubmissionDateDialog == false) {
+      this.editBill.submissionDate = undefined;
+    }
   }
 
   toggleUploadAcknowledgementDialog(id: number | null = null) {
