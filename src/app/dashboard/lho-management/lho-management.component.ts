@@ -86,7 +86,7 @@ export class LhoManagementComponent {
   async loadUsers() {
     try {
       this.showLoader = true;
-      const res = await firstValueFrom(this.adminService.adminGetUsersGet());
+      const res = await firstValueFrom(this.adminService.adminGetLhoUsersGet());
       if (res && res.length) {
         this.users = [...res];
       }

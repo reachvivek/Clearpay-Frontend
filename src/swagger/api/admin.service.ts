@@ -200,6 +200,44 @@ export class AdminService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
+    public adminGetLhoUsersGet(observe?: 'body', reportProgress?: boolean): Observable<Array<User>>;
+    public adminGetLhoUsersGet(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<User>>>;
+    public adminGetLhoUsersGet(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<User>>>;
+    public adminGetLhoUsersGet(observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+
+        let headers = this.defaultHeaders;
+
+        // to determine the Accept header
+        let httpHeaderAccepts: string[] = [
+            'text/plain',
+            'application/json',
+            'text/json'
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected != undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+        ];
+
+        return this.httpClient.request<Array<User>>('get',`${this.basePath}/Admin/GetLhoUsers`,
+            {
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * 
+     * 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
     public adminGetUsersGet(observe?: 'body', reportProgress?: boolean): Observable<Array<User>>;
     public adminGetUsersGet(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<User>>>;
     public adminGetUsersGet(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<User>>>;
