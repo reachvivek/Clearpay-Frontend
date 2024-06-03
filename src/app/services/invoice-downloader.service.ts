@@ -2,27 +2,19 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/prod/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class InvoiceDownloaderService {
-  private baseUrl = 'http://127.0.0.1:5000/get_invoice_pdf';
-  // 'https://slmuat.cms.com:8085/UATMB/cms/MovePartRequest/PostedInvoiceReportPdfBase64';
-
   constructor(private http: HttpClient) {}
 
   getInvoicePdf(invoiceNo: string): Observable<any> {
-    const url = `${this.baseUrl}?InvoiceNo=${encodeURIComponent(invoiceNo)}`;
-    const username = 'WINSPIREADMIN';
-    const password = 'winspire@123';
-    const authHeader = 'Basic ' + btoa(username + ':' + password);
-
-    const headers = new HttpHeaders({
-      Authorization: authHeader,
-    });
-
-    return this.http.get(url, { headers: headers }).pipe(
+    const url = `${
+      environment.BASE_PATH
+    }/Invoice/GetInvoicePdf?invoiceNo=${encodeURIComponent(invoiceNo)}`;
+    return this.http.get(url).pipe(
       map((response: any) => {
         if (response && response.Success === 'True' && response.Base64) {
           return this.base64ToBlob(response.Base64, 'application/pdf');
