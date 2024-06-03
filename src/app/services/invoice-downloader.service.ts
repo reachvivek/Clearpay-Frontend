@@ -16,8 +16,8 @@ export class InvoiceDownloaderService {
     }/Invoice/GetInvoicePdf?invoiceNo=${encodeURIComponent(invoiceNo)}`;
     return this.http.get(url).pipe(
       map((response: any) => {
-        if (response && response.Success === 'True' && response.Base64) {
-          return this.base64ToBlob(response.Base64, 'application/pdf');
+        if (response && response.success === 'True' && response.base64) {
+          return this.base64ToBlob(response.base64, 'application/pdf');
         }
         throw new Error('Failed to fetch the PDF');
       })
