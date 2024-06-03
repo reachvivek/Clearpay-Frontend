@@ -137,11 +137,13 @@
                 [(ngModel)]="dates.invoiceAmountPaidDate"
                 [iconDisplay]="'input'"
                 [showIcon]="true"
-                class="d-flex"
+                class="d-flex {{
+                  isDateNotEntered ? 'ng-invalid ng-dirty' : ''
+                }}"
                 inputId="icondisplay"
                 [dateFormat]="dateFormat"
                 showButtonBar
-                (ngModelChange)="convertToString()"
+                (ngModelChange)="convertToString(); checkFields()"
                 [minDate]="minDate"
                 [maxDate]="maxDate"
                 [disabled]="paymentDetails_Server?.isProcessed == 1"
@@ -405,6 +407,121 @@
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">
+                      Incentive Without DN
+                    </td>
+                    <td>
+                      <input
+                        #withoutDNAmount
+                        type="number"
+                        id="withoutDNAmount"
+                        name="withoutDNAmount"
+                        class="form-control"
+                        [(ngModel)]="withoutDNDetails.wdnAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="
+                          checkInvoiceTotal(); saveInvoiceDetails()
+                        "
+                        onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
+                        onpaste="return false"
+                        min="0"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #withoutDNCGST
+                        type="number"
+                        id="withoutDNCGST"
+                        name="withoutDNCGST"
+                        class="form-control"
+                        [(ngModel)]="withoutDNDetails.wdnCGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="
+                          checkInvoiceTotal(); saveInvoiceDetails()
+                        "
+                        onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
+                        onpaste="return false"
+                        min="0"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #withoutDNSGST
+                        type="number"
+                        id="withoutDNSGST"
+                        name="withoutDNSGST"
+                        class="form-control"
+                        [(ngModel)]="withoutDNDetails.wdnSGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="
+                          checkInvoiceTotal(); saveInvoiceDetails()
+                        "
+                        onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
+                        onpaste="return false"
+                        min="0"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #withoutDNIGST
+                        type="number"
+                        id="withoutDNIGST"
+                        name="withoutDNIGST"
+                        class="form-control"
+                        [(ngModel)]="withoutDNDetails.wdnIGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="
+                          checkInvoiceTotal(); saveInvoiceDetails()
+                        "
+                        onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
+                        onpaste="return false"
+                        min="0"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #withoutDNUGST
+                        type="number"
+                        id="withoutDNUGST"
+                        name="withoutDNUGST"
+                        class="form-control"
+                        [(ngModel)]="withoutDNDetails.wdnUGST"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="
+                          checkInvoiceTotal(); saveInvoiceDetails()
+                        "
+                        onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
+                        onpaste="return false"
+                        min="0"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        #withoutDNTotal
+                        type="number"
+                        id="withoutDNTotal"
+                        name="withoutDNTotal"
+                        class="form-control"
+                        [placeholder]="
+                          withoutDNDetails.wdnTotal || 0
+                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                        "
+                        disabled
+                      />
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="text-secondary text-nowrap p-2">
                       Without CN Amount
                     </td>
                     <td>
@@ -416,7 +533,7 @@
                         class="form-control"
                         [(ngModel)]="withoutCNDetails.wcnAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="updateTotal(4)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -435,7 +552,7 @@
                         class="form-control"
                         [(ngModel)]="withoutCNDetails.wcnCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="updateTotal(4)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -454,7 +571,7 @@
                         class="form-control"
                         [(ngModel)]="withoutCNDetails.wcnSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="updateTotal(4)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -473,7 +590,7 @@
                         class="form-control"
                         [(ngModel)]="withoutCNDetails.wcnIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="updateTotal(4)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -492,7 +609,7 @@
                         class="form-control"
                         [(ngModel)]="withoutCNDetails.wcnUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(3)"
+                        (ngModelChange)="updateTotal(4)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -529,7 +646,7 @@
                         class="form-control"
                         [(ngModel)]="tdsDetails.tdsAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(4)"
+                        (ngModelChange)="updateTotal(5)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -548,7 +665,7 @@
                         class="form-control"
                         [(ngModel)]="tdsDetails.tdsCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(4)"
+                        (ngModelChange)="updateTotal(5)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -567,7 +684,7 @@
                         class="form-control"
                         [(ngModel)]="tdsDetails.tdsSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(4)"
+                        (ngModelChange)="updateTotal(5)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -586,7 +703,7 @@
                         class="form-control"
                         [(ngModel)]="tdsDetails.tdsIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(4)"
+                        (ngModelChange)="updateTotal(5)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -605,7 +722,7 @@
                         class="form-control"
                         [(ngModel)]="tdsDetails.tdsUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(4)"
+                        (ngModelChange)="updateTotal(5)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -642,7 +759,7 @@
                         class="form-control"
                         [(ngModel)]="gstTDSDetails.gstTDSAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(5)"
+                        (ngModelChange)="updateTotal(6)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -661,7 +778,7 @@
                         class="form-control"
                         [(ngModel)]="gstTDSDetails.gstTDSCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(5)"
+                        (ngModelChange)="updateTotal(6)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -680,7 +797,7 @@
                         class="form-control"
                         [(ngModel)]="gstTDSDetails.gstTDSSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(5)"
+                        (ngModelChange)="updateTotal(6)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -699,7 +816,7 @@
                         class="form-control"
                         [(ngModel)]="gstTDSDetails.gstTDSIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(5)"
+                        (ngModelChange)="updateTotal(6)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -718,7 +835,7 @@
                         class="form-control"
                         [(ngModel)]="gstTDSDetails.gstTDSUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(5)"
+                        (ngModelChange)="updateTotal(6)"
                         (ngModelChange)="
                           checkInvoiceTotal(); saveInvoiceDetails()
                         "
@@ -1251,6 +1368,7 @@
                         id="cashoutpenaltyUGST"
                         name="cashoutpenaltyUGST"
                         class="form-control"
+                        [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
                         (ngModelChange)="
@@ -1259,7 +1377,6 @@
                         onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
                         onpaste="return false"
                         min="0"
-                        [(ngModel)]="cashoutpenaltyDetails.cashoutpenaltyUGST"
                         placeholder="₹"
                       />
                     </td>
@@ -2169,6 +2286,7 @@
                         name="excessbillingIGST"
                         class="form-control"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        [(ngModel)]="excessbillingDetails.excessbillingIGST"
                         (ngModelChange)="updateCategoricalTotal(4)"
                         (ngModelChange)="
                           checkCategoricalTotal(); saveCategoricalDetails()
@@ -2176,7 +2294,6 @@
                         onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
                         onpaste="return false"
                         min="0"
-                        [(ngModel)]="excessbillingDetails.excessbillingIGST"
                         placeholder="₹"
                       />
                     </td>
@@ -2289,20 +2406,15 @@
                   </tr>
 
                   <tr>
-                    <td class="text-secondary text-nowrap p-2">
-                      Incentive Amt Without DN
-                    </td>
-
+                    <td class="text-secondary text-nowrap p-2">SLA Penalty</td>
                     <td>
                       <input
-                        #incentiveamountwithoutdnAmount
+                        #slapenaltyAmount
                         type="number"
-                        id="incentiveamountwithoutdnAmount"
-                        name="incentiveamountwithoutdnAmount"
+                        id="slapenaltyAmount"
+                        name="slapenaltyAmount"
                         class="form-control"
-                        [(ngModel)]="
-                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnAmount
-                        "
+                        [(ngModel)]="slapenaltyDetails.slapenaltyAmount"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(1)"
                         (ngModelChange)="
@@ -2316,14 +2428,12 @@
                     </td>
                     <td>
                       <input
-                        #incentiveamountwithoutdnCGST
+                        #slapenaltyCGST
                         type="number"
-                        id="incentiveamountwithoutdnCGST"
-                        name="incentiveamountwithoutdnCGST"
+                        id="slapenaltyCGST"
+                        name="slapenaltyCGST"
                         class="form-control"
-                        [(ngModel)]="
-                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnCGST
-                        "
+                        [(ngModel)]="slapenaltyDetails.slapenaltyCGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(2)"
                         (ngModelChange)="
@@ -2337,14 +2447,12 @@
                     </td>
                     <td>
                       <input
-                        #incentiveamountwithoutdnSGST
+                        #slapenaltySGST
                         type="number"
-                        id="incentiveamountwithoutdnSGST"
-                        name="incentiveamountwithoutdnSGST"
+                        id="slapenaltySGST"
+                        name="slapenaltySGST"
                         class="form-control"
-                        [(ngModel)]="
-                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnSGST
-                        "
+                        [(ngModel)]="slapenaltyDetails.slapenaltySGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
                         (ngModelChange)="
@@ -2358,32 +2466,32 @@
                     </td>
                     <td>
                       <input
-                        #incentiveamountwithoutdnIGST
+                        #slapenaltyIGST
                         type="number"
-                        id="incentiveamountwithoutdnIGST"
-                        name="incentiveamountwithoutdnIGST"
+                        id="slapenaltyIGST"
+                        name="slapenaltyIGST"
                         class="form-control"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateCategoricalTotal(4)"
+                        [(ngModel)]="slapenaltyDetails.slapenaltyIGST"
                         (ngModelChange)="
-                          checkCategoricalTotal(); saveCategoricalDetails()
+                          updateCategoricalTotal(4);
+                          checkCategoricalTotal();
+                          saveCategoricalDetails()
                         "
                         onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
                         onpaste="return false"
                         min="0"
-                        [(ngModel)]="
-                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnIGST
-                        "
                         placeholder="₹"
                       />
                     </td>
                     <td>
                       <input
-                        #incentiveamountwithoutdnUGST
+                        #slapenaltyUGST
                         type="number"
-                        id="incentiveamountwithoutdnUGST"
-                        name="incentiveamountwithoutdnUGST"
+                        id="slapenaltyUGST"
+                        name="slapenaltyUGST"
                         class="form-control"
+                        [(ngModel)]="slapenaltyDetails.slapenaltyUGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(5)"
                         (ngModelChange)="
@@ -2392,22 +2500,17 @@
                         onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
                         onpaste="return false"
                         min="0"
-                        [(ngModel)]="
-                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnUGST
-                        "
                         placeholder="₹"
                       />
                     </td>
                     <td>
                       <input
-                        #incentiveamountwithoutdnCN
+                        #slapenaltyCN
                         type="number"
-                        id="incentiveamountwithoutdnCN"
-                        name="incentiveamountwithoutdnCN"
+                        id="slapenaltyCN"
+                        name="slapenaltyCN"
                         class="form-control"
-                        [(ngModel)]="
-                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnCN
-                        "
+                        [(ngModel)]="slapenaltyDetails.slapenaltyCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(6)"
                         (ngModelChange)="
@@ -2421,14 +2524,12 @@
                     </td>
                     <td>
                       <input
-                        #incentiveamountwithoutdnWCN
+                        #slapenaltyWCN
                         type="number"
-                        id="incentiveamountwithoutdnWCN"
-                        name="incentiveamountwithoutdnWCN"
+                        id="slapenaltyWCN"
+                        name="slapenaltyWCN"
                         class="form-control"
-                        [(ngModel)]="
-                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnWCN
-                        "
+                        [(ngModel)]="slapenaltyDetails.slapenaltyWCN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(7)"
                         (ngModelChange)="
@@ -2442,14 +2543,12 @@
                     </td>
                     <td>
                       <input
-                        #incentiveamountwithoutdnDN
+                        #slapenaltyDN
                         type="number"
-                        id="incentiveamountwithoutdnDN"
-                        name="incentiveamountwithoutdnDN"
+                        id="slapenaltyDN"
+                        name="slapenaltyDN"
                         class="form-control"
-                        [(ngModel)]="
-                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnDN
-                        "
+                        [(ngModel)]="slapenaltyDetails.slapenaltyDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(8)"
                         (ngModelChange)="
@@ -2463,14 +2562,12 @@
                     </td>
                     <td>
                       <input
-                        #incentiveamountwithoutdnWDN
+                        #slapenaltyWDN
                         type="number"
-                        id="incentiveamountwithoutdnWDN"
-                        name="incentiveamountwithoutdnWDN"
+                        id="slapenaltyWDN"
+                        name="slapenaltyWDN"
                         class="form-control"
-                        [(ngModel)]="
-                          incentiveamountwithoutdnDetails.incentiveamountwithoutdnWDN
-                        "
+                        [(ngModel)]="slapenaltyDetails.slapenaltyWDN"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(9)"
                         (ngModelChange)="
@@ -2496,9 +2593,7 @@
                   </tr>
 
                   <tr>
-                    <td class="text-secondary text-nowrap p-2">
-                      Recon Penalty
-                    </td>
+                    <td class="text-secondary text-nowrap p-2">Recon</td>
                     <td>
                       <input
                         #reconpenaltyAmount
@@ -2565,9 +2660,10 @@
                         class="form-control"
                         [(ngModel)]="reconpenaltyDetails.reconpenaltyIGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateCategoricalTotal(4)"
                         (ngModelChange)="
-                          checkCategoricalTotal(); saveCategoricalDetails()
+                          checkCategoricalTotal();
+                          saveCategoricalDetails();
+                          updateCategoricalTotal(4)
                         "
                         onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
                         onpaste="return false"
@@ -3104,6 +3200,7 @@
                         id="esurdowntimeSGST"
                         name="esurdowntimeSGST"
                         class="form-control"
+                        [(ngModel)]="esurdowntimeDetails.esurdowntimeSGST"
                         [disabled]="paymentDetails_Server?.isProcessed == 1"
                         (ngModelChange)="updateCategoricalTotal(3)"
                         (ngModelChange)="
@@ -3112,7 +3209,6 @@
                         onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
                         onpaste="return false"
                         min="0"
-                        [(ngModel)]="esurdowntimeDetails.esurdowntimeSGST"
                         placeholder="₹"
                       />
                     </td>
@@ -4189,7 +4285,7 @@
                 *ngIf="paymentDetails_Server?.isProcessed == 0"
                 label="Save & Continue"
                 severity="primary"
-                (onClick)="saveCategoricalDetails()"
+                (onClick)="saveCategoricalDetails(); checkFields()"
                 (onClick)="nextCallback.emit()"
                 [disabled]="difference !== 0"
               />
@@ -4234,9 +4330,7 @@
                 label="Submit"
                 class="ms-1"
                 (onClick)="submitPaymentDetails()"
-                [disabled]="
-                  difference !== 0 || !paymentDetails!.invoiceAmountPaidDate
-                "
+                [disabled]="difference !== 0 || !dates.invoiceAmountPaidDate"
               ></p-button></div
           ></ng-template>
         </p-stepperPanel>

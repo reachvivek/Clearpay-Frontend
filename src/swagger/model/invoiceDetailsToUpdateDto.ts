@@ -29,7 +29,7 @@ export interface InvoiceDetailsToUpdateDto {
     consumableDetails?: string;
     dosDetails?: string;
     excessBillingDetails?: string;
-    incentiveAmountWithoutDNDetails?: string;
+    slaPenaltyDetails?: string;
     reconPenaltyDetails?: string;
     ejDeductionDetails?: string;
     essFootagesDetails?: string;
@@ -38,4 +38,5 @@ export interface InvoiceDetailsToUpdateDto {
     craServicesDetails?: string;
     robberyDetails?: string;
     cashMisappropriationDetails?: string;
+    withoutDNDetails?: string;
 }

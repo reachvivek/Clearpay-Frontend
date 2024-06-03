@@ -3,6 +3,7 @@ import { InvoiceService } from '../../../swagger';
 import { firstValueFrom } from 'rxjs';
 import { UserSyncService } from '../../services/user-sync.service';
 import { MessageService } from 'primeng/api';
+import { InvoiceDownloaderService } from '../../services/invoice-downloader.service';
 
 interface UploadEvent {
   originalEvent: Event;
@@ -116,7 +117,8 @@ export class DashboardComponent {
   constructor(
     private userSyncService: UserSyncService,
     private invoiceService: InvoiceService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private invoiceDownloaderService: InvoiceDownloaderService
   ) {}
 
   async ngOnInit() {
@@ -219,7 +221,6 @@ export class DashboardComponent {
     switch (ind) {
       case 1:
         this.bills = [...this.allBills];
-        console.log(this.bills);
         break;
       case 2:
         this.bills = [...this.pendingBills];
@@ -281,7 +282,25 @@ export class DashboardComponent {
     this.selectedBill.submissionDate = updatedDate;
     console.log(updatedDate);
   }
-  hideDialog() {}
+
+  async downloadInvoice(invoiceNo: string) {
+    this.showLoader = true;
+    this.invoiceDownloaderService.getInvoicePdf(invoiceNo).subscribe(
+      (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Invoice_${invoiceNo}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.showLoader = false;
+      },
+      (error: any) => {
+        console.error('Error downloading the invoice:', error);
+      }
+    );
+  }
 
   uploadAcknowledgement() {}
 }

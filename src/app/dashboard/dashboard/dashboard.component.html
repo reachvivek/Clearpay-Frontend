@@ -210,9 +210,16 @@
         </td>
         <td>{{ bill.bankName }}</td>
         <td>
-          <a aria-disabled>
-            <i class="pi pi-paperclip"></i>
-          </a>
+          <div class="row d-flex justify-content-center">
+            <button
+              pButton
+              pRipple
+              [rounded]="true"
+              icon="pi pi-file-pdf"
+              class="p-button-rounded p-button-info rounded-circle m-0"
+              (click)="downloadInvoice(bill.invoiceNo)"
+            ></button>
+          </div>
         </td>
         <td>
           {{ bill.dateOfSubmission | date }}

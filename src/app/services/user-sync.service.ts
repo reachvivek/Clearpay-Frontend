@@ -9,6 +9,8 @@ import {
 } from '../../swagger';
 import { Router } from '@angular/router';
 import { HttpHeaders } from '@angular/common/http';
+import * as CryptoJS from 'crypto-js';
+import { environment } from '../../environments/prod/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -81,7 +83,28 @@ export class UserSyncService {
     }
   }
 
+  encryptPassword(password: string): string {
+    const key = CryptoJS.enc.Utf8.parse(environment.KEY);
+    const iv = CryptoJS.lib.WordArray.random(16);
+
+    const encrypted = CryptoJS.AES.encrypt(
+      CryptoJS.enc.Utf8.parse(password),
+      key,
+      {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      }
+    );
+
+    const cipherText = iv
+      .concat(encrypted.ciphertext)
+      .toString(CryptoJS.enc.Base64);
+    return cipherText;
+  }
+
   async sendLoginOTP(credentials: { employeecode: string; password: string }) {
+    credentials.password = this.encryptPassword(credentials.password);
     try {
       const res = await firstValueFrom(
         this.authService.authSendLoginOTPPost(credentials)
@@ -182,7 +205,7 @@ export class UserSyncService {
     sessionStorage.clear();
     sessionStorage.removeItem('token');
     localStorage.removeItem('token');
-    localStorage.clear();
+    // localStorage.clear();
     this.router.navigate(['/auth']);
   }
 }

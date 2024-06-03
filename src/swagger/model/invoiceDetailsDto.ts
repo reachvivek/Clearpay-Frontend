@@ -50,7 +50,7 @@ export interface InvoiceDetailsDto {
     consumableDetails?: string;
     dosDetails?: string;
     excessBillingDetails?: string;
-    incentiveAmountWithoutDNDetails?: string;
+    slaPenaltyDetails?: string;
     reconPenaltyDetails?: string;
     ejDeductionDetails?: string;
     essFootagesDetails?: string;
@@ -59,4 +59,5 @@ export interface InvoiceDetailsDto {
     craServicesDetails?: string;
     robberyDetails?: string;
     cashMisappropriationDetails?: string;
+    withoutDNDetails?: string;
 }

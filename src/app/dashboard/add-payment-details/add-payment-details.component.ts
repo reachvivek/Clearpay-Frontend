@@ -25,6 +25,7 @@ export class AddPaymentDetailsComponent {
   // Invoice Details
   cnDetails: any = {};
   dnDetails: any = {};
+  withoutDNDetails: any = {};
   withoutCNDetails: any = {};
   tdsDetails: any = {};
   gstTDSDetails: any = {};
@@ -41,7 +42,7 @@ export class AddPaymentDetailsComponent {
   consumableDetails: any = {};
   dosDetails: any = {};
   excessbillingDetails: any = {};
-  incentiveamountwithoutdnDetails: any = {};
+  slapenaltyDetails: any = {};
   reconpenaltyDetails: any = {};
   ejdeductionDetails: any = {};
   essfootagesDetails: any = {};
@@ -64,9 +65,10 @@ export class AddPaymentDetailsComponent {
   minDate: Date | undefined;
   maxDate: Date | undefined = new Date();
 
+  isDateNotEntered: boolean = false;
+
   constructor(
     private invoiceService: InvoiceService,
-    private decimalPipe: DecimalPipe,
     private excelService: ExcelService,
     private messageService: MessageService,
     private router: Router
@@ -74,6 +76,11 @@ export class AddPaymentDetailsComponent {
 
   async ngOnInit() {
     await this.loadBillDetails();
+    if (this.paymentDetails_Server?.isProcessed == 1) {
+      this.difference =
+        (this.paymentDetails_Server.invoiceAmountWithGST! || 0) -
+        (this.paymentDetails_Server.invoiceAmountPaid! || 0);
+    }
     if (this.paymentDetails_Server?.isProcessed == 0) {
       await this.loadFromLocalStorage();
       this.updateDifference(1);
@@ -88,11 +95,11 @@ export class AddPaymentDetailsComponent {
     this.paymentDetails!.withoutCNDetails = JSON.stringify(
       this.withoutCNDetails
     );
+    this.paymentDetails!.withoutDNDetails = JSON.stringify(
+      this.withoutDNDetails
+    );
     this.paymentDetails!.tdsDetails = JSON.stringify(this.tdsDetails);
     this.paymentDetails!.gsttdsDetails = JSON.stringify(this.gstTDSDetails);
-    this.paymentDetails!.remainingDetails = JSON.stringify(
-      this.remainingDetails
-    );
 
     let savedHistory: InvoiceDetailsDto | undefined = JSON.parse(
       localStorage.getItem(this.billId)!
@@ -125,9 +132,12 @@ export class AddPaymentDetailsComponent {
     this.paymentDetails!.excessBillingDetails = JSON.stringify(
       this.excessbillingDetails
     );
-    this.paymentDetails!.incentiveAmountWithoutDNDetails = JSON.stringify(
-      this.incentiveamountwithoutdnDetails
+    this.paymentDetails!.slaPenaltyDetails = JSON.stringify(
+      this.slapenaltyDetails
     );
+    // this.paymentDetails!.incentiveAmountWithoutDNDetails = JSON.stringify(
+    //   this.incentiveamountwithoutdnDetails
+    // );
     this.paymentDetails!.reconPenaltyDetails = JSON.stringify(
       this.reconpenaltyDetails
     );
@@ -150,7 +160,6 @@ export class AddPaymentDetailsComponent {
     this.paymentDetails!.cashMisappropriationDetails = JSON.stringify(
       this.cashmisappropriationDetails
     );
-    console.log(this.paymentDetails);
     localStorage.setItem(this.billId, JSON.stringify(this.paymentDetails));
   }
 
@@ -177,6 +186,9 @@ export class AddPaymentDetailsComponent {
         }
         if (savedHistory.incentiveDNDetails) {
           this.dnDetails = JSON.parse(savedHistory.incentiveDNDetails);
+        }
+        if (savedHistory.withoutDNDetails) {
+          this.withoutDNDetails = JSON.parse(savedHistory.withoutDNDetails);
         }
         if (savedHistory.withoutCNDetails) {
           this.withoutCNDetails = JSON.parse(savedHistory.withoutCNDetails);
@@ -221,10 +233,8 @@ export class AddPaymentDetailsComponent {
             savedHistory.excessBillingDetails
           );
         }
-        if (savedHistory.incentiveAmountWithoutDNDetails) {
-          this.incentiveamountwithoutdnDetails = JSON.parse(
-            savedHistory.incentiveAmountWithoutDNDetails
-          );
+        if (savedHistory.slaPenaltyDetails) {
+          this.slapenaltyDetails = JSON.parse(savedHistory.slaPenaltyDetails);
         }
         if (savedHistory.reconPenaltyDetails) {
           this.reconpenaltyDetails = JSON.parse(
@@ -290,6 +300,7 @@ export class AddPaymentDetailsComponent {
   }
 
   async submitPaymentDetails() {
+    console.log(this.paymentDetails);
     this.showLoader = true;
     this.paymentDetails!.billID = this.billId;
     try {
@@ -300,7 +311,7 @@ export class AddPaymentDetailsComponent {
         this.messageService.add({
           severity: 'success',
           summary: 'Submitted Successfully',
-          detail: 'Invoice Status Updated',
+          detail: 'Invoice Details Uploaded',
           life: 3000,
         });
       }
@@ -316,6 +327,18 @@ export class AddPaymentDetailsComponent {
         detail: 'Payment Details Submission Failed',
         life: 3000,
       });
+    }
+  }
+
+  checkFields() {
+    if (
+      !this.dates.invoiceAmountPaidDate ||
+      this.dates.invoiceAmountPaidDate == undefined ||
+      this.dates.invoiceAmountPaidDate == null
+    ) {
+      this.isDateNotEntered = true;
+    } else {
+      this.isDateNotEntered = false;
     }
   }
 
@@ -351,6 +374,11 @@ export class AddPaymentDetailsComponent {
         if (this.paymentDetails_Server.withoutCNDetails) {
           this.withoutCNDetails = JSON.parse(
             this.paymentDetails_Server.withoutCNDetails
+          );
+        }
+        if (this.paymentDetails_Server.withoutDNDetails) {
+          this.withoutDNDetails = JSON.parse(
+            this.paymentDetails_Server.withoutDNDetails
           );
         }
         if (this.paymentDetails_Server.tdsDetails) {
@@ -402,9 +430,9 @@ export class AddPaymentDetailsComponent {
             this.paymentDetails_Server.excessBillingDetails
           );
         }
-        if (this.paymentDetails_Server.incentiveAmountWithoutDNDetails) {
-          this.incentiveamountwithoutdnDetails = JSON.parse(
-            this.paymentDetails_Server.incentiveAmountWithoutDNDetails
+        if (this.paymentDetails_Server.slaPenaltyDetails) {
+          this.slapenaltyDetails = JSON.parse(
+            this.paymentDetails_Server.slaPenaltyDetails
           );
         }
         if (this.paymentDetails_Server.reconPenaltyDetails) {
@@ -493,6 +521,16 @@ export class AddPaymentDetailsComponent {
         break;
       case 3:
         {
+          this.withoutDNDetails.wdnTotal =
+            (this.withoutDNDetails.wdnAmount || 0) +
+            (this.withoutDNDetails.wdnCGST || 0) +
+            (this.withoutDNDetails.wdnSGST || 0) +
+            (this.withoutDNDetails.wdnIGST || 0) +
+            (this.withoutDNDetails.wdnUGST || 0);
+        }
+        break;
+      case 4:
+        {
           this.withoutCNDetails.wcnTotal =
             (this.withoutCNDetails.wcnAmount || 0) +
             (this.withoutCNDetails.wcnCGST || 0) +
@@ -501,7 +539,7 @@ export class AddPaymentDetailsComponent {
             (this.withoutCNDetails.wcnUGST || 0);
         }
         break;
-      case 4:
+      case 5:
         {
           this.tdsDetails.tdsTotal =
             (this.tdsDetails.tdsAmount || 0) +
@@ -511,7 +549,7 @@ export class AddPaymentDetailsComponent {
             (this.tdsDetails.tdsUGST || 0);
         }
         break;
-      case 5:
+      case 6:
         {
           this.gstTDSDetails.gstTDSTotal =
             (this.gstTDSDetails.gstTDSAmount || 0) +
@@ -521,19 +559,8 @@ export class AddPaymentDetailsComponent {
             (this.gstTDSDetails.gstTDSUGST || 0);
         }
         break;
-      case 6:
-        {
-          this.remainingDetails.remainingTotal =
-            (this.remainingDetails.remainingAmount || 0) +
-            (this.remainingDetails.remainingCGST || 0) +
-            (this.remainingDetails.remainingSGST || 0) +
-            (this.remainingDetails.remainingIGST || 0) +
-            (this.remainingDetails.remainingUGST || 0);
-        }
-        break;
       default:
         return;
-        break;
     }
   }
 
@@ -541,10 +568,10 @@ export class AddPaymentDetailsComponent {
     this.invoiceTotal =
       (this.cnDetails.cnTotal || 0) +
       (this.dnDetails.dnTotal || 0) +
+      (this.withoutDNDetails.wdnTotal || 0) +
       (this.withoutCNDetails.wcnTotal || 0) +
       (this.tdsDetails.tdsTotal || 0) +
       (this.gstTDSDetails.gstTDSTotal || 0);
-    console.log('Difference: ', this.difference, 'Total: ', this.invoiceTotal);
   }
 
   checkCategoricalTotal(): void {
@@ -574,8 +601,7 @@ export class AddPaymentDetailsComponent {
             (this.consumableDetails.consumableAmount || 0) +
             (this.dosDetails.dosAmount || 0) +
             (this.excessbillingDetails.excessbillingAmount || 0) +
-            (this.incentiveamountwithoutdnDetails
-              .incentiveamountwithoutdnAmount || 0) +
+            (this.slapenaltyDetails.slapenaltyAmount || 0) +
             (this.reconpenaltyDetails.reconpenaltyAmount || 0) +
             (this.ejdeductionDetails.ejdeductionAmount || 0) +
             (this.essfootagesDetails.essfootagesAmount || 0) +
@@ -597,8 +623,7 @@ export class AddPaymentDetailsComponent {
             (this.consumableDetails.consumableCGST || 0) +
             (this.dosDetails.dosCGST || 0) +
             (this.excessbillingDetails.excessbillingCGST || 0) +
-            (this.incentiveamountwithoutdnDetails
-              .incentiveamountwithoutdnCGST || 0) +
+            (this.slapenaltyDetails.slapenaltyCGST || 0) +
             (this.reconpenaltyDetails.reconpenaltyCGST || 0) +
             (this.ejdeductionDetails.ejdeductionCGST || 0) +
             (this.essfootagesDetails.essfootagesCGST || 0) +
@@ -620,8 +645,7 @@ export class AddPaymentDetailsComponent {
             (this.consumableDetails.consumableSGST || 0) +
             (this.dosDetails.dosSGST || 0) +
             (this.excessbillingDetails.excessbillingSGST || 0) +
-            (this.incentiveamountwithoutdnDetails
-              .incentiveamountwithoutdnSGST || 0) +
+            (this.slapenaltyDetails.slapenaltySGST || 0) +
             (this.reconpenaltyDetails.reconpenaltySGST || 0) +
             (this.ejdeductionDetails.ejdeductionSGST || 0) +
             (this.essfootagesDetails.essfootagesSGST || 0) +
@@ -643,8 +667,7 @@ export class AddPaymentDetailsComponent {
             (this.consumableDetails.consumableIGST || 0) +
             (this.dosDetails.dosIGST || 0) +
             (this.excessbillingDetails.excessbillingIGST || 0) +
-            (this.incentiveamountwithoutdnDetails
-              .incentiveamountwithoutdnIGST || 0) +
+            (this.slapenaltyDetails.slapenaltyIGST || 0) +
             (this.reconpenaltyDetails.reconpenaltyIGST || 0) +
             (this.ejdeductionDetails.ejdeductionIGST || 0) +
             (this.essfootagesDetails.essfootagesIGST || 0) +
@@ -666,8 +689,7 @@ export class AddPaymentDetailsComponent {
             (this.consumableDetails.consumableUGST || 0) +
             (this.dosDetails.dosUGST || 0) +
             (this.excessbillingDetails.excessbillingUGST || 0) +
-            (this.incentiveamountwithoutdnDetails
-              .incentiveamountwithoutdnUGST || 0) +
+            (this.slapenaltyDetails.slapenaltyUGST || 0) +
             (this.reconpenaltyDetails.reconpenaltyUGST || 0) +
             (this.ejdeductionDetails.ejdeductionUGST || 0) +
             (this.essfootagesDetails.essfootagesUGST || 0) +
@@ -689,8 +711,7 @@ export class AddPaymentDetailsComponent {
             (this.consumableDetails.consumableCN || 0) +
             (this.dosDetails.dosCN || 0) +
             (this.excessbillingDetails.excessbillingCN || 0) +
-            (this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnCN ||
-              0) +
+            (this.slapenaltyDetails.slapenaltyCN || 0) +
             (this.reconpenaltyDetails.reconpenaltyCN || 0) +
             (this.ejdeductionDetails.ejdeductionCN || 0) +
             (this.essfootagesDetails.essfootagesCN || 0) +
@@ -712,8 +733,7 @@ export class AddPaymentDetailsComponent {
             (this.consumableDetails.consumableWCN || 0) +
             (this.dosDetails.dosWCN || 0) +
             (this.excessbillingDetails.excessbillingWCN || 0) +
-            (this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnWCN ||
-              0) +
+            (this.slapenaltyDetails.slapenaltyWCN || 0) +
             (this.reconpenaltyDetails.reconpenaltyWCN || 0) +
             (this.ejdeductionDetails.ejdeductionWCN || 0) +
             (this.essfootagesDetails.essfootagesWCN || 0) +
@@ -735,8 +755,7 @@ export class AddPaymentDetailsComponent {
             (this.consumableDetails.consumableDN || 0) +
             (this.dosDetails.dosDN || 0) +
             (this.excessbillingDetails.excessbillingDN || 0) +
-            (this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnDN ||
-              0) +
+            (this.slapenaltyDetails.slapenaltyDN || 0) +
             (this.reconpenaltyDetails.reconpenaltyDN || 0) +
             (this.ejdeductionDetails.ejdeductionDN || 0) +
             (this.essfootagesDetails.essfootagesDN || 0) +
@@ -758,8 +777,7 @@ export class AddPaymentDetailsComponent {
             (this.consumableDetails.consumableWDN || 0) +
             (this.dosDetails.dosWDN || 0) +
             (this.excessbillingDetails.excessbillingWDN || 0) +
-            (this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnWDN ||
-              0) +
+            (this.slapenaltyDetails.slapenaltyWDN || 0) +
             (this.reconpenaltyDetails.reconpenaltyWDN || 0) +
             (this.ejdeductionDetails.ejdeductionWDN || 0) +
             (this.essfootagesDetails.essfootagesWDN || 0) +
@@ -823,6 +841,15 @@ export class AddPaymentDetailsComponent {
           total: this.dnDetails.dnTotal || '',
         },
         {
+          details: 'Incentive Without DN',
+          amount: this.withoutDNDetails.wdnAmount || '',
+          cgst: this.withoutDNDetails.wdnCGST || '',
+          sgst: this.withoutDNDetails.wdnSGST || '',
+          igst: this.withoutDNDetails.wdnIGST || '',
+          ugst: this.withoutDNDetails.wdnUGST || '',
+          total: this.withoutDNDetails.wdnTotal || '',
+        },
+        {
           details: 'Without CN Amount',
           amount: this.withoutCNDetails.wcnAmount || '',
           cgst: this.withoutCNDetails.wcnCGST || '',
@@ -849,15 +876,15 @@ export class AddPaymentDetailsComponent {
           ugst: this.gstTDSDetails.gstTDSUGST || '',
           total: this.gstTDSDetails.gstTDSTotal || '',
         },
-        {
-          details: 'Remaining/Difference',
-          amount: this.remainingDetails.remainingAmount || '',
-          cgst: this.remainingDetails.remainingCGST || '',
-          sgst: this.remainingDetails.remainingSGST || '',
-          igst: this.remainingDetails.remainingIGST || '',
-          ugst: this.remainingDetails.remainingUGST || '',
-          total: this.remainingDetails.remainingTotal || '',
-        },
+        // {
+        //   details: 'Remaining/Difference',
+        //   amount: this.remainingDetails.remainingAmount || '',
+        //   cgst: this.remainingDetails.remainingCGST || '',
+        //   sgst: this.remainingDetails.remainingSGST || '',
+        //   igst: this.remainingDetails.remainingIGST || '',
+        //   ugst: this.remainingDetails.remainingUGST || '',
+        //   total: this.remainingDetails.remainingTotal || '',
+        // },
       ],
       columns: [
         'Details',
@@ -977,26 +1004,39 @@ export class AddPaymentDetailsComponent {
           wdn: this.excessbillingDetails.excessbillingWDN,
           document: '#Attachment File Link',
         },
+        // {
+        //   category: 'Incentive Amount Without DN',
+        //   amount:
+        //     this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnAmount,
+        //   cgst: this.incentiveamountwithoutdnDetails
+        //     .incentiveamountwithoutdnCGST,
+        //   sgst: this.incentiveamountwithoutdnDetails
+        //     .incentiveamountwithoutdnSGST,
+        //   igst: this.incentiveamountwithoutdnDetails
+        //     .incentiveamountwithoutdnIGST,
+        //   ugst: this.incentiveamountwithoutdnDetails
+        //     .incentiveamountwithoutdnUGST,
+        //   cn: this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnCN,
+        //   wcn: this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnWCN,
+        //   dn: this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnDN,
+        //   wdn: this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnWDN,
+        //   document: '#Attachment File Link',
+        // },
         {
-          category: 'Incentive Amount Without DN',
-          amount:
-            this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnAmount,
-          cgst: this.incentiveamountwithoutdnDetails
-            .incentiveamountwithoutdnCGST,
-          sgst: this.incentiveamountwithoutdnDetails
-            .incentiveamountwithoutdnSGST,
-          igst: this.incentiveamountwithoutdnDetails
-            .incentiveamountwithoutdnIGST,
-          ugst: this.incentiveamountwithoutdnDetails
-            .incentiveamountwithoutdnUGST,
-          cn: this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnCN,
-          wcn: this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnWCN,
-          dn: this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnDN,
-          wdn: this.incentiveamountwithoutdnDetails.incentiveamountwithoutdnWDN,
+          category: 'SLA Penalty',
+          amount: this.slapenaltyDetails.slapenaltyAmount,
+          cgst: this.slapenaltyDetails.slapenaltyCGST,
+          sgst: this.slapenaltyDetails.slapenaltySGST,
+          igst: this.slapenaltyDetails.slapenaltyIGST,
+          ugst: this.slapenaltyDetails.slapenaltyUGST,
+          cn: this.slapenaltyDetails.slapenaltyCN,
+          wcn: this.slapenaltyDetails.slapenaltyWCN,
+          dn: this.slapenaltyDetails.slapenaltyDN,
+          wdn: this.slapenaltyDetails.slapenaltyWDN,
           document: '#Attachment File Link',
         },
         {
-          category: 'Recon Penalty',
+          category: 'Recon',
           amount: this.reconpenaltyDetails.reconpenaltyAmount,
           cgst: this.reconpenaltyDetails.reconpenaltyCGST,
           sgst: this.reconpenaltyDetails.reconpenaltySGST,
