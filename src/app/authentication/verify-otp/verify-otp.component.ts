@@ -8,7 +8,6 @@ import { UserSyncService } from '../../services/user-sync.service';
   styleUrl: './verify-otp.component.scss',
 })
 export class VerifyOtpComponent {
-  private token: string | undefined;
   public showLoader = false;
   showIncorrectOTP = false;
   showAccountBlocked = false;

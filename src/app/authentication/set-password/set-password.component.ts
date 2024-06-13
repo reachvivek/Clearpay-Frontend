@@ -13,7 +13,6 @@ export class SetPasswordComponent {
   public showLoader = false;
 
   isInputFocusedOrTyped: boolean = false;
-  private token: string | undefined;
   public newPassword: string = '';
   public confirmPassword: string = '';
   public newPasswordType = true;

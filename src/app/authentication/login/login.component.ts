@@ -8,7 +8,6 @@ import { UserSyncService } from '../../services/user-sync.service';
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
-  private token: string | undefined;
   public passwordType = true;
   public showLoader = false;
   showInvalidCredentials = false;

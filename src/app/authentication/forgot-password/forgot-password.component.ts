@@ -8,7 +8,6 @@ import { UserSyncService } from '../../services/user-sync.service';
   styleUrl: './forgot-password.component.scss',
 })
 export class ForgotPasswordComponent {
-  private token: string | undefined;
   public passwordType = true;
   public showLoader = false;
   public forgotPasswordForm = {
