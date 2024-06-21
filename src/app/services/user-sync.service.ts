@@ -4,6 +4,7 @@ import {
   AdminService,
   AuthService,
   Configuration,
+  FileUploadService,
   InvoiceService,
   LhoService,
 } from '../../swagger';
@@ -24,7 +25,8 @@ export class UserSyncService {
     private authService: AuthService,
     private adminService: AdminService,
     private lhoService: LhoService,
-    private invoiceService: InvoiceService
+    private invoiceService: InvoiceService,
+    private fileDownloadService: FileUploadService
   ) {}
 
   private async refreshToken() {
@@ -104,13 +106,14 @@ export class UserSyncService {
   }
 
   async sendLoginOTP(credentials: { employeecode: string; password: string }) {
-    credentials.password = this.encryptPassword(credentials.password);
+    const creds = { ...credentials };
+    creds.password = this.encryptPassword(creds.password);
     try {
       const res = await firstValueFrom(
-        this.authService.authSendLoginOTPPost(credentials)
+        this.authService.authSendLoginOTPPost(creds)
       );
       if (res && res.verified && res.otp_sent) {
-        sessionStorage.setItem('credentials', JSON.stringify(credentials));
+        sessionStorage.setItem('credentials', JSON.stringify(creds));
         sessionStorage.setItem('action', 'login');
         // To Do Refresh Token
         return true;
@@ -199,6 +202,7 @@ export class UserSyncService {
     this.adminService.defaultHeaders = headers;
     this.lhoService.defaultHeaders = headers;
     this.invoiceService.defaultHeaders = headers;
+    this.fileDownloadService.defaultHeaders = headers;
   }
 
   public async logout() {

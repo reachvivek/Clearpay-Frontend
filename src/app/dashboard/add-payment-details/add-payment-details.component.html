@@ -194,7 +194,7 @@
                         onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
                         onpaste="return false"
                         min="0"
-                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        [disabled]="1== 1"
                         placeholder="₹"
                       />
                     </td>
@@ -1084,14 +1084,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.fosAttachment == '' ||
+                          !paymentDetails_Server?.fosAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('2')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.fosAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.fosAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -1270,14 +1287,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.downtimeAttachment == '' ||
+                          !paymentDetails_Server?.downtimeAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('3')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.downtimeAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.downtimeAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -1458,14 +1492,32 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.cashOutPenaltyAttachment ==
+                            '' ||
+                          !paymentDetails_Server?.cashOutPenaltyAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('4')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.cashOutPenaltyAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.cashOutPenaltyAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -1646,14 +1698,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.houseKeepingAttachment == '' ||
+                          !paymentDetails_Server?.houseKeepingAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('5')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.houseKeepingAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.houseKeepingAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -1833,14 +1902,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.rejectBinAttachment == '' ||
+                          !paymentDetails_Server?.rejectBinAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('6')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.rejectBinAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.rejectBinAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -2020,14 +2106,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.consumableAttachment == '' ||
+                          !paymentDetails_Server?.consumableAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('7')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.consumableAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.consumableAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -2206,14 +2309,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.dosAttachment == '' ||
+                          !paymentDetails_Server?.dosAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('8')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.dosAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.dosAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -2394,14 +2514,32 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.excessBillingAttachment ==
+                            '' ||
+                          !paymentDetails_Server?.excessBillingAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('9')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.excessBillingAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.excessBillingAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -2581,14 +2719,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.slaPenaltyAttachment == '' ||
+                          !paymentDetails_Server?.slaPenaltyAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('10')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.slaPenaltyAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.slaPenaltyAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -2768,14 +2923,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.reconPenaltyAttachment == '' ||
+                          !paymentDetails_Server?.reconPenaltyAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('11')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.reconPenaltyAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.reconPenaltyAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -2954,14 +3126,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.ejDeductionAttachment == '' ||
+                          !paymentDetails_Server?.ejDeductionAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('12')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.ejDeductionAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.ejDeductionAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -3140,14 +3329,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.essFootagesAttachment == '' ||
+                          !paymentDetails_Server?.essFootagesAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('13')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.essFootagesAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.essFootagesAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -3328,14 +3534,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.eSurDowntimeAttachment == '' ||
+                          !paymentDetails_Server?.eSurDowntimeAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('14')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.eSurDowntimeAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.eSurDowntimeAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -3530,14 +3753,34 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.eSurNotInstalledAttachment ==
+                            '' ||
+                          !paymentDetails_Server?.eSurNotInstalledAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('15')"
+                      ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.eSurNotInstalledAttachment
+                        "
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.eSurNotInstalledAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -3736,14 +3979,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.craServicesAttachment == '' ||
+                          !paymentDetails_Server?.craServicesAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('16')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.craServicesAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.craServicesAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -3924,14 +4184,31 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.robberyAttachment == '' ||
+                          !paymentDetails_Server?.robberyAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('17')"
+                      ></button>
+                      <button
+                        *ngIf="paymentDetails_Server?.robberyAttachment"
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!.robberyAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -4130,14 +4407,35 @@
                     </td>
                     <td>
                       <button
+                        *ngIf="
+                          paymentDetails_Server?.cashMisappropriationAttachment ==
+                            '' ||
+                          !paymentDetails_Server?.cashMisappropriationAttachment
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-warning m-0 p-0"
+                        [disabled]="paymentDetails_Server!.isProcessed!"
+                        icon="pi pi-file-arrow-up"
+                        type="button"
+                        (click)="toggleUploadAttachmentDialog('18')"
+                      ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.cashMisappropriationAttachment
+                        "
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
-                        icon="pi pi-file-arrow-up"
+                        icon="pi pi-download"
                         type="button"
-                      >
-                        Upload
-                      </button>
+                        (click)="
+                          downloadAttachment(
+                            paymentDetails_Server!
+                              .cashMisappropriationAttachment!
+                          )
+                        "
+                      ></button>
                     </td>
                   </tr>
 
@@ -4338,4 +4636,51 @@
     </form>
   </div>
 </div>
+
+<form #submissionAttachmentForm="ngForm" ngNativeValidate>
+  <p-dialog
+    [(visible)]="showUploadAttachmentDialog"
+    [style]="{ width: '450px' }"
+    header="Upload Attachment"
+    [modal]="true"
+    styleClass="p-fluid"
+  >
+    <ng-template pTemplate="content">
+      <div class="field form-group">
+        <label for="name" class="form-label"
+          >Select the file to be uploaded</label
+        >
+        <p-fileUpload
+          name="attachment[]"
+          customUpload="true"
+          (uploadHandler)="onUpload($event)"
+          [multiple]="true"
+          accept=".pdf,.msg"
+          maxFileSize="10000000"
+        >
+          <ng-template pTemplate="content">
+            <ul *ngIf="uploadedFiles.length">
+              <li *ngFor="let file of uploadedFiles">
+                {{ file.name }} - {{ file.size }} bytes
+              </li>
+            </ul>
+          </ng-template>
+        </p-fileUpload>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        pRipple
+        type="button"
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="toggleUploadAttachmentDialog()"
+      ></button>
+    </ng-template>
+  </p-dialog>
+</form>
+
 <app-loader *ngIf="showLoader"></app-loader>

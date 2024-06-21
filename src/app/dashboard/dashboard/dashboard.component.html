@@ -201,9 +201,16 @@
           <p-tableCheckbox [value]="user"></p-tableCheckbox>
         </td> -->
         <td>
-          {{ bill.dateOfSubmission ? "" : bill.invoiceNo }}
+          {{
+            bill.isProcessed || (bill.dateOfSubmission && bill.ackProof)
+              ? ""
+              : bill.invoiceNo
+          }}
           <a
-            *ngIf="bill.dateOfSubmission != '' || bill.dateOfSubmission"
+            *ngIf="
+              (bill.dateOfSubmission != '' || bill.dateOfSubmission) &&
+              (bill.ackProof != '' || bill.ackProof)
+            "
             routerLink="./add-payment-details/{{ bill.billID }}"
             >{{ bill.invoiceNo }}</a
           >
@@ -240,6 +247,16 @@
         <td>
           <div class="row d-flex justify-content-center">
             <button
+              *ngIf="bill.ackProof"
+              pButton
+              pRipple
+              [rounded]="true"
+              icon="pi pi-file-export"
+              class="p-button-rounded p-button-info rounded-circle m-0"
+              (click)="downloadAcknowledgement(bill.ackProof)"
+            ></button>
+            <button
+              *ngIf="!bill.ackProof || bill.ackProof == ''"
               pButton
               pRipple
               [rounded]="true"
@@ -320,11 +337,7 @@
 </form>
 
 <!-- Create/Edit User Dialog -->
-<form
-  #submissionDateForm="ngForm"
-  (submit)="uploadAcknowledgement()"
-  ngNativeValidate
->
+<form #submissionAcknowledgementForm="ngForm" ngNativeValidate>
   <p-dialog
     [(visible)]="showUploadAcknowledgementDialog"
     [style]="{ width: '450px' }"
@@ -338,12 +351,12 @@
           >Select the file to be uploaded</label
         >
         <p-fileUpload
-          name="demo[]"
-          url="https://www.primefaces.org/cdn/api/upload.php"
-          (onUpload)="onUpload($event)"
+          name="acknowledgement[]"
+          customUpload="true"
+          (uploadHandler)="onUpload($event)"
           [multiple]="true"
-          accept="image/*"
-          maxFileSize="1000000"
+          accept="image/*,.pdf,.msg"
+          maxFileSize="10000000"
         >
           <ng-template pTemplate="content">
             <ul *ngIf="uploadedFiles.length">
@@ -365,15 +378,6 @@
         icon="pi pi-times"
         class="p-button-text"
         (click)="toggleUploadAcknowledgementDialog()"
-      ></button>
-      <button
-        pButton
-        [disabled]="submissionDateForm.invalid"
-        pRipple
-        label="Save"
-        icon="pi pi-check"
-        class="p-button-text"
-        type="submit"
       ></button>
     </ng-template>
   </p-dialog>

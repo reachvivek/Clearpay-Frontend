@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { AdminService } from './api/admin.service';
 import { AuthService } from './api/auth.service';
 import { DatabaseManagementService } from './api/databaseManagement.service';
+import { FileUploadService } from './api/fileUpload.service';
 import { InvoiceService } from './api/invoice.service';
 import { LhoService } from './api/lho.service';
 
@@ -17,6 +18,7 @@ import { LhoService } from './api/lho.service';
     AdminService,
     AuthService,
     DatabaseManagementService,
+    FileUploadService,
     InvoiceService,
     LhoService ]
 })

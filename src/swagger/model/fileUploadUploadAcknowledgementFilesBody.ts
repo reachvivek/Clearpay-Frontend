@@ -10,17 +10,7 @@
  * Do not edit the class manually.
  */
 
-export interface BillsForDashboardDto { 
-    billID?: number;
-    isPending?: number;
-    isProcessed?: number;
-    invoiceNo?: string;
-    bankName?: string;
-    state?: string;
-    lhoName?: string;
-    serviceType?: string;
-    invoiceYear?: number;
-    invoiceMonth?: string;
-    dateOfSubmission?: string;
-    ackProof?: string;
+export interface FileUploadUploadAcknowledgementFilesBody { 
+    BillID?: number;
+    Files?: Array<Blob>;
 }

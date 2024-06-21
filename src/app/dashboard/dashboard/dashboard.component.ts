@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
-import { InvoiceService } from '../../../swagger';
+import { FileUploadService, InvoiceService } from '../../../swagger';
 import { firstValueFrom } from 'rxjs';
 import { UserSyncService } from '../../services/user-sync.service';
 import { MessageService } from 'primeng/api';
 import { InvoiceDownloaderService } from '../../services/invoice-downloader.service';
+import { environment } from '../../../environments/prod/environment';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 interface UploadEvent {
   originalEvent: Event;
@@ -112,13 +114,15 @@ export class DashboardComponent {
 
   bill!: any;
 
-  uploadedFiles: any[] = [];
+  uploadedFiles: File[] = [];
 
   constructor(
     private userSyncService: UserSyncService,
     private invoiceService: InvoiceService,
     private messageService: MessageService,
-    private invoiceDownloaderService: InvoiceDownloaderService
+    private invoiceDownloaderService: InvoiceDownloaderService,
+    private fileDownloaderService: FileUploadService,
+    private http: HttpClient
   ) {}
 
   async ngOnInit() {
@@ -134,16 +138,16 @@ export class DashboardComponent {
       const res = await firstValueFrom(
         this.invoiceService.invoiceLoadFiltersGet()
       );
-      this.banks = res['banks']?.split(',');
-      this.invoiceYears = res['invoiceYears']?.split(',');
-      this.invoiceMonths = res['invoiceMonths']?.split(',');
-      const stateCodes = res['states'] ? res['states'].split(',') : [];
+      this.banks = (res.banks ?? res.Banks)?.split(',');
+      this.invoiceYears = (res.invoiceYears ?? res.InvoiceYears)?.split(',');
+      this.invoiceMonths = (res.invoiceMonths ?? res.InvoiceMonths)?.split(',');
+      const stateCodes = (res.states ?? res.States)?.split(',') ?? [];
       this.states = stateCodes.map((code: any) => ({
         code,
         name: this.stateNames[code] || code,
       }));
-      this.lhos = res['lhoNames']?.split(',');
-      this.servicetypes = res['serviceTypes']?.split(',');
+      this.lhos = (res.lhoNames ?? res.LhoNames)?.split(',');
+      this.servicetypes = (res.serviceTypes ?? res.ServiceTypes)?.split(',');
       this.showLoader = false;
     } catch (err: any) {
       console.log(err);
@@ -234,16 +238,66 @@ export class DashboardComponent {
     }
   }
 
-  onUpload(event: any) {
+  async onUpload(event: any) {
+    this.showLoader = true;
+    this.uploadedFiles = [];
     for (let file of event.files) {
+      console.log(file);
       this.uploadedFiles.push(file);
     }
 
-    this.messageService.add({
-      severity: 'info',
-      summary: 'File Uploaded',
-      detail: '',
+    const formData = new FormData();
+    formData.append('BillID', this.selectedBill.billId);
+    formData.append('Type', '1');
+
+    // Append each file to FormData
+    for (let file of this.uploadedFiles) {
+      formData.append('Files', file, file.name);
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${localStorage.getItem('token')!}`,
     });
+    // Now you can send formData to your API using HttpClient
+    this.http
+      .post(`${environment.BASE_PATH}/FileUpload/UploadFiles`, formData, {
+        headers,
+      })
+      .subscribe(
+        (response: any) => {
+          if (response && response.url)
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Uploaded Successfully',
+              detail: 'Acknowledgement Uploaded Successfully',
+              life: 3000,
+            });
+          this.showLoader = false;
+          this.uploadedFiles = [];
+          this.toggleUploadAcknowledgementDialog();
+          this.ngOnInit();
+        },
+        (error: any) => {
+          console.error('Error uploading files', error);
+          this.showLoader = false;
+        }
+      );
+  }
+
+  async downloadAcknowledgement(uri: string) {
+    this.showLoader = true;
+    try {
+      const res = await firstValueFrom(
+        this.fileDownloaderService.fileUploadDownloadFilePost({ uri })
+      );
+      if (res && res.sasUrl) {
+        window.open(res.sasUrl);
+        this.showLoader = false;
+      }
+    } catch (err: any) {
+      console.error(err);
+      this.showLoader = false;
+    }
   }
 
   async addSubmissionDate() {
@@ -298,9 +352,8 @@ export class DashboardComponent {
       },
       (error: any) => {
         console.error('Error downloading the invoice:', error);
+        this.showLoader = false;
       }
     );
   }
-
-  uploadAcknowledgement() {}
 }

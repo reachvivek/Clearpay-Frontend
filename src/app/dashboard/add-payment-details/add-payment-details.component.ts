@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import {
+  FileUploadService,
   InvoiceDetailsDto,
   InvoiceDetailsToUpdateDto,
   InvoiceService,
@@ -9,6 +10,8 @@ import { DecimalPipe } from '@angular/common';
 import { ExcelService } from '../../services/excel.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../environments/prod/environment';
 
 @Component({
   selector: 'app-add-payment-details',
@@ -67,11 +70,19 @@ export class AddPaymentDetailsComponent {
 
   isDateNotEntered: boolean = false;
 
+  showUploadAttachmentDialog: boolean = false;
+
+  uploadedFiles: File[] = [];
+
+  type!: string;
+
   constructor(
     private invoiceService: InvoiceService,
     private excelService: ExcelService,
     private messageService: MessageService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient,
+    private fileDownloaderService: FileUploadService
   ) {}
 
   async ngOnInit() {
@@ -86,6 +97,74 @@ export class AddPaymentDetailsComponent {
       this.updateDifference(1);
       this.checkInvoiceTotal();
       this.checkCategoricalTotal();
+      this.updateTotal(1);
+    }
+  }
+
+  toggleUploadAttachmentDialog(type: string = '') {
+    this.type = type;
+    this.showUploadAttachmentDialog = !this.showUploadAttachmentDialog;
+  }
+
+  async onUpload(event: any) {
+    this.showLoader = true;
+    this.uploadedFiles = [];
+    for (let file of event.files) {
+      console.log(file);
+      this.uploadedFiles.push(file);
+    }
+
+    const formData = new FormData();
+    formData.append('BillID', this.billId);
+    formData.append('Type', this.type);
+
+    // Append each file to FormData
+    for (let file of this.uploadedFiles) {
+      formData.append('Files', file, file.name);
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${localStorage.getItem('token')!}`,
+    });
+
+    this.http
+      .post(`${environment.BASE_PATH}/FileUpload/UploadFiles`, formData, {
+        headers,
+      })
+      .subscribe(
+        (response: any) => {
+          if (response && response.url)
+            this.messageService.add({
+              severity: 'info',
+              summary: 'Upload Successful',
+              detail: 'Attachment Uploaded Successfully',
+              life: 3000,
+            });
+          this.showLoader = false;
+          this.uploadedFiles = [];
+          this.toggleUploadAttachmentDialog();
+          this.loadBillDetails();
+        },
+        (error: any) => {
+          console.error('Error uploading files', error);
+          this.showLoader = false;
+        }
+      );
+  }
+
+  async downloadAttachment(uri: string) {
+    this.showLoader = true;
+    try {
+      const res = await firstValueFrom(
+        this.fileDownloaderService.fileUploadDownloadFilePost({ uri })
+      );
+      if (res && res.sasUrl) {
+        window.open(res.sasUrl);
+        this.showLoader = false;
+      }
+    } catch (err: any) {
+      console.error(err);
+      this.showLoader = false;
     }
   }
 
@@ -911,7 +990,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.fosDetails.fosWCN,
           dn: this.fosDetails.fosDN,
           wdn: this.fosDetails.fosWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.fosAttachment,
         },
         {
           category: 'Down Time',
@@ -924,7 +1003,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.downtimeDetails.downtimeWCN,
           dn: this.downtimeDetails.downtimeDN,
           wdn: this.downtimeDetails.downtimeWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.downtimeAttachment,
         },
         {
           category: 'Cash Out Penalty',
@@ -937,7 +1016,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.cashoutpenaltyDetails.cashoutpenaltyWCN,
           dn: this.cashoutpenaltyDetails.cashoutpenaltyDN,
           wdn: this.cashoutpenaltyDetails.cashoutpenaltyWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.cashOutPenaltyAttachment,
         },
         {
           category: 'House Keeping',
@@ -950,7 +1029,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.housekeepingDetails.housekeepingWCN,
           dn: this.housekeepingDetails.housekeepingDN,
           wdn: this.housekeepingDetails.housekeepingWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.houseKeepingAttachment,
         },
         {
           category: 'Reject Bin',
@@ -963,7 +1042,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.rejectbinDetails.rejectbinWCN,
           dn: this.rejectbinDetails.rejectbinDN,
           wdn: this.rejectbinDetails.rejectbinWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.rejectBinAttachment,
         },
         {
           category: 'Consumable',
@@ -976,7 +1055,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.consumableDetails.consumableWCN,
           dn: this.consumableDetails.consumableDN,
           wdn: this.consumableDetails.consumableWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.consumableAttachment,
         },
         {
           category: 'DOS',
@@ -989,7 +1068,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.dosDetails.dosWCN,
           dn: this.dosDetails.dosDN,
           wdn: this.dosDetails.dosWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.dosAttachment,
         },
         {
           category: 'Excess Billing',
@@ -1002,7 +1081,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.excessbillingDetails.excessbillingWCN,
           dn: this.excessbillingDetails.excessbillingDN,
           wdn: this.excessbillingDetails.excessbillingWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.excessBillingAttachment,
         },
         // {
         //   category: 'Incentive Amount Without DN',
@@ -1033,7 +1112,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.slapenaltyDetails.slapenaltyWCN,
           dn: this.slapenaltyDetails.slapenaltyDN,
           wdn: this.slapenaltyDetails.slapenaltyWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.slaPenaltyAttachment,
         },
         {
           category: 'Recon',
@@ -1046,7 +1125,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.reconpenaltyDetails.reconpenaltyWCN,
           dn: this.reconpenaltyDetails.reconpenaltyDN,
           wdn: this.reconpenaltyDetails.reconpenaltyWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.reconPenaltyAttachment,
         },
         {
           category: 'EJ Deduction',
@@ -1059,7 +1138,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.ejdeductionDetails.ejdeductionWCN,
           dn: this.ejdeductionDetails.ejdeductionDN,
           wdn: this.ejdeductionDetails.ejdeductionWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.ejDeductionAttachment,
         },
         {
           category: 'ESS Footages',
@@ -1072,7 +1151,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.essfootagesDetails.essfootagesWCN,
           dn: this.essfootagesDetails.essfootagesDN,
           wdn: this.essfootagesDetails.essfootagesWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.essFootagesAttachment,
         },
         {
           category: 'E-Sur Downtime',
@@ -1085,7 +1164,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.esurdowntimeDetails.esurdowntimeWCN,
           dn: this.esurdowntimeDetails.esurdowntimeDN,
           wdn: this.esurdowntimeDetails.esurdowntimeWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.eSurDowntimeAttachment,
         },
         {
           category: 'E-Sur Not Installed',
@@ -1098,7 +1177,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.esurnotinstalledDetails.esurnotinstalledWCN,
           dn: this.esurnotinstalledDetails.esurnotinstalledDN,
           wdn: this.esurnotinstalledDetails.esurnotinstalledWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.eSurNotInstalledAttachment,
         },
         {
           category: 'CRA Services Issues',
@@ -1111,7 +1190,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.craservicesissuesDetails.craservicesissuesWCN,
           dn: this.craservicesissuesDetails.craservicesissuesDN,
           wdn: this.craservicesissuesDetails.craservicesissuesWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.craServicesAttachment,
         },
         {
           category: 'Robbery / Theft',
@@ -1124,7 +1203,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.robberyDetails.robberyWCN,
           dn: this.robberyDetails.robberyDN,
           wdn: this.robberyDetails.robberyWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.robberyAttachment,
         },
         {
           category: 'Cash Misappropriation',
@@ -1137,7 +1216,7 @@ export class AddPaymentDetailsComponent {
           wcn: this.cashmisappropriationDetails.cashmisappropriationWCN,
           dn: this.cashmisappropriationDetails.cashmisappropriationDN,
           wdn: this.cashmisappropriationDetails.cashmisappropriationWDN,
-          document: '#Attachment File Link',
+          document: this.paymentDetails_Server?.cashMisappropriationAttachment,
         },
         {
           category: 'Total',
@@ -1150,7 +1229,6 @@ export class AddPaymentDetailsComponent {
           wcn: this.totalDetails.totalWCN,
           dn: this.totalDetails.totalDN,
           wdn: this.totalDetails.totalWDN,
-          document: '#Attachment File Link',
         },
       ],
       columns: [

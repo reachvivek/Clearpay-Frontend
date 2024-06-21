@@ -17,6 +17,7 @@ export interface InvoiceDetailsToUpdateDto {
     invoiceAmountPaidDate?: string;
     cnDetails?: string;
     incentiveDNDetails?: string;
+    withoutDNDetails?: string;
     withoutCNDetails?: string;
     tdsDetails?: string;
     gsttdsDetails?: string;
@@ -38,5 +39,4 @@ export interface InvoiceDetailsToUpdateDto {
     craServicesDetails?: string;
     robberyDetails?: string;
     cashMisappropriationDetails?: string;
-    withoutDNDetails?: string;
 }
