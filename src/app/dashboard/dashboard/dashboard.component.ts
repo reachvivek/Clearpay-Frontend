@@ -7,11 +7,6 @@ import { InvoiceDownloaderService } from '../../services/invoice-downloader.serv
 import { environment } from '../../../environments/prod/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-interface UploadEvent {
-  originalEvent: Event;
-  files: File[];
-}
-
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',

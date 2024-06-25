@@ -110,7 +110,6 @@ export class AddPaymentDetailsComponent {
     this.showLoader = true;
     this.uploadedFiles = [];
     for (let file of event.files) {
-      console.log(file);
       this.uploadedFiles.push(file);
     }
 
@@ -143,7 +142,7 @@ export class AddPaymentDetailsComponent {
           this.showLoader = false;
           this.uploadedFiles = [];
           this.toggleUploadAttachmentDialog();
-          this.loadBillDetails();
+          this.loadBillDetails(true);
         },
         (error: any) => {
           console.error('Error uploading files', error);
@@ -379,7 +378,6 @@ export class AddPaymentDetailsComponent {
   }
 
   async submitPaymentDetails() {
-    console.log(this.paymentDetails);
     this.showLoader = true;
     this.paymentDetails!.billID = this.billId;
     try {
@@ -421,140 +419,177 @@ export class AddPaymentDetailsComponent {
     }
   }
 
-  async loadBillDetails() {
+  async loadBillDetails(update: boolean = false) {
     this.showLoader = true;
     try {
       const res = await firstValueFrom(
         this.invoiceService.invoiceGetInvoiceDetailsBillIdGet(this.billId)
       );
       if (res) {
-        this.paymentDetails_Server = res;
-        this.paymentDetails!.invoiceNo = this.paymentDetails_Server.invoiceNo;
-        if (this.paymentDetails_Server.invoiceAmountPaid) {
-          this.paymentDetails!.invoiceAmountPaid =
-            this.paymentDetails_Server.invoiceAmountPaid;
+        if (update) {
+          this.paymentDetails_Server!.ackProof = res.ackProof;
+          this.paymentDetails_Server!.fosAttachment = res.fosAttachment;
+          this.paymentDetails_Server!.downtimeAttachment =
+            res.downtimeAttachment;
+          this.paymentDetails_Server!.cashOutPenaltyAttachment =
+            res.cashOutPenaltyAttachment;
+          this.paymentDetails_Server!.cashMisappropriationAttachment =
+            res.cashMisappropriationAttachment;
+          this.paymentDetails_Server!.houseKeepingAttachment =
+            res.houseKeepingAttachment;
+          this.paymentDetails_Server!.rejectBinAttachment =
+            res.rejectBinAttachment;
+          this.paymentDetails_Server!.consumableAttachment =
+            res.consumableAttachment;
+          this.paymentDetails_Server!.dosAttachment = res.dosAttachment;
+          this.paymentDetails_Server!.excessBillingAttachment =
+            res.excessBillingAttachment;
+          this.paymentDetails_Server!.slaPenaltyAttachment =
+            res.slaPenaltyAttachment;
+          this.paymentDetails_Server!.reconPenaltyAttachment =
+            res.reconPenaltyAttachment;
+          this.paymentDetails_Server!.ejDeductionAttachment =
+            res.ejDeductionAttachment;
+          this.paymentDetails_Server!.essFootagesAttachment =
+            res.essFootagesAttachment;
+          this.paymentDetails_Server!.eSurDowntimeAttachment =
+            res.eSurDowntimeAttachment;
+          this.paymentDetails_Server!.eSurNotInstalledAttachment =
+            res.eSurNotInstalledAttachment;
+          this.paymentDetails_Server!.craServicesAttachment =
+            res.craServicesAttachment;
+          this.paymentDetails_Server!.robberyAttachment = res.robberyAttachment;
+          this.paymentDetails_Server!.cashMisappropriationAttachment =
+            res.cashMisappropriationAttachment;
+        } else {
+          this.paymentDetails_Server = res;
+          this.paymentDetails!.invoiceNo = this.paymentDetails_Server.invoiceNo;
+          if (this.paymentDetails_Server.invoiceAmountPaid) {
+            this.paymentDetails!.invoiceAmountPaid =
+              this.paymentDetails_Server.invoiceAmountPaid;
+          }
+          if (this.paymentDetails_Server.invoiceAmountPaidDate) {
+            this.dates.invoiceAmountPaidDate = new Date(
+              this.paymentDetails_Server.invoiceAmountPaidDate
+            );
+          }
+          if (this.paymentDetails_Server.invoiceAmountWithGST) {
+            this.difference = this.paymentDetails_Server.invoiceAmountWithGST;
+          }
+          if (this.paymentDetails_Server.cnDetails) {
+            this.cnDetails = JSON.parse(this.paymentDetails_Server.cnDetails);
+          }
+          if (this.paymentDetails_Server.incentiveDNDetails) {
+            this.dnDetails = JSON.parse(
+              this.paymentDetails_Server.incentiveDNDetails
+            );
+          }
+          if (this.paymentDetails_Server.withoutCNDetails) {
+            this.withoutCNDetails = JSON.parse(
+              this.paymentDetails_Server.withoutCNDetails
+            );
+          }
+          if (this.paymentDetails_Server.withoutDNDetails) {
+            this.withoutDNDetails = JSON.parse(
+              this.paymentDetails_Server.withoutDNDetails
+            );
+          }
+          if (this.paymentDetails_Server.tdsDetails) {
+            this.tdsDetails = JSON.parse(this.paymentDetails_Server.tdsDetails);
+          }
+          if (this.paymentDetails_Server.gsttdsDetails) {
+            this.gstTDSDetails = JSON.parse(
+              this.paymentDetails_Server.gsttdsDetails
+            );
+          }
+          if (this.paymentDetails_Server.remainingDetails) {
+            this.remainingDetails = JSON.parse(
+              this.paymentDetails_Server.remainingDetails
+            );
+          }
+          if (this.paymentDetails_Server.fosDetails) {
+            this.fosDetails = JSON.parse(this.paymentDetails_Server.fosDetails);
+          }
+          if (this.paymentDetails_Server.downtimeDetails) {
+            this.downtimeDetails = JSON.parse(
+              this.paymentDetails_Server.downtimeDetails
+            );
+          }
+          if (this.paymentDetails_Server.cashOutPenaltyDetails) {
+            this.cashoutpenaltyDetails = JSON.parse(
+              this.paymentDetails_Server.cashOutPenaltyDetails
+            );
+          }
+          if (this.paymentDetails_Server.houseKeepingDetails) {
+            this.housekeepingDetails = JSON.parse(
+              this.paymentDetails_Server.houseKeepingDetails
+            );
+          }
+          if (this.paymentDetails_Server.rejectBinDetails) {
+            this.rejectbinDetails = JSON.parse(
+              this.paymentDetails_Server.rejectBinDetails
+            );
+          }
+          if (this.paymentDetails_Server.consumableDetails) {
+            this.consumableDetails = JSON.parse(
+              this.paymentDetails_Server.consumableDetails
+            );
+          }
+          if (this.paymentDetails_Server.dosDetails) {
+            this.dosDetails = JSON.parse(this.paymentDetails_Server.dosDetails);
+          }
+          if (this.paymentDetails_Server.excessBillingDetails) {
+            this.excessbillingDetails = JSON.parse(
+              this.paymentDetails_Server.excessBillingDetails
+            );
+          }
+          if (this.paymentDetails_Server.slaPenaltyDetails) {
+            this.slapenaltyDetails = JSON.parse(
+              this.paymentDetails_Server.slaPenaltyDetails
+            );
+          }
+          if (this.paymentDetails_Server.reconPenaltyDetails) {
+            this.reconpenaltyDetails = JSON.parse(
+              this.paymentDetails_Server.reconPenaltyDetails
+            );
+          }
+          if (this.paymentDetails_Server.ejDeductionDetails) {
+            this.ejdeductionDetails = JSON.parse(
+              this.paymentDetails_Server.ejDeductionDetails
+            );
+          }
+          if (this.paymentDetails_Server.essFootagesDetails) {
+            this.essfootagesDetails = JSON.parse(
+              this.paymentDetails_Server.essFootagesDetails
+            );
+          }
+          if (this.paymentDetails_Server.eSurDowntimeDetails) {
+            this.esurdowntimeDetails = JSON.parse(
+              this.paymentDetails_Server.eSurDowntimeDetails
+            );
+          }
+          if (this.paymentDetails_Server.eSurNotInstalledDetails) {
+            this.esurnotinstalledDetails = JSON.parse(
+              this.paymentDetails_Server.eSurNotInstalledDetails
+            );
+          }
+          if (this.paymentDetails_Server.craServicesDetails) {
+            this.craservicesissuesDetails = JSON.parse(
+              this.paymentDetails_Server.craServicesDetails
+            );
+          }
+          if (this.paymentDetails_Server.robberyDetails) {
+            this.robberyDetails = JSON.parse(
+              this.paymentDetails_Server.robberyDetails
+            );
+          }
+          if (this.paymentDetails_Server.cashMisappropriationDetails) {
+            this.cashmisappropriationDetails = JSON.parse(
+              this.paymentDetails_Server.cashMisappropriationDetails
+            );
+          }
+          this.updateCategories();
         }
-        if (this.paymentDetails_Server.invoiceAmountPaidDate) {
-          this.dates.invoiceAmountPaidDate = new Date(
-            this.paymentDetails_Server.invoiceAmountPaidDate
-          );
-        }
-        if (this.paymentDetails_Server.invoiceAmountWithGST) {
-          this.difference = this.paymentDetails_Server.invoiceAmountWithGST;
-        }
-        if (this.paymentDetails_Server.cnDetails) {
-          this.cnDetails = JSON.parse(this.paymentDetails_Server.cnDetails);
-        }
-        if (this.paymentDetails_Server.incentiveDNDetails) {
-          this.dnDetails = JSON.parse(
-            this.paymentDetails_Server.incentiveDNDetails
-          );
-        }
-        if (this.paymentDetails_Server.withoutCNDetails) {
-          this.withoutCNDetails = JSON.parse(
-            this.paymentDetails_Server.withoutCNDetails
-          );
-        }
-        if (this.paymentDetails_Server.withoutDNDetails) {
-          this.withoutDNDetails = JSON.parse(
-            this.paymentDetails_Server.withoutDNDetails
-          );
-        }
-        if (this.paymentDetails_Server.tdsDetails) {
-          this.tdsDetails = JSON.parse(this.paymentDetails_Server.tdsDetails);
-        }
-        if (this.paymentDetails_Server.gsttdsDetails) {
-          this.gstTDSDetails = JSON.parse(
-            this.paymentDetails_Server.gsttdsDetails
-          );
-        }
-        if (this.paymentDetails_Server.remainingDetails) {
-          this.remainingDetails = JSON.parse(
-            this.paymentDetails_Server.remainingDetails
-          );
-        }
-        if (this.paymentDetails_Server.fosDetails) {
-          this.fosDetails = JSON.parse(this.paymentDetails_Server.fosDetails);
-        }
-        if (this.paymentDetails_Server.downtimeDetails) {
-          this.downtimeDetails = JSON.parse(
-            this.paymentDetails_Server.downtimeDetails
-          );
-        }
-        if (this.paymentDetails_Server.cashOutPenaltyDetails) {
-          this.cashoutpenaltyDetails = JSON.parse(
-            this.paymentDetails_Server.cashOutPenaltyDetails
-          );
-        }
-        if (this.paymentDetails_Server.houseKeepingDetails) {
-          this.housekeepingDetails = JSON.parse(
-            this.paymentDetails_Server.houseKeepingDetails
-          );
-        }
-        if (this.paymentDetails_Server.rejectBinDetails) {
-          this.rejectbinDetails = JSON.parse(
-            this.paymentDetails_Server.rejectBinDetails
-          );
-        }
-        if (this.paymentDetails_Server.consumableDetails) {
-          this.consumableDetails = JSON.parse(
-            this.paymentDetails_Server.consumableDetails
-          );
-        }
-        if (this.paymentDetails_Server.dosDetails) {
-          this.dosDetails = JSON.parse(this.paymentDetails_Server.dosDetails);
-        }
-        if (this.paymentDetails_Server.excessBillingDetails) {
-          this.excessbillingDetails = JSON.parse(
-            this.paymentDetails_Server.excessBillingDetails
-          );
-        }
-        if (this.paymentDetails_Server.slaPenaltyDetails) {
-          this.slapenaltyDetails = JSON.parse(
-            this.paymentDetails_Server.slaPenaltyDetails
-          );
-        }
-        if (this.paymentDetails_Server.reconPenaltyDetails) {
-          this.reconpenaltyDetails = JSON.parse(
-            this.paymentDetails_Server.reconPenaltyDetails
-          );
-        }
-        if (this.paymentDetails_Server.ejDeductionDetails) {
-          this.ejdeductionDetails = JSON.parse(
-            this.paymentDetails_Server.ejDeductionDetails
-          );
-        }
-        if (this.paymentDetails_Server.essFootagesDetails) {
-          this.essfootagesDetails = JSON.parse(
-            this.paymentDetails_Server.essFootagesDetails
-          );
-        }
-        if (this.paymentDetails_Server.eSurDowntimeDetails) {
-          this.esurdowntimeDetails = JSON.parse(
-            this.paymentDetails_Server.eSurDowntimeDetails
-          );
-        }
-        if (this.paymentDetails_Server.eSurNotInstalledDetails) {
-          this.esurnotinstalledDetails = JSON.parse(
-            this.paymentDetails_Server.eSurNotInstalledDetails
-          );
-        }
-        if (this.paymentDetails_Server.craServicesDetails) {
-          this.craservicesissuesDetails = JSON.parse(
-            this.paymentDetails_Server.craServicesDetails
-          );
-        }
-        if (this.paymentDetails_Server.robberyDetails) {
-          this.robberyDetails = JSON.parse(
-            this.paymentDetails_Server.robberyDetails
-          );
-        }
-        if (this.paymentDetails_Server.cashMisappropriationDetails) {
-          this.cashmisappropriationDetails = JSON.parse(
-            this.paymentDetails_Server.cashMisappropriationDetails
-          );
-        }
-        this.updateCategories();
       }
       this.showLoader = false;
     } catch (err: any) {
@@ -644,17 +679,18 @@ export class AddPaymentDetailsComponent {
   }
 
   checkInvoiceTotal(): void {
-    this.invoiceTotal =
+    this.invoiceTotal = (
       (this.cnDetails.cnTotal || 0) +
       (this.dnDetails.dnTotal || 0) +
       (this.withoutDNDetails.wdnTotal || 0) +
       (this.withoutCNDetails.wcnTotal || 0) +
       (this.tdsDetails.tdsTotal || 0) +
-      (this.gstTDSDetails.gstTDSTotal || 0);
+      (this.gstTDSDetails.gstTDSTotal || 0)
+    ).toFixed(2);
   }
 
   checkCategoricalTotal(): void {
-    this.categoricalTotal =
+    this.categoricalTotal = (
       (this.totalDetails.totalAmount || 0) +
       (this.totalDetails.totalCGST || 0) +
       (this.totalDetails.totalSGST || 0) +
@@ -663,7 +699,8 @@ export class AddPaymentDetailsComponent {
       (this.totalDetails.totalCN || 0) +
       (this.totalDetails.totalWCN || 0) +
       (this.totalDetails.totalDN || 0) +
-      (this.totalDetails.totalWDN || 0);
+      (this.totalDetails.totalWDN || 0)
+    ).toFixed(2);
     this.difference = this.invoiceTotal - this.categoricalTotal;
   }
 

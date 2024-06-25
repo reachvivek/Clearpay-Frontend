@@ -59,14 +59,14 @@
         <th pSortableColumn="customer">
           Customer <p-sortIcon field="customer"></p-sortIcon>
         </th>
-        <th pSortableColumn="serviceMonth">
-          Service Month <p-sortIcon field="serviceMonth"></p-sortIcon>
+        <th pSortableColumn="invoiceMonth">
+          Service Month <p-sortIcon field="invoiceMonth"></p-sortIcon>
         </th>
-        <th pSortableColumn="financialYear">
-          Financial Year <p-sortIcon field="financialYear"></p-sortIcon>
+        <th pSortableColumn="invoiceYear">
+          Financial Year <p-sortIcon field="invoiceYear"></p-sortIcon>
         </th>
-        <th pSortableColumn="project">
-          Project <p-sortIcon field="project"></p-sortIcon>
+        <th pSortableColumn="serviceType">
+          Service Type <p-sortIcon field="serviceType"></p-sortIcon>
         </th>
         <th pSortableColumn="cnTotal">
           Credit Note <p-sortIcon field="cnTotal"></p-sortIcon>
@@ -137,9 +137,9 @@
         <td>{{ bill.dateOfSubmission | date }}</td>
         <td>{{ bill.invoiceNo }}</td>
         <td>{{ bill.bankName }}</td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>{{ bill.invoiceMonth }}</td>
+        <td>{{ bill.invoiceYear }}</td>
+        <td>{{ bill.serviceType }}</td>
         <td>
           {{ bill.cnTotal || 0 | currency : "INR" : "symbol-narrow" : "0.2-2" }}
         </td>
