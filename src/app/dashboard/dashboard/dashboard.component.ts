@@ -67,6 +67,7 @@ export class DashboardComponent {
   };
   lhos: string[] = [];
   servicetypes: string[] = [];
+  glcodes: string[] = [];
 
   filters: {
     bank: string;
@@ -75,6 +76,7 @@ export class DashboardComponent {
     state: string;
     lho: string;
     serviceType: string;
+    glCode: string;
   } = {
     bank: '',
     invoiceYear: '',
@@ -82,6 +84,7 @@ export class DashboardComponent {
     state: '',
     lho: '',
     serviceType: '',
+    glCode: '',
   };
 
   minDate: Date | undefined;
@@ -143,6 +146,8 @@ export class DashboardComponent {
       }));
       this.lhos = (res.lhoNames ?? res.LhoNames)?.split(',');
       this.servicetypes = (res.serviceTypes ?? res.ServiceTypes)?.split(',');
+      this.glcodes = (res.glCodes ?? res.GLCodes)?.split(',');
+      this.glcodes = this.glcodes.filter((entry: any) => entry != '');
       this.showLoader = false;
     } catch (err: any) {
       console.log(err);
@@ -163,6 +168,7 @@ export class DashboardComponent {
       state: string;
       lho: string;
       serviceType: string;
+      glCode: string;
     } | null = null
   ) {
     this.showLoader = true;
@@ -174,7 +180,8 @@ export class DashboardComponent {
           filters?.invoiceMonth,
           filters?.state,
           filters?.lho,
-          filters?.serviceType
+          filters?.serviceType,
+          filters?.glCode
         )
       );
 

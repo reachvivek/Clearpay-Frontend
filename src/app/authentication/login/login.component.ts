@@ -13,6 +13,7 @@ export class LoginComponent {
   showInvalidCredentials = false;
   showAccountBlocked = false;
   showAccountInactive = false;
+  showTooManyRequests = false;
   public loginForm = {
     employeecode: '',
     password: '',
@@ -38,6 +39,7 @@ export class LoginComponent {
     this.showAccountBlocked = false;
     this.showInvalidCredentials = false;
     this.showAccountInactive = false;
+    this.showTooManyRequests = false;
   }
 
   onSubmit = async () => {
@@ -70,6 +72,9 @@ export class LoginComponent {
         }
         if (err.error.toString().includes('Inactive')) {
           this.showAccountInactive = true;
+        }
+        if (err.error.toString().includes('Too many requests.')) {
+          this.showTooManyRequests = true;
         }
         this.showLoader = false;
       }

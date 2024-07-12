@@ -292,3 +292,7 @@ input[type="number"]:focus,
   display: none !important;
   visibility: hidden !important;
 }
+
+th {
+  white-space: nowrap !important;
+}

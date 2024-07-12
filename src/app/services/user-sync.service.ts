@@ -105,9 +105,14 @@ export class UserSyncService {
     return cipherText;
   }
 
-  async sendLoginOTP(credentials: { employeecode: string; password: string }) {
+  async sendLoginOTP(
+    credentials: { employeecode: string; password: string },
+    resend: boolean = false
+  ) {
     const creds = { ...credentials };
-    creds.password = this.encryptPassword(creds.password);
+    if (!resend) {
+      creds.password = this.encryptPassword(creds.password);
+    }
     try {
       const res = await firstValueFrom(
         this.authService.authSendLoginOTPPost(creds)
@@ -158,14 +163,13 @@ export class UserSyncService {
         this.authService.authSetNewPasswordPost(credentials)
       );
       if (res && res.updated) {
-        return true;
+        return res;
       } else {
         throw new Error('Something went wrong!');
-        return false;
       }
     } catch (err: any) {
       console.log(err);
-      return false;
+      return err;
     }
   }
 

@@ -18,6 +18,7 @@ export class SetPasswordComponent {
   public newPasswordType = true;
   public confirmPasswordType = true;
   public showConfirmPasswordError = false;
+  public showPasswordMatchesOldPasswordError = false;
 
   public isPasswordFocused = false;
   public hasUppercase = false;
@@ -63,7 +64,12 @@ export class SetPasswordComponent {
     this.hasMinLength = this.newPassword!.length >= 8;
   }
 
+  clearInfo() {
+    this.showPasswordMatchesOldPasswordError = false;
+  }
+
   onSubmit = async () => {
+    this.clearInfo();
     this.showLoader = true;
     if (!this.newPassword || !this.confirmPassword) {
       this.showLoader = false;
@@ -81,7 +87,7 @@ export class SetPasswordComponent {
       const res = await this.userSyncService.setNewPassword({
         password: this.newPassword,
       });
-      if (res) {
+      if (res && res.updated) {
         this.showLoader = false;
         localStorage.clear();
         this.messageService.add({
@@ -94,11 +100,20 @@ export class SetPasswordComponent {
           () => this.router.navigate(['/auth'], { replaceUrl: true }),
           3000
         );
+      } else if (
+        res &&
+        res.error.toString().includes('matches previously used passwords.')
+      ) {
+        this.showPasswordMatchesOldPasswordError = true;
       }
     } catch (err: any) {
-      console.log(err);
+      if (err.error.toString().includes('matches previously used passwords.')) {
+        this.showPasswordMatchesOldPasswordError = true;
+      }
+      console.log(err.error.toString());
       this.showLoader = false;
     }
+    this.showLoader = false;
   };
 
   checkForm() {

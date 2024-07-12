@@ -70,13 +70,15 @@ export class InvoiceService {
      * @param state 
      * @param lho 
      * @param serviceType 
+     * @param glCode 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, observe?: 'body', reportProgress?: boolean): Observable<DashboardBillsResponseDto>;
-    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<DashboardBillsResponseDto>>;
-    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<DashboardBillsResponseDto>>;
-    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, glCode?: string, observe?: 'body', reportProgress?: boolean): Observable<DashboardBillsResponseDto>;
+    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, glCode?: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<DashboardBillsResponseDto>>;
+    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, glCode?: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<DashboardBillsResponseDto>>;
+    public invoiceGetBillsGet(bank?: string, invoiceYear?: string, invoiceMonth?: string, state?: string, lho?: string, serviceType?: string, glCode?: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+
 
 
 
@@ -102,6 +104,9 @@ export class InvoiceService {
         }
         if (serviceType !== undefined && serviceType !== null) {
             queryParameters = queryParameters.set('serviceType', <any>serviceType);
+        }
+        if (glCode !== undefined && glCode !== null) {
+            queryParameters = queryParameters.set('glCode', <any>glCode);
         }
 
         let headers = this.defaultHeaders;

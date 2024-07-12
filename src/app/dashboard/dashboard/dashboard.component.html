@@ -38,7 +38,7 @@
     </div>
     <!-- <p class="display-6 text-body-secondary fs-4 m-0">Filters</p> -->
     <div class="row">
-      <div class="col-sm-6 col-md-3 col-lg-2">
+      <div class="col">
         <div class="form-group">
           <label for="BankFilter" class="form-label">Bank</label>
           <select
@@ -53,7 +53,7 @@
           </select>
         </div>
       </div>
-      <div class="col-sm-6 col-md-3 col-lg-2">
+      <div class="col">
         <div class="form-group">
           <label for="InvoiceYearFilter" class="form-label">Invoice Year</label>
           <select
@@ -68,7 +68,7 @@
           </select>
         </div>
       </div>
-      <div class="col-sm-6 col-md-3 col-lg-2">
+      <div class="col">
         <div class="form-group">
           <label for="InvoiceMonthFilter" class="form-label"
             >Invoice Month</label
@@ -85,7 +85,7 @@
           </select>
         </div>
       </div>
-      <div class="col-sm-6 col-md-3 col-lg-2">
+      <div class="col">
         <div class="form-group">
           <label for="StateFilter" class="form-label">State</label>
           <select
@@ -100,7 +100,7 @@
           </select>
         </div>
       </div>
-      <div class="col-sm-6 col-md-3 col-lg-2">
+      <div class="col">
         <div class="form-group">
           <label for="LhoFilter" class="form-label">LHO</label>
           <select
@@ -113,7 +113,7 @@
           </select>
         </div>
       </div>
-      <div class="col-sm-6 col-md-3 col-lg-2">
+      <div class="col">
         <div class="form-group">
           <label for="TypeOfServiceFilter" class="form-label"
             >Type of Service</label
@@ -129,6 +129,21 @@
               [value]="servicetype"
             >
               {{ servicetype }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          <label for="glCode" class="form-label">GL Code</label>
+          <select
+            class="form-select"
+            [(ngModel)]="filters.glCode"
+            (ngModelChange)="applyFilters()"
+          >
+            <option value="" selected>All</option>
+            <option *ngFor="let glcode of glcodes" [value]="glcode">
+              {{ glcode }}
             </option>
           </select>
         </div>
@@ -187,9 +202,12 @@
         <th pSortableColumn="bankName">
           Bank<p-sortIcon field="bankName"></p-sortIcon>
         </th>
+        <th pSortableColumn="invoiceAmountWithGST">
+          Invoice Amount<p-sortIcon field="invoiceAmountWithGST"></p-sortIcon>
+        </th>
         <th>Attachment</th>
-        <th>Date of Submission</th>
-        <th>Upload Acknowledgement</th>
+        <th>Submission Date</th>
+        <th>Acknowledgement</th>
         <th *ngIf="active_index == 1" pSortableColumn="isProcessed">
           Status<p-sortIcon field="isProcessed"></p-sortIcon>
         </th>
@@ -216,13 +234,28 @@
           >
         </td>
         <td>{{ bill.bankName }}</td>
+        <td>{{ bill.invoiceAmountWithGST | indianNumber : true }}</td>
         <td>
           <div class="row d-flex justify-content-center">
             <button
+              *ngIf="bill.attachment"
+              pButton
+              pRipple
+              [rounded]="true"
+              pTooltip="Download Attachment"
+              tooltipPosition="bottom"
+              icon="pi pi-file-pdf"
+              class="p-button-rounded p-button-info rounded-circle m-0"
+              (click)="downloadAcknowledgement(bill.attachment)"
+            ></button>
+            <button
+              *ngIf="!bill.attachment || bill.attachment == ''"
               pButton
               pRipple
               [rounded]="true"
               icon="pi pi-file-pdf"
+              pTooltip="Download Attachment"
+              tooltipPosition="bottom"
               class="p-button-rounded p-button-info rounded-circle m-0"
               (click)="downloadInvoice(bill.invoiceNo)"
             ></button>
@@ -239,6 +272,8 @@
               pRipple
               [rounded]="true"
               icon="pi pi-calendar"
+              pTooltip="Add Date Of Submission"
+              tooltipPosition="bottom"
               class="p-button-rounded p-button-secondary rounded-circle m-0"
               (click)="toggleSubmissionDateDialog(bill.billID)"
             ></button>
@@ -251,6 +286,8 @@
               pButton
               pRipple
               [rounded]="true"
+              pTooltip="Download Acknowledgement"
+              tooltipPosition="bottom"
               icon="pi pi-file-export"
               class="p-button-rounded p-button-info rounded-circle m-0"
               (click)="downloadAcknowledgement(bill.ackProof)"
@@ -261,6 +298,8 @@
               pRipple
               [rounded]="true"
               [disabled]="!bill.dateOfSubmission || bill.dateOfSubmission == ''"
+              pTooltip="Upload Acknowledgement"
+              tooltipPosition="bottom"
               icon="pi pi-file-arrow-up"
               class="p-button-rounded p-button-primary rounded-circle m-0"
               (click)="toggleUploadAcknowledgementDialog(bill.billID)"

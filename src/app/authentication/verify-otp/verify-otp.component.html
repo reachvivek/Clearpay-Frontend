@@ -79,6 +79,10 @@
             >
               The One-Time Password (OTP) you entered is incorrect.
             </p>
+            <p *ngIf="showOTPExpired" class="form-text text-danger text-start">
+              The One-Time Password (OTP) you entered has expired. Please
+              request a new one by clicking on Resend Code.
+            </p>
             <p
               class="form-text text-success"
               *ngIf="!showIncorrectOTP && showOTPSent"
@@ -98,7 +102,14 @@
                 (click)="resendOTP()"
                 [disabled]="isDisabled"
               >
-                Resend Code
+                Resend
+                {{
+                  isDisabled
+                    ? (countdownMinutes | number : "2.0") +
+                      ":" +
+                      (countdownSeconds | number : "2.0")
+                    : "Code"
+                }}
               </button>
               <button
                 [disabled]="otp.invalid"

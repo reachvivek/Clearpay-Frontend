@@ -66,6 +66,13 @@
               minutes due to multiple incorrect attempts.
             </p>
             <p
+              *ngIf="showTooManyRequests"
+              class="form-text text-danger text-start nowrap"
+            >
+              <em>Request limit exceeded:</em>
+              Please retry after 1 minute.
+            </p>
+            <p
               *ngIf="showAccountInactive"
               class="form-text text-danger text-start nowrap"
             >

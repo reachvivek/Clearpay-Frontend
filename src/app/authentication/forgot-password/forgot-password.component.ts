@@ -17,6 +17,7 @@ export class ForgotPasswordComponent {
   showInvalidCredentials = false;
   showAccountBlocked = false;
   showAccountInactive = false;
+  showTooManyRequests = false;
 
   isInputFocusedOrTyped: boolean = false;
 
@@ -24,8 +25,16 @@ export class ForgotPasswordComponent {
     private userSyncService: UserSyncService,
     private router: Router // private _matSnackBar: MatSnackBar
   ) {}
+
   ngOnInit(): void {
     this.isLoggedIn();
+  }
+
+  clearAllInfo() {
+    this.showAccountBlocked = false;
+    this.showInvalidCredentials = false;
+    this.showAccountInactive = false;
+    this.showTooManyRequests = false;
   }
 
   isLoggedIn() {
@@ -41,6 +50,7 @@ export class ForgotPasswordComponent {
 
   onSubmit = async () => {
     // console.log(this.loginForm)
+    this.clearAllInfo();
     this.showLoader = true;
     if (!this.forgotPasswordForm.employeecode) {
       this.showLoader = false;
@@ -67,6 +77,9 @@ export class ForgotPasswordComponent {
       }
       if (err.error.toString().includes('Inactive')) {
         this.showAccountInactive = true;
+      }
+      if (err.error.toString().includes('Too many requests.')) {
+        this.showTooManyRequests = true;
       }
       this.showLoader = false;
     }

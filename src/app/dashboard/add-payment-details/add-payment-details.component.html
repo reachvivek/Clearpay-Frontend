@@ -46,27 +46,7 @@
                 disabled
                 class="form-control"
                 [value]="
-                  paymentDetails_Server?.invoiceAmount
-                    | number : '1.2-5' : 'en-IN'
-                "
-              />
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="form-group">
-            <label for="InvoiceAmountWithGST" class="form-label"
-              >Invoice Amount With GST</label
-            >
-            <div class="input-group">
-              <span class="input-group-text">₹</span>
-              <input
-                type="text"
-                disabled
-                class="form-control"
-                [value]="
-                  paymentDetails_Server?.invoiceAmountWithGST
-                    | number : '1.2-5' : 'en-IN'
+                  paymentDetails_Server?.invoiceAmountWithGST | indianNumber
                 "
               />
             </div>
@@ -88,10 +68,44 @@
                 onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
                 onpaste="return false"
                 min="0"
-                min="0"
-                [disabled]="paymentDetails_Server?.isProcessed == 1"
                 class="form-control"
+                [disabled]="paymentDetails_Server?.isProcessed == 1"
               />
+            </div>
+          </div>
+        </div>
+        <div *ngIf="isAdmin" class="col">
+          <div class="form-group">
+            <label for="InvoiceAmountPaidNavision" class="form-label"
+              >Invoice Amount Paid (N)</label
+            >
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input
+                type="text"
+                disabled
+                class="form-control"
+                [value]="
+                  paymentDetails_Server?.invoiceAmountPaidNavision
+                    | indianNumber
+                "
+              />
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-group">
+            <label for="CNAmount" class="form-label">CN Amount</label>
+            <div class="input-group">
+              <div class="input-group">
+                <span class="input-group-text">₹</span>
+                <input
+                  type="text"
+                  disabled
+                  class="form-control"
+                  [value]="cnDetails.cnAmount | indianNumber"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -104,7 +118,7 @@
                 type="text"
                 disabled
                 class="form-control"
-                [placeholder]="difference || 0 | number : '0.2-5'"
+                [placeholder]="difference || 0 | indianNumber"
               />
             </div>
           </div>
@@ -112,7 +126,7 @@
         <div class="col">
           <div class="form-group">
             <label for="InvoiceAmountPaidDate" class="form-label"
-              >Invoice Amount Paid Date</label
+              >Invoice Amt Paid Date</label
             >
             <input
               *ngIf="paymentDetails_Server?.isProcessed == 1"
@@ -154,7 +168,12 @@
         </div>
       </div>
 
-      <p-stepper orientation="vertical" [linear]="true">
+      <p-stepper
+        orientation="vertical"
+        [linear]="paymentDetails_Server!.isProcessed == 0"
+        [(activeStep)]="activeStep"
+        (activeStepChange)="onStepChange($event)"
+      >
         <p-stepperPanel header="Invoice Details">
           <ng-template
             pTemplate="content"
@@ -177,7 +196,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  <!-- <tr>
                     <td class="text-secondary text-nowrap p-2">CN Amount</td>
                     <td>
                       <input
@@ -194,7 +213,7 @@
                         onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
                         onpaste="return false"
                         min="0"
-                        [disabled]="1== 1"
+                        [disabled]="1 == 1"
                         placeholder="₹"
                       />
                     </td>
@@ -282,13 +301,12 @@
                         name="cnTotal"
                         class="form-control"
                         [placeholder]="
-                          cnDetails.cnTotal || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          cnDetails.cnTotal || 0 | indianNumber : true
                         "
                         disabled
                       />
                     </td>
-                  </tr>
+                  </tr> -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">
@@ -397,8 +415,7 @@
                         name="dnTotal"
                         class="form-control"
                         [placeholder]="
-                          dnDetails.dnTotal || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          dnDetails.dnTotal || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -512,8 +529,7 @@
                         name="withoutDNTotal"
                         class="form-control"
                         [placeholder]="
-                          withoutDNDetails.wdnTotal || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          withoutDNDetails.wdnTotal || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -627,8 +643,7 @@
                         name="withoutCNTotal"
                         class="form-control"
                         [placeholder]="
-                          withoutCNDetails.wcnTotal || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          withoutCNDetails.wcnTotal || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -740,8 +755,7 @@
                         name="tdsTotal"
                         class="form-control"
                         [placeholder]="
-                          tdsDetails.tdsTotal || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          tdsDetails.tdsTotal || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -853,8 +867,7 @@
                         name="gstTDSTotal"
                         class="form-control"
                         [placeholder]="
-                          gstTDSDetails.gstTDSTotal || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          gstTDSDetails.gstTDSTotal || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -868,15 +881,14 @@
               <p-button
                 label="Save & Continue"
                 *ngIf="paymentDetails_Server?.isProcessed == 0"
-                (onClick)="nextCallback.emit()"
-                (onClick)="saveInvoiceDetails()"
-                [disabled]="this.invoiceTotal != this.difference"
+                (onClick)="handleNext(nextCallback.emit)"
+                [disabled]="!isWithinRange()"
                 iconPos="right"
               />
               <p-button
                 label="Next"
                 *ngIf="paymentDetails_Server?.isProcessed == 1"
-                (onClick)="nextCallback.emit()"
+                (onClick)="handleNext(nextCallback.emit)"
                 iconPos="right"
               /></div
           ></ng-template>
@@ -4449,8 +4461,7 @@
                         name="totalAmount"
                         class="form-control"
                         [placeholder]="
-                          totalDetails.totalAmount || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          totalDetails.totalAmount || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -4463,8 +4474,7 @@
                         name="totalCGST"
                         class="form-control"
                         [placeholder]="
-                          totalDetails.totalCGST || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          totalDetails.totalCGST || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -4477,8 +4487,7 @@
                         name="totalSGST"
                         class="form-control"
                         [placeholder]="
-                          totalDetails.totalSGST || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          totalDetails.totalSGST || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -4491,8 +4500,7 @@
                         name="totalIGST"
                         class="form-control"
                         [placeholder]="
-                          totalDetails.totalIGST || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          totalDetails.totalIGST || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -4505,8 +4513,7 @@
                         name="totalUGST"
                         class="form-control"
                         [placeholder]="
-                          totalDetails.totalUGST || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          totalDetails.totalUGST || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -4519,8 +4526,7 @@
                         name="totalCN"
                         class="form-control"
                         [placeholder]="
-                          totalDetails.totalCN || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          totalDetails.totalCN || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -4533,8 +4539,7 @@
                         name="totalWCN"
                         class="form-control"
                         [placeholder]="
-                          totalDetails.totalWCN || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          totalDetails.totalWCN || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -4547,8 +4552,7 @@
                         name="totalDN"
                         class="form-control"
                         [placeholder]="
-                          totalDetails.totalDN || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          totalDetails.totalDN || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -4561,8 +4565,7 @@
                         name="totalWDN"
                         class="form-control"
                         [placeholder]="
-                          totalDetails.totalWDN || 0
-                            | currency : 'INR' : 'symbol-narrow' : '0.2-2'
+                          totalDetails.totalWDN || 0 | indianNumber : true
                         "
                         disabled
                       />
@@ -4576,22 +4579,25 @@
               <p-button
                 label="Back"
                 severity="secondary"
-                (onClick)="saveCategoricalDetails()"
-                (onClick)="prevCallback.emit()"
+                (onClick)="
+                  saveCategoricalDetails();
+                  this.activeStep = 0;
+                  this.updateDifference(1)
+                "
               />
               <p-button
                 *ngIf="paymentDetails_Server?.isProcessed == 0"
                 label="Save & Continue"
                 severity="primary"
                 (onClick)="saveCategoricalDetails(); checkFields()"
-                (onClick)="nextCallback.emit()"
+                (onClick)="this.activeStep = 2"
                 [disabled]="difference !== 0"
               />
               <p-button
                 *ngIf="paymentDetails_Server?.isProcessed == 1"
                 label="Next"
                 severity="primary"
-                (onClick)="nextCallback.emit()"
+                (onClick)="activeStep = 2"
               /></div
           ></ng-template>
         </p-stepperPanel>
@@ -4622,13 +4628,16 @@
               </div>
             </div>
             <div class="flex py-4">
-              <p-button label="Back" (onClick)="prevCallback.emit()" />
+              <p-button
+                label="Back"
+                (onClick)="handleBack(prevCallback.emit)"
+              />
               <p-button
                 *ngIf="paymentDetails_Server?.isProcessed == 0"
                 label="Submit"
                 class="ms-1"
                 (onClick)="submitPaymentDetails()"
-                [disabled]="difference !== 0 || !dates.invoiceAmountPaidDate"
+                [disabled]="!canSubmitInvoiceDetails()"
               ></p-button></div
           ></ng-template>
         </p-stepperPanel>

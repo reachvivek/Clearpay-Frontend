@@ -9,10 +9,15 @@ import { UserSyncService } from '../../services/user-sync.service';
 })
 export class VerifyOtpComponent {
   public showLoader = false;
+  countdownMinutes: number = 1;
+  countdownSeconds: number = 0;
+  interval: any;
+  showOTPExpired = false;
   showIncorrectOTP = false;
   showAccountBlocked = false;
   showOTPSent = true;
   isDisabled = true;
+
   public otpForm = {
     otp: '',
   };
@@ -22,11 +27,11 @@ export class VerifyOtpComponent {
 
   constructor(
     private userSyncService: UserSyncService,
-    private router: Router // private _matSnackBar: MatSnackBar
+    private router: Router
   ) {}
   ngOnInit(): void {
     try {
-      this.disableOTPBtnTemp(30000);
+      this.disableOTPBtnTemp(this.countdownMinutes * 60 * 1000);
       const token = localStorage.getItem('token');
       if (token) {
         this.router.navigate(['/dashboard']);
@@ -40,11 +45,27 @@ export class VerifyOtpComponent {
     }
   }
 
+  startCountdown() {
+    this.interval = setInterval(() => {
+      if (this.countdownSeconds > 0) {
+        this.countdownSeconds--;
+      } else {
+        if (this.countdownMinutes > 0) {
+          this.countdownMinutes--;
+          this.countdownSeconds = 59;
+        } else {
+          clearInterval(this.interval);
+        }
+      }
+    }, 1000);
+  }
+
   disableOTPBtnTemp(time: number) {
     this.isDisabled = true;
+    this.startCountdown();
     setTimeout(() => {
       this.isDisabled = false;
-    }, 30000);
+    }, time);
   }
 
   onSubmit = async () => {
@@ -61,19 +82,23 @@ export class VerifyOtpComponent {
     this.showAccountBlocked = false;
     this.showIncorrectOTP = false;
     this.showOTPSent = false;
+    this.showOTPExpired = false;
   }
 
   async resendOTP() {
     this.clearMessages();
+    this.countdownMinutes = 1;
+    this.countdownSeconds = 0;
+    this.disableOTPBtnTemp(this.countdownMinutes * 60 * 1000);
     try {
-      this.showIncorrectOTP = false;
       this.showLoader = true;
       let res;
       switch (sessionStorage.getItem('action')) {
         case 'login':
           {
             res = await this.userSyncService.sendLoginOTP(
-              JSON.parse(sessionStorage.getItem('credentials')!)
+              JSON.parse(sessionStorage.getItem('credentials')!),
+              true
             );
           }
           break;
@@ -147,6 +172,9 @@ export class VerifyOtpComponent {
       }
       if (err.error.toString().includes('Blocked')) {
         this.showAccountBlocked = true;
+      }
+      if (err.error.toString().includes('OTP has expired.')) {
+        this.showOTPExpired = true;
       }
     }
   }

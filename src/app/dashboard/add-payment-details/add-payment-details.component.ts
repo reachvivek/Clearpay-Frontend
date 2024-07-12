@@ -1,17 +1,18 @@
 import { Component, Input } from '@angular/core';
 import {
+  AdminService,
   FileUploadService,
   InvoiceDetailsDto,
   InvoiceDetailsToUpdateDto,
   InvoiceService,
 } from '../../../swagger';
 import { firstValueFrom } from 'rxjs';
-import { DecimalPipe } from '@angular/common';
 import { ExcelService } from '../../services/excel.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/prod/environment';
+import { UserSyncService } from '../../services/user-sync.service';
 
 @Component({
   selector: 'app-add-payment-details',
@@ -22,6 +23,8 @@ export class AddPaymentDetailsComponent {
   @Input('billId') billId: any;
   paymentDetails: InvoiceDetailsToUpdateDto | undefined = {};
   paymentDetails_Server: InvoiceDetailsDto | undefined = {};
+
+  isAdmin: boolean = false;
 
   difference: any;
   showLoader: boolean = false;
@@ -76,29 +79,71 @@ export class AddPaymentDetailsComponent {
 
   type!: string;
 
+  activeStep = 0; // Initial step
+
   constructor(
     private invoiceService: InvoiceService,
     private excelService: ExcelService,
     private messageService: MessageService,
     private router: Router,
     private http: HttpClient,
-    private fileDownloaderService: FileUploadService
+    private fileDownloaderService: FileUploadService,
+    private adminService: AdminService
   ) {}
 
   async ngOnInit() {
+    this.isAdmin = await firstValueFrom(this.adminService.adminIsAdminGet());
     await this.loadBillDetails();
     if (this.paymentDetails_Server?.isProcessed == 1) {
       this.difference =
         (this.paymentDetails_Server.invoiceAmountWithGST! || 0) -
+        (this.cnDetails.cnAmount! || 0) -
         (this.paymentDetails_Server.invoiceAmountPaid! || 0);
     }
     if (this.paymentDetails_Server?.isProcessed == 0) {
       await this.loadFromLocalStorage();
       this.updateDifference(1);
       this.checkInvoiceTotal();
-      this.checkCategoricalTotal();
-      this.updateTotal(1);
     }
+  }
+
+  handleNext(nextCallback: Function) {
+    if (Math.round(this.difference - this.tdsDetails.tdsTotal) <= 1) {
+      // Skip to step 3 if condition is met
+      this.activeStep = 2;
+    } else {
+      // Proceed to the next step
+      this.activeStep = 1;
+      this.checkCategoricalTotal();
+    }
+    this.saveInvoiceDetails();
+    this.checkFields();
+  }
+
+  handleBack(prevCallback: Function) {
+    if (Math.round(this.tdsDetails.tdsTotal - this.difference) <= 1) {
+      // Skip to step 3 if condition is met
+      this.activeStep = 0;
+    } else {
+      this.activeStep = 1;
+    }
+  }
+
+  canSubmitInvoiceDetails(): boolean {
+    if (this.isDateNotEntered) {
+      return false;
+    }
+    if (
+      Math.round(this.difference - this.tdsDetails.tdsTotal) > 1 &&
+      this.difference !== 0
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  onStepChange(event: any) {
+    this.activeStep = event.value;
   }
 
   toggleUploadAttachmentDialog(type: string = '') {
@@ -367,6 +412,16 @@ export class AddPaymentDetailsComponent {
     this.updateCategoricalTotal(9);
   }
 
+  isWithinRange(): boolean {
+    const roundedInvoiceTotal = Math.round(this.invoiceTotal);
+    const roundedDifference = Math.round(this.difference);
+
+    if (Math.abs(roundedInvoiceTotal - roundedDifference) <= 1) {
+      return true;
+    }
+    return false;
+  }
+
   convertToString() {
     const dateToUpdate = this.dates.invoiceAmountPaidDate;
     const offset = dateToUpdate!.getTimezoneOffset();
@@ -604,6 +659,7 @@ export class AddPaymentDetailsComponent {
         {
           this.difference = (
             (this.paymentDetails_Server!.invoiceAmountWithGST || 0) -
+            (this.cnDetails.cnAmount || 0) -
             (this.paymentDetails!.invoiceAmountPaid || 0)
           ).toFixed(2);
         }
@@ -613,16 +669,6 @@ export class AddPaymentDetailsComponent {
 
   updateTotal(ind: number) {
     switch (ind) {
-      case 1:
-        {
-          this.cnDetails.cnTotal =
-            (this.cnDetails.cnAmount || 0) +
-            (this.cnDetails.cnCGST || 0) +
-            (this.cnDetails.cnSGST || 0) +
-            (this.cnDetails.cnIGST || 0) +
-            (this.cnDetails.cnUGST || 0);
-        }
-        break;
       case 2:
         {
           this.dnDetails.dnTotal =
@@ -680,7 +726,6 @@ export class AddPaymentDetailsComponent {
 
   checkInvoiceTotal(): void {
     this.invoiceTotal = (
-      (this.cnDetails.cnTotal || 0) +
       (this.dnDetails.dnTotal || 0) +
       (this.withoutDNDetails.wdnTotal || 0) +
       (this.withoutCNDetails.wcnTotal || 0) +

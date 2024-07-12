@@ -104,6 +104,7 @@ import { LoaderComponent } from '../standalone/loader/loader.component';
 import { AddPaymentDetailsComponent } from './add-payment-details/add-payment-details.component';
 import { withComponentInputBinding } from '@angular/router';
 import { ReportsComponent } from './reports/reports.component';
+import { IndianNumberPipe } from '../pipes/indian-number.pipe';
 
 @NgModule({
   declarations: [
@@ -114,6 +115,7 @@ import { ReportsComponent } from './reports/reports.component';
     DashboardComponent,
     AddPaymentDetailsComponent,
     ReportsComponent,
+    IndianNumberPipe,
   ],
   imports: [
     CommonModule,

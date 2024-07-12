@@ -100,6 +100,8 @@
                 pRipple
                 [rounded]="true"
                 icon="pi pi-user-edit"
+                pTooltip="Edit User"
+                tooltipPosition="bottom"
                 class="p-button-rounded p-button-success rounded-circle m-0"
                 (click)="editUser(user)"
               ></button>
@@ -111,6 +113,8 @@
                 pRipple
                 class="p-button-rounded p-button-danger rounded-circle m-0"
                 icon="pi pi-ban"
+                pTooltip="Suspend User"
+                tooltipPosition="bottom"
                 (click)="suspendUser(user)"
               ></button>
               <button
@@ -119,6 +123,8 @@
                 pRipple
                 class="p-button-rounded p-button-warning rounded-circle m-0"
                 icon="pi pi-undo"
+                pTooltip="Activate User"
+                tooltipPosition="bottom"
                 (click)="activateUser(user)"
               ></button>
             </div>
