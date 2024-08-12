@@ -8,11 +8,10 @@ import {
 } from '../../../swagger';
 import { firstValueFrom } from 'rxjs';
 import { ExcelService } from '../../services/excel.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/prod/environment';
-import { UserSyncService } from '../../services/user-sync.service';
 
 @Component({
   selector: 'app-add-payment-details',
@@ -88,7 +87,8 @@ export class AddPaymentDetailsComponent {
     private router: Router,
     private http: HttpClient,
     private fileDownloaderService: FileUploadService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private confirmationService: ConfirmationService
   ) {}
 
   async ngOnInit() {
@@ -179,7 +179,7 @@ export class AddPaymentDetailsComponent {
         (response: any) => {
           if (response && response.url)
             this.messageService.add({
-              severity: 'info',
+              severity: 'success',
               summary: 'Upload Successful',
               detail: 'Attachment Uploaded Successfully',
               life: 3000,
@@ -210,6 +210,38 @@ export class AddPaymentDetailsComponent {
       console.error(err);
       this.showLoader = false;
     }
+  }
+
+  deleteAttachment(type: number) {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this attachment' + '?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      acceptButtonStyleClass: 'ms-2',
+      accept: async () => {
+        this.showLoader = true;
+        try {
+          const res = await firstValueFrom(
+            this.fileDownloaderService.fileUploadDeleteAttachmentIdDelete(
+              this.billId,
+              type
+            )
+          );
+          if (res && res.deleted) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Attachment Deleted',
+              detail: 'Attachment Deleted Successfully',
+            });
+            this.uploadedFiles = [];
+            this.loadBillDetails(true);
+          }
+        } catch (err: any) {
+          console.error(err.error);
+        }
+        this.showLoader = false;
+      },
+    });
   }
 
   saveInvoiceDetails() {
@@ -660,7 +692,9 @@ export class AddPaymentDetailsComponent {
           this.difference = (
             (this.paymentDetails_Server!.invoiceAmountWithGST || 0) -
             (this.cnDetails.cnAmount || 0) -
-            (this.paymentDetails!.invoiceAmountPaid || 0)
+            (this.paymentDetails!.invoiceAmountPaid || 0) -
+            (this.tdsDetails.tdsTotal || 0) -
+            (this.gstTDSDetails.gstTDSTotal || 0)
           ).toFixed(2);
         }
         break;
@@ -707,6 +741,7 @@ export class AddPaymentDetailsComponent {
             (this.tdsDetails.tdsSGST || 0) +
             (this.tdsDetails.tdsIGST || 0) +
             (this.tdsDetails.tdsUGST || 0);
+          this.updateDifference(1);
         }
         break;
       case 6:
@@ -717,6 +752,7 @@ export class AddPaymentDetailsComponent {
             (this.gstTDSDetails.gstTDSSGST || 0) +
             (this.gstTDSDetails.gstTDSIGST || 0) +
             (this.gstTDSDetails.gstTDSUGST || 0);
+          this.updateDifference(1);
         }
         break;
       default:

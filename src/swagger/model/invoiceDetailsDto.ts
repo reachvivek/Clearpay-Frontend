@@ -34,6 +34,7 @@ export interface InvoiceDetailsDto {
     invoiceAmount?: number;
     invoiceAmountWithGST?: number;
     invoiceAmountPaid?: number;
+    invoiceAmountPaidNavision?: number;
     invoiceAmountPaidDate?: string;
     cnDetails?: string;
     incentiveDNDetails?: string;
@@ -76,5 +77,4 @@ export interface InvoiceDetailsDto {
     robberyAttachment?: string;
     cashMisappropriationDetails?: string;
     cashMisappropriationAttachment?: string;
-    invoiceAmountPaidNavision?: number;
 }

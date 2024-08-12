@@ -1,6 +1,6 @@
 <div class="card">
+  <p-toast></p-toast>
   <div class="container">
-    <p-toast></p-toast>
     <div class="row mb-2">
       <div class="col-9">
         <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
@@ -196,118 +196,6 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <!-- <tr>
-                    <td class="text-secondary text-nowrap p-2">CN Amount</td>
-                    <td>
-                      <input
-                        #cnAmount
-                        type="number"
-                        id="cnAmount"
-                        name="CNAmount"
-                        class="form-control"
-                        [(ngModel)]="cnDetails.cnAmount"
-                        (ngModelChange)="updateTotal(1)"
-                        (ngModelChange)="
-                          checkInvoiceTotal(); saveInvoiceDetails()
-                        "
-                        onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
-                        onpaste="return false"
-                        min="0"
-                        [disabled]="1 == 1"
-                        placeholder="₹"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        #cnCGST
-                        type="number"
-                        id="cnCGST"
-                        name="cnCGST"
-                        class="form-control"
-                        [(ngModel)]="cnDetails.cnCGST"
-                        (ngModelChange)="updateTotal(1)"
-                        (ngModelChange)="
-                          checkInvoiceTotal(); saveInvoiceDetails()
-                        "
-                        onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
-                        onpaste="return false"
-                        min="0"
-                        [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        placeholder="₹"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        #cnSGST
-                        type="number"
-                        id="cnSGST"
-                        name="cnSGST"
-                        class="form-control"
-                        [(ngModel)]="cnDetails.cnSGST"
-                        (ngModelChange)="updateTotal(1)"
-                        (ngModelChange)="
-                          checkInvoiceTotal(); saveInvoiceDetails()
-                        "
-                        onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
-                        onpaste="return false"
-                        min="0"
-                        [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        placeholder="₹"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        #cnIGST
-                        type="number"
-                        id="cnIGST"
-                        name="cnIGST"
-                        class="form-control"
-                        [(ngModel)]="cnDetails.cnIGST"
-                        (ngModelChange)="updateTotal(1)"
-                        (ngModelChange)="
-                          checkInvoiceTotal(); saveInvoiceDetails()
-                        "
-                        onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
-                        onpaste="return false"
-                        min="0"
-                        [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        placeholder="₹"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        #cnUGST
-                        type="number"
-                        id="cnUGST"
-                        name="cnUGST"
-                        class="form-control"
-                        [(ngModel)]="cnDetails.cnUGST"
-                        [disabled]="paymentDetails_Server?.isProcessed == 1"
-                        (ngModelChange)="updateTotal(1)"
-                        (ngModelChange)="
-                          checkInvoiceTotal(); saveInvoiceDetails()
-                        "
-                        onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
-                        onpaste="return false"
-                        min="0"
-                        placeholder="₹"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        #cnTotal
-                        type="number"
-                        id="cnTotal"
-                        name="cnTotal"
-                        class="form-control"
-                        [placeholder]="
-                          cnDetails.cnTotal || 0 | indianNumber : true
-                        "
-                        disabled
-                      />
-                    </td>
-                  </tr> -->
-
                   <tr>
                     <td class="text-secondary text-nowrap p-2">
                       Incentive DN Amount
@@ -1097,11 +985,14 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.fosAttachment == '' ||
-                          !paymentDetails_Server?.fosAttachment
+                          (paymentDetails_Server?.fosAttachment == '' ||
+                            !paymentDetails_Server?.fosAttachment) &&
+                          paymentDetails_Server?.isProcessed == 0
                         "
                         pButton
                         pRipple
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
@@ -1115,14 +1006,31 @@
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
                         type="button"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         (click)="
                           downloadAttachment(
                             paymentDetails_Server!.fosAttachment!
                           )
                         "
                       ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.fosAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(2)"
+                      ></button>
                     </td>
                   </tr>
+                  <!-- FOS -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">Downtime</td>
@@ -1300,11 +1208,14 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.downtimeAttachment == '' ||
-                          !paymentDetails_Server?.downtimeAttachment
+                          (paymentDetails_Server?.downtimeAttachment == '' ||
+                            !paymentDetails_Server?.downtimeAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
@@ -1316,6 +1227,8 @@
                         pButton
                         pRipple
                         class="p-button-info m-0 p-0"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         icon="pi pi-download"
                         type="button"
                         (click)="
@@ -1324,8 +1237,23 @@
                           )
                         "
                       ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.downtimeAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(3)"
+                      ></button>
                     </td>
                   </tr>
+                  <!-- Downtime -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">
@@ -1505,12 +1433,15 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.cashOutPenaltyAttachment ==
+                          (paymentDetails_Server?.cashOutPenaltyAttachment ==
                             '' ||
-                          !paymentDetails_Server?.cashOutPenaltyAttachment
+                            !paymentDetails_Server?.cashOutPenaltyAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
@@ -1523,6 +1454,8 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
@@ -1530,8 +1463,23 @@
                           )
                         "
                       ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.cashOutPenaltyAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(4)"
+                      ></button>
                     </td>
                   </tr>
+                  <!-- Cash Out Penalty -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">
@@ -1711,14 +1659,18 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.houseKeepingAttachment == '' ||
-                          !paymentDetails_Server?.houseKeepingAttachment
+                          (paymentDetails_Server?.houseKeepingAttachment ==
+                            '' ||
+                            !paymentDetails_Server?.houseKeepingAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('5')"
                       ></button>
@@ -1728,6 +1680,8 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
@@ -1735,8 +1689,23 @@
                           )
                         "
                       ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.houseKeepingAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(5)"
+                      ></button>
                     </td>
                   </tr>
+                  <!-- House Keeping -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">Reject Bin</td>
@@ -1915,14 +1884,17 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.rejectBinAttachment == '' ||
-                          !paymentDetails_Server?.rejectBinAttachment
+                          (paymentDetails_Server?.rejectBinAttachment == '' ||
+                            !paymentDetails_Server?.rejectBinAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('6')"
                       ></button>
@@ -1932,6 +1904,8 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
@@ -1939,8 +1913,23 @@
                           )
                         "
                       ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.rejectBinAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(6)"
+                      ></button>
                     </td>
                   </tr>
+                  <!-- Reject Bin -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">Consumable</td>
@@ -2119,14 +2108,17 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.consumableAttachment == '' ||
-                          !paymentDetails_Server?.consumableAttachment
+                          (paymentDetails_Server?.consumableAttachment == '' ||
+                            !paymentDetails_Server?.consumableAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('7')"
                       ></button>
@@ -2136,6 +2128,8 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
@@ -2143,8 +2137,23 @@
                           )
                         "
                       ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.consumableAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(7)"
+                      ></button>
                     </td>
                   </tr>
+                  <!-- Consumable -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">DOS</td>
@@ -2322,14 +2331,17 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.dosAttachment == '' ||
-                          !paymentDetails_Server?.dosAttachment
+                          (paymentDetails_Server?.dosAttachment == '' ||
+                            !paymentDetails_Server?.dosAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('8')"
                       ></button>
@@ -2339,6 +2351,8 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
@@ -2346,8 +2360,23 @@
                           )
                         "
                       ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.dosAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(8)"
+                      ></button>
                     </td>
                   </tr>
+                  <!-- DOS -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">
@@ -2527,15 +2556,18 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.excessBillingAttachment ==
+                          (paymentDetails_Server?.excessBillingAttachment ==
                             '' ||
-                          !paymentDetails_Server?.excessBillingAttachment
+                            !paymentDetails_Server?.excessBillingAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('9')"
                       ></button>
@@ -2546,14 +2578,31 @@
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
                         type="button"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         (click)="
                           downloadAttachment(
                             paymentDetails_Server!.excessBillingAttachment!
                           )
                         "
                       ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.excessBillingAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(9)"
+                      ></button>
                     </td>
                   </tr>
+                  <!-- Excess Billing -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">SLA Penalty</td>
@@ -2732,8 +2781,9 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.slaPenaltyAttachment == '' ||
-                          !paymentDetails_Server?.slaPenaltyAttachment
+                          (paymentDetails_Server?.slaPenaltyAttachment == '' ||
+                            !paymentDetails_Server?.slaPenaltyAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
@@ -2749,6 +2799,8 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
@@ -2756,8 +2808,23 @@
                           )
                         "
                       ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.slaPenaltyAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(10)"
+                      ></button>
                     </td>
                   </tr>
+                  <!-- Sla Penalty -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">Recon</td>
@@ -2936,14 +3003,18 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.reconPenaltyAttachment == '' ||
-                          !paymentDetails_Server?.reconPenaltyAttachment
+                          (paymentDetails_Server?.reconPenaltyAttachment ==
+                            '' ||
+                            !paymentDetails_Server?.reconPenaltyAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('11')"
                       ></button>
@@ -2953,6 +3024,8 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
@@ -2960,8 +3033,23 @@
                           )
                         "
                       ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.reconPenaltyAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(11)"
+                      ></button>
                     </td>
                   </tr>
+                  <!-- Recon -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">EJ Deduction</td>
@@ -3139,13 +3227,16 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.ejDeductionAttachment == '' ||
-                          !paymentDetails_Server?.ejDeductionAttachment
+                          (paymentDetails_Server?.ejDeductionAttachment == '' ||
+                            !paymentDetails_Server?.ejDeductionAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         icon="pi pi-file-arrow-up"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('12')"
@@ -3156,6 +3247,8 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
@@ -3163,8 +3256,23 @@
                           )
                         "
                       ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.ejDeductionAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(12)"
+                      ></button>
                     </td>
                   </tr>
+                  <!-- EJ Deduction -->
 
                   <tr>
                     <td class="text-secondary text-nowrap p-2">ESS Footages</td>
@@ -3342,14 +3450,17 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.essFootagesAttachment == '' ||
-                          !paymentDetails_Server?.essFootagesAttachment
+                          (paymentDetails_Server?.essFootagesAttachment == '' ||
+                            !paymentDetails_Server?.essFootagesAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('13')"
                       ></button>
@@ -3359,12 +3470,28 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
                             paymentDetails_Server!.essFootagesAttachment!
                           )
                         "
+                      ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.essFootagesAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(13)"
                       ></button>
                     </td>
                   </tr>
@@ -3547,14 +3674,18 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.eSurDowntimeAttachment == '' ||
-                          !paymentDetails_Server?.eSurDowntimeAttachment
+                          (paymentDetails_Server?.eSurDowntimeAttachment ==
+                            '' ||
+                            !paymentDetails_Server?.eSurDowntimeAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('14')"
                       ></button>
@@ -3564,12 +3695,28 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
                             paymentDetails_Server!.eSurDowntimeAttachment!
                           )
                         "
+                      ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.eSurDowntimeAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(14)"
                       ></button>
                     </td>
                   </tr>
@@ -3766,15 +3913,18 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.eSurNotInstalledAttachment ==
+                          (paymentDetails_Server?.eSurNotInstalledAttachment ==
                             '' ||
-                          !paymentDetails_Server?.eSurNotInstalledAttachment
+                            !paymentDetails_Server?.eSurNotInstalledAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('15')"
                       ></button>
@@ -3786,12 +3936,28 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
                             paymentDetails_Server!.eSurNotInstalledAttachment!
                           )
                         "
+                      ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.eSurNotInstalledAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(15)"
                       ></button>
                     </td>
                   </tr>
@@ -3992,14 +4158,17 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.craServicesAttachment == '' ||
-                          !paymentDetails_Server?.craServicesAttachment
+                          (paymentDetails_Server?.craServicesAttachment == '' ||
+                            !paymentDetails_Server?.craServicesAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('16')"
                       ></button>
@@ -4009,12 +4178,28 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
                             paymentDetails_Server!.craServicesAttachment!
                           )
                         "
+                      ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.craServicesAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(16)"
                       ></button>
                     </td>
                   </tr>
@@ -4197,12 +4382,15 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.robberyAttachment == '' ||
-                          !paymentDetails_Server?.robberyAttachment
+                          (paymentDetails_Server?.robberyAttachment == '' ||
+                            !paymentDetails_Server?.robberyAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
                         type="button"
@@ -4214,12 +4402,28 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
                             paymentDetails_Server!.robberyAttachment!
                           )
                         "
+                      ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.robberyAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(17)"
                       ></button>
                     </td>
                   </tr>
@@ -4420,15 +4624,18 @@
                     <td>
                       <button
                         *ngIf="
-                          paymentDetails_Server?.cashMisappropriationAttachment ==
+                          (paymentDetails_Server?.cashMisappropriationAttachment ==
                             '' ||
-                          !paymentDetails_Server?.cashMisappropriationAttachment
+                            !paymentDetails_Server?.cashMisappropriationAttachment) &&
+                          paymentDetails_Server!.isProcessed == 0
                         "
                         pButton
                         pRipple
                         class="p-button-warning m-0 p-0"
                         [disabled]="paymentDetails_Server!.isProcessed!"
                         icon="pi pi-file-arrow-up"
+                        pTooltip="Upload Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="toggleUploadAttachmentDialog('18')"
                       ></button>
@@ -4440,6 +4647,8 @@
                         pRipple
                         class="p-button-info m-0 p-0"
                         icon="pi pi-download"
+                        pTooltip="Download Attachment"
+                        tooltipPosition="left"
                         type="button"
                         (click)="
                           downloadAttachment(
@@ -4447,6 +4656,20 @@
                               .cashMisappropriationAttachment!
                           )
                         "
+                      ></button>
+                      <button
+                        *ngIf="
+                          paymentDetails_Server?.cashMisappropriationAttachment &&
+                          paymentDetails_Server!.isProcessed == 0
+                        "
+                        pButton
+                        pRipple
+                        class="p-button-danger mx-2 p-0"
+                        pTooltip="Delete Attachment"
+                        tooltipPosition="left"
+                        icon="pi pi-trash"
+                        type="button"
+                        (click)="deleteAttachment(18)"
                       ></button>
                     </td>
                   </tr>
@@ -4646,6 +4869,7 @@
   </div>
 </div>
 
+<!-- Categorical Details Attachment Dialog -->
 <form #submissionAttachmentForm="ngForm" ngNativeValidate>
   <p-dialog
     [(visible)]="showUploadAttachmentDialog"
@@ -4664,7 +4888,7 @@
           customUpload="true"
           (uploadHandler)="onUpload($event)"
           [multiple]="true"
-          accept=".pdf,.msg"
+          accept=".pdf,.msg,.xlsx"
           maxFileSize="10000000"
         >
           <ng-template pTemplate="content">
@@ -4692,4 +4916,5 @@
   </p-dialog>
 </form>
 
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 <app-loader *ngIf="showLoader"></app-loader>

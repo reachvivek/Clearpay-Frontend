@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
-import { FileUploadService, InvoiceService } from '../../../swagger';
 import { firstValueFrom } from 'rxjs';
 import { UserSyncService } from '../../services/user-sync.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { InvoiceDownloaderService } from '../../services/invoice-downloader.service';
 import { environment } from '../../../environments/prod/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { FileUploadService, InvoiceService } from '../../../swagger';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss',
+  selector: 'app-bill-management',
+  templateUrl: './bill-management.component.html',
+  styleUrl: './bill-management.component.scss',
 })
-export class DashboardComponent {
+export class BillManagementComponent {
   showLoader: boolean = false;
   showSubmissionDateDialog: boolean = false;
   showUploadAcknowledgementDialog: boolean = false;
@@ -114,10 +114,20 @@ export class DashboardComponent {
 
   uploadedFiles: File[] = [];
 
+  columns = [
+    { field: 'invoiceNo', header: 'Invoice No' },
+    { field: 'bankName', header: 'Bank' },
+    { field: 'invoiceAmountWithGST', header: 'Invoice Amount' },
+    { field: 'dateOfSubmission', header: 'Submission Date' },
+    { field: 'ackProof', header: 'Acknowledgement' },
+    { field: 'isProcessed', header: 'Status' },
+  ];
+
   constructor(
     private userSyncService: UserSyncService,
     private invoiceService: InvoiceService,
     private messageService: MessageService,
+    private confirmationService: ConfirmationService,
     private invoiceDownloaderService: InvoiceDownloaderService,
     private fileDownloaderService: FileUploadService,
     private http: HttpClient
@@ -158,6 +168,26 @@ export class DashboardComponent {
   async applyFilters() {
     await this.loadBills(this.filters);
     await this.loadBillsCategorically(this.active_index);
+  }
+
+  isFilterApplied(): boolean {
+    for (const key of Object.keys(this.filters) as Array<
+      keyof typeof this.filters
+    >) {
+      if (this.filters[key] !== '') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  resetFilters() {
+    (Object.keys(this.filters) as Array<keyof typeof this.filters>).forEach(
+      (key) => {
+        this.filters[key] = '';
+      }
+    );
+    this.applyFilters();
   }
 
   async loadBills(
@@ -204,6 +234,39 @@ export class DashboardComponent {
     }
   }
 
+  deleteAcknowledgement(id: number, number: string) {
+    this.confirmationService.confirm({
+      message:
+        'Are you sure you want to delete acknowledgement for Invoice ' +
+        number +
+        '?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      acceptButtonStyleClass: 'ms-2',
+      accept: async () => {
+        this.showLoader = true;
+        try {
+          const res = await firstValueFrom(
+            this.fileDownloaderService.fileUploadDeleteAttachmentIdDelete(id, 1)
+          );
+          if (res && res.deleted) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Acknowledgement Deleted',
+              detail: 'Acknowledgement Deleted Successfully',
+            });
+            await this.loadBills();
+            this.loadFilters();
+            this.loadBillsCategorically(1);
+          }
+        } catch (err: any) {
+          console.error(err.error);
+        }
+        this.showLoader = false;
+      },
+    });
+  }
+
   toggleSubmissionDateDialog(id: number | null = null) {
     this.showSubmissionDateDialog = !this.showSubmissionDateDialog;
     if (id) {
@@ -238,6 +301,25 @@ export class DashboardComponent {
         this.bills = [...this.allBills];
         break;
     }
+  }
+
+  getExportFileName(): string {
+    let fileName = '';
+    switch (this.active_index) {
+      case 1:
+        fileName = `Total_Bills_${new Date().toLocaleString()}`;
+        break;
+      case 2:
+        fileName = `Pending_Bills_${new Date().toLocaleString()}`;
+        break;
+      case 3:
+        fileName = `Processed_Bills_${new Date().toLocaleString()}`;
+        break;
+      default:
+        throw new Error('Invalid Index');
+        break;
+    }
+    return fileName;
   }
 
   async onUpload(event: any) {

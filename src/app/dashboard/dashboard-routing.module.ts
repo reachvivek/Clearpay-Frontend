@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { UserManagementComponent } from './user-management/user-management.component';
 import { LhoManagementComponent } from './lho-management/lho-management.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { BillManagementComponent } from './bill-management/bill-management.component';
 import { adminGuard } from '../guards/admin.guard';
 import { AddPaymentDetailsComponent } from './add-payment-details/add-payment-details.component';
 import { isLoggedIn } from '../guards/isLoggedIn.guard';
@@ -16,7 +16,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: DashboardComponent,
+        component: BillManagementComponent,
         data: { title: 'Dashboard' },
       },
       {

@@ -37,7 +37,7 @@
       </div> -->
     </div>
     <!-- <p class="display-6 text-body-secondary fs-4 m-0">Filters</p> -->
-    <div class="row">
+    <div class="row flex-wrap">
       <div class="col">
         <div class="form-group">
           <label for="BankFilter" class="form-label">Bank</label>
@@ -148,6 +148,19 @@
           </select>
         </div>
       </div>
+
+      <div class="col-auto" *ngIf="isFilterApplied()">
+        <button
+          pButton
+          pRipple
+          [rounded]="true"
+          icon="pi pi-filter-slash"
+          pTooltip="Clear Filters"
+          tooltipPosition="bottom"
+          class="p-button-rounded p-button-secondary rounded-circle reset-filter-margin"
+          (click)="resetFilters()"
+        ></button>
+      </div>
     </div>
   </div>
   <p-toast></p-toast>
@@ -156,6 +169,8 @@
     #dt
     [value]="bills"
     [rows]="4"
+    [columns]="columns"
+    [exportFilename]="getExportFileName()"
     [rowsPerPageOptions]="[4, 10, 25]"
     [paginator]="true"
     [tableStyle]="{
@@ -177,17 +192,26 @@
     <ng-template pTemplate="caption">
       <div class="d-flex align-items-center justify-content-between">
         <h5 class="m-0">Bill Details</h5>
-        <div>
-          <span class="p-input-icon-left m-1">
-            <i class="pi pi-search"></i>
-            <input
-              #searchInput
-              pInputText
-              type="text"
-              (input)="dt.filterGlobal(searchInput.value, 'contains')"
-              placeholder="Search..."
-            />
-          </span>
+        <div class="d-flex flex-row">
+          <p-button
+            *ngIf="bills.length"
+            icon="pi pi-file-export"
+            label="Export"
+            (click)="dt.exportCSV()"
+            class="p-2"
+          />
+          <div>
+            <span class="p-input-icon-left m-1">
+              <i class="pi pi-search"></i>
+              <input
+                #searchInput
+                pInputText
+                type="text"
+                (input)="dt.filterGlobal(searchInput.value, 'contains')"
+                placeholder="Search..."
+              />
+            </span>
+          </div>
         </div>
       </div>
     </ng-template>
@@ -293,6 +317,17 @@
               (click)="downloadAcknowledgement(bill.ackProof)"
             ></button>
             <button
+              *ngIf="bill.ackProof && !bill.isProcessed"
+              pButton
+              pRipple
+              [rounded]="true"
+              pTooltip="Delete Acknowledgement"
+              tooltipPosition="bottom"
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-danger rounded-circle mx-2"
+              (click)="deleteAcknowledgement(bill.billID, bill.invoiceNo)"
+            ></button>
+            <button
               *ngIf="!bill.ackProof || bill.ackProof == ''"
               pButton
               pRipple
@@ -316,7 +351,7 @@
   </p-table>
 </div>
 
-<!-- Create/Edit User Dialog -->
+<!-- Add Submission Date Dialog -->
 <form
   #submissionDateForm="ngForm"
   (submit)="addSubmissionDate()"
@@ -375,7 +410,7 @@
   </p-dialog>
 </form>
 
-<!-- Create/Edit User Dialog -->
+<!-- Upload Acknowledgement Dialog -->
 <form #submissionAcknowledgementForm="ngForm" ngNativeValidate>
   <p-dialog
     [(visible)]="showUploadAcknowledgementDialog"
@@ -394,7 +429,7 @@
           customUpload="true"
           (uploadHandler)="onUpload($event)"
           [multiple]="true"
-          accept="image/*,.pdf,.msg"
+          accept="image/*,.pdf,.msg,.xlsx"
           maxFileSize="10000000"
         >
           <ng-template pTemplate="content">

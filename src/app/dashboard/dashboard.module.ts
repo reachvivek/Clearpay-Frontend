@@ -6,7 +6,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { LayoutComponent } from './layout/layout.component';
 import { UserManagementComponent } from './user-management/user-management.component';
 import { LhoManagementComponent } from './lho-management/lho-management.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { BillManagementComponent } from './bill-management/bill-management.component';
 
 import { AccordionModule } from 'primeng/accordion';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -112,7 +112,7 @@ import { IndianNumberPipe } from '../pipes/indian-number.pipe';
     LayoutComponent,
     UserManagementComponent,
     LhoManagementComponent,
-    DashboardComponent,
+    BillManagementComponent,
     AddPaymentDetailsComponent,
     ReportsComponent,
     IndianNumberPipe,

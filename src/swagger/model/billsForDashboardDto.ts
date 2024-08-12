@@ -23,4 +23,6 @@ export interface BillsForDashboardDto {
     invoiceMonth?: string;
     dateOfSubmission?: string;
     ackProof?: string;
+    invoiceAmountWithGST?: number;
+    attachment?: string;
 }

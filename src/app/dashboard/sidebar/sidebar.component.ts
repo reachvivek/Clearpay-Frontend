@@ -1,13 +1,6 @@
 import { Component } from '@angular/core';
-import {
-  ActivatedRoute,
-  NavigationEnd,
-  NavigationStart,
-  Router,
-} from '@angular/router';
+import { Router } from '@angular/router';
 import { UserSyncService } from '../../services/user-sync.service';
-import { filter, firstValueFrom, map, startWith } from 'rxjs';
-import { AdminService, AuthService } from '../../../swagger';
 
 @Component({
   selector: 'app-sidebar',
@@ -62,13 +55,11 @@ export class SidebarComponent {
           this.routeTitle = title;
           break;
         } else {
-          this.routeTitle = 'Dashboard';
+          this.routeTitle = 'Bill Management';
         }
       }
       if (currentUrl.includes('add-payment-details')) {
         this.isSidebarOpen = false;
-      } else {
-        this.isSidebarOpen = true;
       }
     });
     this.userSyncService.loadState();
