@@ -764,9 +764,7 @@ export class AddPaymentDetailsComponent {
     this.invoiceTotal = (
       (this.dnDetails.dnTotal || 0) +
       (this.withoutDNDetails.wdnTotal || 0) +
-      (this.withoutCNDetails.wcnTotal || 0) +
-      (this.tdsDetails.tdsTotal || 0) +
-      (this.gstTDSDetails.gstTDSTotal || 0)
+      (this.withoutCNDetails.wcnTotal || 0)
     ).toFixed(2);
   }
 
