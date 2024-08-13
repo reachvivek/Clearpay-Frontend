@@ -80,6 +80,8 @@ export class AddPaymentDetailsComponent {
 
   activeStep = 0; // Initial step
 
+  formActionsDisabled: boolean = false;
+
   constructor(
     private invoiceService: InvoiceService,
     private excelService: ExcelService,
@@ -95,10 +97,7 @@ export class AddPaymentDetailsComponent {
     this.isAdmin = await firstValueFrom(this.adminService.adminIsAdminGet());
     await this.loadBillDetails();
     if (this.paymentDetails_Server?.isProcessed == 1) {
-      this.difference =
-        (this.paymentDetails_Server.invoiceAmountWithGST! || 0) -
-        (this.cnDetails.cnAmount! || 0) -
-        (this.paymentDetails_Server.invoiceAmountPaid! || 0);
+      this.updateDifference(2);
     }
     if (this.paymentDetails_Server?.isProcessed == 0) {
       await this.loadFromLocalStorage();
@@ -108,20 +107,25 @@ export class AddPaymentDetailsComponent {
   }
 
   handleNext(nextCallback: Function) {
-    if (Math.round(this.difference - this.tdsDetails.tdsTotal) <= 1) {
-      // Skip to step 3 if condition is met
-      this.activeStep = 2;
-    } else {
-      // Proceed to the next step
+    if (this.paymentDetails_Server?.isProcessed == 1) {
       this.activeStep = 1;
-      this.checkCategoricalTotal();
+    } else {
+      if (Math.round(this.invoiceTotal) <= 1) {
+        // Skip to step 3 if condition is met
+        this.activeStep = 2;
+      } else {
+        // Proceed to the next step
+        this.activeStep = 1;
+        this.checkCategoricalTotal();
+      }
+      this.saveInvoiceDetails();
+      this.checkFields();
     }
-    this.saveInvoiceDetails();
-    this.checkFields();
   }
 
   handleBack(prevCallback: Function) {
-    if (Math.round(this.tdsDetails.tdsTotal - this.difference) <= 1) {
+    this.checkInvoiceTotal();
+    if (Math.round(this.invoiceTotal) <= 1) {
       // Skip to step 3 if condition is met
       this.activeStep = 0;
     } else {
@@ -425,6 +429,9 @@ export class AddPaymentDetailsComponent {
             savedHistory.cashMisappropriationDetails
           );
         }
+        if (savedHistory.adjustedAmount) {
+          this.paymentDetails!.adjustedAmount = savedHistory.adjustedAmount;
+        }
         this.updateCategories();
       }
     } catch (err: any) {
@@ -444,14 +451,24 @@ export class AddPaymentDetailsComponent {
     this.updateCategoricalTotal(9);
   }
 
-  isWithinRange(): boolean {
-    const roundedInvoiceTotal = Math.round(this.invoiceTotal);
-    const roundedDifference = Math.round(this.difference);
+  isWithinRange(type: number): boolean {
+    if (type == 1) {
+      const roundedInvoiceTotal = Math.round(this.invoiceTotal);
+      const roundedDifference = Math.round(this.difference);
 
-    if (Math.abs(roundedInvoiceTotal - roundedDifference) <= 1) {
-      return true;
+      if (Math.abs(roundedInvoiceTotal - roundedDifference) <= 1) {
+        return true;
+      }
+      return false;
+    } else if (type == 2) {
+      const roundedDifference = Math.round(this.difference);
+      if (Math.abs(roundedDifference) <= 1) {
+        return true;
+      }
+      return false;
+    } else {
+      return false;
     }
-    return false;
   }
 
   convertToString() {
@@ -466,6 +483,7 @@ export class AddPaymentDetailsComponent {
 
   async submitPaymentDetails() {
     this.showLoader = true;
+    this.formActionsDisabled = true;
     this.paymentDetails!.billID = this.billId;
     try {
       const res = await firstValueFrom(
@@ -491,6 +509,8 @@ export class AddPaymentDetailsComponent {
         detail: 'Payment Details Submission Failed',
         life: 3000,
       });
+      this.formActionsDisabled = false;
+      this.showLoader = false;
     }
   }
 
@@ -675,6 +695,10 @@ export class AddPaymentDetailsComponent {
               this.paymentDetails_Server.cashMisappropriationDetails
             );
           }
+          if (this.paymentDetails_Server.adjustedAmount) {
+            this.paymentDetails!.adjustedAmount =
+              this.paymentDetails_Server.adjustedAmount;
+          }
           this.updateCategories();
         }
       }
@@ -685,8 +709,8 @@ export class AddPaymentDetailsComponent {
     }
   }
 
-  updateDifference(ind: number) {
-    switch (ind) {
+  updateDifference(type: number) {
+    switch (type) {
       case 1:
         {
           this.difference = (
@@ -696,6 +720,41 @@ export class AddPaymentDetailsComponent {
             (this.tdsDetails.tdsTotal || 0) -
             (this.gstTDSDetails.gstTDSTotal || 0)
           ).toFixed(2);
+        }
+        break;
+      case 2:
+        {
+          this.tdsDetails.tdsTotal =
+            (this.tdsDetails.tdsAmount || 0) +
+            (this.tdsDetails.tdsCGST || 0) +
+            (this.tdsDetails.tdsSGST || 0) +
+            (this.tdsDetails.tdsIGST || 0) +
+            (this.tdsDetails.tdsUGST || 0);
+          this.gstTDSDetails.gstTDSTotal =
+            (this.gstTDSDetails.gstTDSAmount || 0) +
+            (this.gstTDSDetails.gstTDSCGST || 0) +
+            (this.gstTDSDetails.gstTDSSGST || 0) +
+            (this.gstTDSDetails.gstTDSIGST || 0) +
+            (this.gstTDSDetails.gstTDSUGST || 0);
+          this.categoricalTotal = (
+            (this.totalDetails.totalAmount || 0) +
+            (this.totalDetails.totalCGST || 0) +
+            (this.totalDetails.totalSGST || 0) +
+            (this.totalDetails.totalIGST || 0) +
+            (this.totalDetails.totalUGST || 0) +
+            (this.totalDetails.totalCN || 0) +
+            (this.totalDetails.totalWCN || 0) +
+            (this.totalDetails.totalDN || 0) +
+            (this.totalDetails.totalWDN || 0)
+          ).toFixed(2);
+          this.difference =
+            (this.paymentDetails_Server!.invoiceAmountWithGST || 0) -
+            (this.cnDetails.cnAmount || 0) -
+            (this.paymentDetails!.invoiceAmountPaid || 0) -
+            (this.tdsDetails.tdsTotal || 0) -
+            (this.gstTDSDetails.gstTDSTotal || 0) -
+            (this.categoricalTotal || 0);
+          console.log(this.categoricalTotal);
         }
         break;
     }
@@ -778,7 +837,8 @@ export class AddPaymentDetailsComponent {
       (this.totalDetails.totalCN || 0) +
       (this.totalDetails.totalWCN || 0) +
       (this.totalDetails.totalDN || 0) +
-      (this.totalDetails.totalWDN || 0)
+      (this.totalDetails.totalWDN || 0) +
+      (this.paymentDetails!.adjustedAmount || 0)
     ).toFixed(2);
     this.difference = this.invoiceTotal - this.categoricalTotal;
   }

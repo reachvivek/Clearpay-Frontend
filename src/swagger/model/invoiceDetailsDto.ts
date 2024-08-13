@@ -77,4 +77,5 @@ export interface InvoiceDetailsDto {
     robberyAttachment?: string;
     cashMisappropriationDetails?: string;
     cashMisappropriationAttachment?: string;
+    adjustedAmount?: number;
 }

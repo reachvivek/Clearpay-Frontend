@@ -24,5 +24,6 @@ export interface BillsForDashboardDto {
     dateOfSubmission?: string;
     ackProof?: string;
     invoiceAmountWithGST?: number;
+    invoiceAmountPaidNavision?: number;
     attachment?: string;
 }

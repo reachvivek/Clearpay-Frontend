@@ -229,6 +229,11 @@
         <th pSortableColumn="invoiceAmountWithGST">
           Invoice Amount<p-sortIcon field="invoiceAmountWithGST"></p-sortIcon>
         </th>
+        <th pSortableColumn="invoiceAmountPaidNavision">
+          Invoice Paid<p-sortIcon
+            field="invoiceAmountPaidNavision"
+          ></p-sortIcon>
+        </th>
         <th>Attachment</th>
         <th>Submission Date</th>
         <th>Acknowledgement</th>
@@ -259,6 +264,7 @@
         </td>
         <td>{{ bill.bankName }}</td>
         <td>{{ bill.invoiceAmountWithGST | indianNumber : true }}</td>
+        <td>{{ bill.invoiceAmountPaidNavision | indianNumber : true }}</td>
         <td>
           <div class="row d-flex justify-content-center">
             <button

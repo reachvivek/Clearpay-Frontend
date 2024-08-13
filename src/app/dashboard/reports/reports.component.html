@@ -130,6 +130,10 @@
           Cash Misappropriation
           <p-sortIcon field="cashmisappropriationTotal"></p-sortIcon>
         </th>
+        <th pSortableColumn="adjustedAmount">
+          Adjusted Amount
+          <p-sortIcon field="adjustedAmount"></p-sortIcon>
+        </th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-bill>
@@ -141,110 +145,64 @@
         <td>{{ bill.invoiceYear }}</td>
         <td>{{ bill.serviceType }}</td>
         <td>
-          {{ bill.cnTotal || 0 | currency : "INR" : "symbol-narrow" : "0.2-2" }}
+          {{ bill.cnTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{ bill.dnTotal || 0 | currency : "INR" : "symbol-narrow" : "0.2-2" }}
+          {{ bill.dnTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.fosTotal || 0 | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.fosTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.downtimeTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.downtimeTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.cashoutpenaltyTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.cashoutpenaltyTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.housekeepingTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.housekeepingTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.rejectbinTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.rejectbinTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.consumableTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.consumableTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.dosTotal || 0 | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.dosTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.excessbillingTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.excessbillingTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.incentiveamountwithoutdnTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.incentiveamountwithoutdnTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.reconpenaltyTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.reconpenaltyTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.ejdeductionTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.ejdeductionTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.essfootagesTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.essfootagesTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.esurdowntimeTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.esurdowntimeTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.esurnotinstalledTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.esurnotinstalledTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.craservicesTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.craservicesTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.robberyTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.robberyTotal || 0 | indianNumber : true }}
         </td>
         <td>
-          {{
-            bill.cashmisappropriationTotal || 0
-              | currency : "INR" : "symbol-narrow" : "0.2-2"
-          }}
+          {{ bill.cashmisappropriationTotal || 0 | indianNumber : true }}
+        </td>
+        <td>
+          {{ bill.adjustedAmount || 0 | indianNumber : true }}
         </td>
 
         <td>

@@ -74,10 +74,10 @@
             </div>
           </div>
         </div>
-        <div *ngIf="isAdmin" class="col">
+        <div class="col">
           <div class="form-group">
             <label for="InvoiceAmountPaidNavision" class="form-label"
-              >Invoice Amount Paid (N)</label
+              >Invoice Paid (Navision)</label
             >
             <div class="input-group">
               <span class="input-group-text">₹</span>
@@ -770,7 +770,7 @@
                 label="Save & Continue"
                 *ngIf="paymentDetails_Server?.isProcessed == 0"
                 (onClick)="handleNext(nextCallback.emit)"
-                [disabled]="!isWithinRange()"
+                [disabled]="!isWithinRange(1)"
                 iconPos="right"
               />
               <p-button
@@ -4675,6 +4675,37 @@
                   </tr>
 
                   <tr>
+                    <td class="text-secondary text-nowrap p-2">
+                      Adjusted Amount
+                    </td>
+                    <td colspan="3">
+                      <input
+                        #adjustedAmount
+                        type="number"
+                        id="adjustedAmount"
+                        name="adjustedAmount"
+                        class="form-control"
+                        [(ngModel)]="paymentDetails!.adjustedAmount"
+                        [disabled]="paymentDetails_Server?.isProcessed == 1"
+                        (ngModelChange)="
+                          checkCategoricalTotal(); saveCategoricalDetails()
+                        "
+                        onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)) && event.charCode !== 43 && event.charCode !== 45"
+                        onpaste="return false"
+                        min="0"
+                        placeholder="₹"
+                      />
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+
+                  <tr>
                     <td class="text-secondary text-nowrap p-2">Total</td>
                     <td>
                       <input
@@ -4800,6 +4831,13 @@
             </section>
             <div class="flex py-4 gap-2">
               <p-button
+                *ngIf="paymentDetails_Server!.isProcessed == 1"
+                label="Back"
+                severity="secondary"
+                (onClick)="this.activeStep = 0"
+              />
+              <p-button
+                *ngIf="paymentDetails_Server!.isProcessed == 0"
                 label="Back"
                 severity="secondary"
                 (onClick)="
@@ -4814,7 +4852,7 @@
                 severity="primary"
                 (onClick)="saveCategoricalDetails(); checkFields()"
                 (onClick)="this.activeStep = 2"
-                [disabled]="difference !== 0"
+                [disabled]="!isWithinRange(2)"
               />
               <p-button
                 *ngIf="paymentDetails_Server?.isProcessed == 1"
@@ -4853,6 +4891,7 @@
             <div class="flex py-4">
               <p-button
                 label="Back"
+                [disabled]="formActionsDisabled"
                 (onClick)="handleBack(prevCallback.emit)"
               />
               <p-button
@@ -4860,7 +4899,7 @@
                 label="Submit"
                 class="ms-1"
                 (onClick)="submitPaymentDetails()"
-                [disabled]="!canSubmitInvoiceDetails()"
+                [disabled]="!canSubmitInvoiceDetails() || formActionsDisabled"
               ></p-button></div
           ></ng-template>
         </p-stepperPanel>

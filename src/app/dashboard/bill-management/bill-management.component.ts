@@ -136,8 +136,13 @@ export class BillManagementComponent {
   async ngOnInit() {
     this.userSyncService.loadState();
     await this.loadBills();
-    this.loadBillsCategorically(1);
+    this.loadBillsCategorically(this.active_index);
     this.loadFilters();
+  }
+
+  async loadUpdatedBills() {
+    await this.loadBills(this.filters);
+    this.loadBillsCategorically(this.active_index);
   }
 
   async loadFilters() {
@@ -255,9 +260,8 @@ export class BillManagementComponent {
               summary: 'Acknowledgement Deleted',
               detail: 'Acknowledgement Deleted Successfully',
             });
-            await this.loadBills();
-            this.loadFilters();
-            this.loadBillsCategorically(1);
+            await this.loadBills(this.filters);
+            this.loadBillsCategorically(this.active_index);
           }
         } catch (err: any) {
           console.error(err.error);
@@ -359,7 +363,7 @@ export class BillManagementComponent {
           this.showLoader = false;
           this.uploadedFiles = [];
           this.toggleUploadAcknowledgementDialog();
-          this.ngOnInit();
+          this.loadUpdatedBills();
         },
         (error: any) => {
           console.error('Error uploading files', error);
@@ -395,8 +399,8 @@ export class BillManagementComponent {
       );
       this.toggleSubmissionDateDialog();
       if (res && res.updated) {
-        await this.loadBills();
-        this.loadBillsCategorically(1);
+        await this.loadBills(this.filters);
+        this.loadBillsCategorically(this.active_index);
         this.messageService.add({
           severity: 'success',
           summary: 'Successful',
@@ -410,6 +414,7 @@ export class BillManagementComponent {
       this.showLoader = false;
     }
   }
+
   convertToString() {
     const dateToUpdate = this.editBill.submissionDate;
     const offset = dateToUpdate!.getTimezoneOffset();

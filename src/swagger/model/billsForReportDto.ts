@@ -22,6 +22,8 @@ export interface BillsForReportDto {
     invoiceYear?: number;
     invoiceMonth?: string;
     dateOfSubmission?: string;
+    invoiceAmountPaid?: number;
+    invoiceAmountPaidNavision?: number;
     cnDetails?: string;
     incentiveDNDetails?: string;
     fosDetails?: string;
@@ -41,4 +43,5 @@ export interface BillsForReportDto {
     craServicesDetails?: string;
     robberyDetails?: string;
     cashMisappropriationDetails?: string;
+    adjustedAmount?: number;
 }

@@ -39,4 +39,5 @@ export interface InvoiceDetailsToUpdateDto {
     craServicesDetails?: string;
     robberyDetails?: string;
     cashMisappropriationDetails?: string;
+    adjustedAmount?: number;
 }
