@@ -30,7 +30,7 @@
             *ngIf="reports.length"
             icon="pi pi-file-export"
             label="Export"
-            (click)="dt.exportCSV()"
+            (click)="exportToCSV()"
             class="p-2"
           />
           <div>
@@ -68,11 +68,25 @@
         <th pSortableColumn="serviceType">
           Service Type <p-sortIcon field="serviceType"></p-sortIcon>
         </th>
+        <th pSortableColumn="invoiceAmountPaid">
+          Invoice Amount Paid
+          <p-sortIcon field="invoiceAmountPaid"></p-sortIcon>
+        </th>
+        <th pSortableColumn="invoiceGst">
+          GST
+          <p-sortIcon field="invoiceGst"></p-sortIcon>
+        </th>
         <th pSortableColumn="cnTotal">
           Credit Note <p-sortIcon field="cnTotal"></p-sortIcon>
         </th>
         <th pSortableColumn="dnTotal">
           Debit Note <p-sortIcon field="dnTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="tdsTotal">
+          TDS <p-sortIcon field="tdsTotal"></p-sortIcon>
+        </th>
+        <th pSortableColumn="gstTdsTotal">
+          GST TDS <p-sortIcon field="gstTdsTotal"></p-sortIcon>
         </th>
         <th pSortableColumn="fosTotal">
           FOS <p-sortIcon field="fosTotal"></p-sortIcon>
@@ -145,10 +159,20 @@
         <td>{{ bill.invoiceYear }}</td>
         <td>{{ bill.serviceType }}</td>
         <td>
+          {{ bill.invoiceAmountPaid || 0 | indianNumber : true }}
+        </td>
+        <td>{{ bill.invoiceGst || 0 | indianNumber : true }}</td>
+        <td>
           {{ bill.cnTotal || 0 | indianNumber : true }}
         </td>
         <td>
           {{ bill.dnTotal || 0 | indianNumber : true }}
+        </td>
+        <td>
+          {{ bill.tdsTotal || 0 | indianNumber : true }}
+        </td>
+        <td>
+          {{ bill.gstTdsTotal || 0 | indianNumber : true }}
         </td>
         <td>
           {{ bill.fosTotal || 0 | indianNumber : true }}

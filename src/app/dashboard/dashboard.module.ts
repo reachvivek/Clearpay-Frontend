@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { SidebarComponent } from './sidebar/sidebar.component';
@@ -214,6 +214,12 @@ import { IndianNumberPipe } from '../pipes/indian-number.pipe';
     RippleModule,
     StyleClassModule,
   ],
-  providers: [MessageService, ConfirmationService, DecimalPipe],
+  providers: [
+    MessageService,
+    ConfirmationService,
+    DecimalPipe,
+    IndianNumberPipe,
+    DatePipe,
+  ],
 })
 export class DashboardModule {}

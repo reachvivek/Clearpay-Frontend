@@ -159,6 +159,7 @@ export class UserSyncService {
         Authorization: `Bearer ${localStorage.getItem('employeeToken')}`,
       });
       this.authService.defaultHeaders = headers;
+      credentials.password = this.encryptPassword(credentials.password);
       const res = await firstValueFrom(
         this.authService.authSetNewPasswordPost(credentials)
       );

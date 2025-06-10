@@ -493,7 +493,7 @@ export class AddPaymentDetailsComponent {
         this.messageService.add({
           severity: 'success',
           summary: 'Submitted Successfully',
-          detail: 'Invoice Details Uploaded',
+          detail: 'Invoice Details Updated',
           life: 3000,
         });
       }

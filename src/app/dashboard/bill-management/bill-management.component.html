@@ -185,6 +185,7 @@
     [globalFilterFields]="['bankName', 'invoiceNo']"
     [tableStyle]="{ 'min-width': '50rem' }"
     [rowHover]="true"
+    (onFilter)="onFilter($event)"
     dataKey="id"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     [showCurrentPageReport]="true"
@@ -197,7 +198,7 @@
             *ngIf="bills.length"
             icon="pi pi-file-export"
             label="Export"
-            (click)="dt.exportCSV()"
+            (click)="exportToCSV()"
             class="p-2"
           />
           <div>
@@ -229,11 +230,14 @@
         <th pSortableColumn="invoiceAmountWithGST">
           Invoice Amount<p-sortIcon field="invoiceAmountWithGST"></p-sortIcon>
         </th>
-        <th pSortableColumn="invoiceAmountPaidNavision">
-          Invoice Paid<p-sortIcon
+        <th pSortableColumn="invoiceAmountPaid">
+          Invoice Paid<p-sortIcon field="invoiceAmountPaid"></p-sortIcon>
+        </th>
+        <!-- <th pSortableColumn="invoiceAmountPaidNavision">
+          Invoice Paid (N)<p-sortIcon
             field="invoiceAmountPaidNavision"
           ></p-sortIcon>
-        </th>
+        </th> -->
         <th>Attachment</th>
         <th>Submission Date</th>
         <th>Acknowledgement</th>
@@ -264,7 +268,8 @@
         </td>
         <td>{{ bill.bankName }}</td>
         <td>{{ bill.invoiceAmountWithGST | indianNumber : true }}</td>
-        <td>{{ bill.invoiceAmountPaidNavision | indianNumber : true }}</td>
+        <td>{{ bill.invoiceAmountPaid | indianNumber : true }}</td>
+        <!-- <td>{{ bill.invoiceAmountPaidNavision | indianNumber : true }}</td> -->
         <td>
           <div class="row d-flex justify-content-center">
             <button

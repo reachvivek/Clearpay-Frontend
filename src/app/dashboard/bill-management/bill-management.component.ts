@@ -6,6 +6,8 @@ import { InvoiceDownloaderService } from '../../services/invoice-downloader.serv
 import { environment } from '../../../environments/prod/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FileUploadService, InvoiceService } from '../../../swagger';
+import { IndianNumberPipe } from '../../pipes/indian-number.pipe';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-bill-management',
@@ -114,12 +116,17 @@ export class BillManagementComponent {
 
   uploadedFiles: File[] = [];
 
+  filteredValues: any[] = [];
+
   columns = [
     { field: 'invoiceNo', header: 'Invoice No' },
+    { field: 'invoiceMonth', header: 'Invoice Month' },
     { field: 'bankName', header: 'Bank' },
     { field: 'invoiceAmountWithGST', header: 'Invoice Amount' },
+    { field: 'gst', header: 'GST' },
+    { field: 'invoiceAmountPaid', header: 'Invoice Amount Paid' },
     { field: 'dateOfSubmission', header: 'Submission Date' },
-    { field: 'ackProof', header: 'Acknowledgement' },
+    { field: 'ackProof', header: 'Date of Acknowledgement' },
     { field: 'isProcessed', header: 'Status' },
   ];
 
@@ -130,7 +137,9 @@ export class BillManagementComponent {
     private confirmationService: ConfirmationService,
     private invoiceDownloaderService: InvoiceDownloaderService,
     private fileDownloaderService: FileUploadService,
-    private http: HttpClient
+    private http: HttpClient,
+    private indianCurrencyPipe: IndianNumberPipe,
+    private datePipe: DatePipe
   ) {}
 
   async ngOnInit() {
@@ -221,22 +230,79 @@ export class BillManagementComponent {
       );
 
       this.allBills = [...allBills.bills!];
-      this.totalBillsCount = allBills.totalBills!;
-      this.pendingBillsCount = allBills.pendingBills!;
-      this.processedBillsCount = allBills.processedBills!;
+      this.totalBillsCount = this.allBills.length!;
 
       this.processedBills = this.allBills.filter(
         (bill: any) => bill.isProcessed == 1
       );
+      this.processedBillsCount = this.processedBills.length!;
 
       this.pendingBills = this.allBills.filter(
         (bill: any) => bill.isPending == 1
       );
+      this.pendingBillsCount = this.pendingBills.length!;
       this.showLoader = false;
     } catch (err: any) {
       console.error(err);
       this.showLoader = false;
     }
+  }
+
+  onFilter(event: any) {
+    this.filteredValues = event.filteredValue;
+  }
+
+  exportToCSV() {
+    const data = this.filteredValues.length ? this.filteredValues : this.bills;
+
+    const headers = this.columns.map((col) => col.header);
+    const rows = data.map((bill: any) =>
+      [
+        this.escapeCsvField(bill.invoiceNo),
+        this.escapeCsvField(bill.invoiceMonth),
+        this.escapeCsvField(bill.bankName),
+        this.escapeCsvField(
+          this.indianCurrencyPipe.transform(bill.invoiceAmountWithGST, true)
+        ),
+        this.escapeCsvField(
+          this.indianCurrencyPipe.transform(
+            bill.invoiceAmountWithGST - bill.invoiceAmount,
+            true
+          )
+        ),
+        this.escapeCsvField(
+          this.indianCurrencyPipe.transform(bill.invoiceAmountPaid, true)
+        ),
+        this.escapeCsvField(
+          this.datePipe.transform(bill.dateOfSubmission, 'dd-MMM-yyyy') || ''
+        ),
+        this.escapeCsvField(bill.ackProof || ''),
+        this.escapeCsvField(bill.isProcessed ? 'Processed' : 'Pending'),
+      ].join(',')
+    );
+
+    const csvData = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([`\ufeff${csvData}`], {
+      type: 'text/csv;charset=utf-8;',
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', this.getExportFileName());
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  escapeCsvField(value: any) {
+    if (typeof value === 'string') {
+      value = value.replace(/"/g, '""'); // Escape double quotes
+      if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+        value = `"${value}"`; // Wrap in quotes if necessary
+      }
+    }
+    return value;
   }
 
   deleteAcknowledgement(id: number, number: string) {
